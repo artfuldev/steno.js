@@ -31,7 +31,11 @@
                 throw new Error('Incorrect Number of Arguments');
             if (typeof string == 'undefined' || string == null || (typeof string != 'string' && !(string instanceof String)))
                 throw new Error('Invalid Arguments');
-            var html = string;
+            //If no element, make div the default element
+            var element = string == '' ? 'div' : string;
+            var prefix = '<' + element + '>';
+            var suffix = '</' + element + '>';
+            var html = prefix + suffix;
             return html;
         },
     };
