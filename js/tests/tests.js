@@ -3,3 +3,6 @@
 /// <reference path="../project/zen-query.js" />
 
 $Q = QUnit;
+$Z = ZenQuery;
+
+//Tests to come here
