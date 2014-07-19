@@ -21,9 +21,19 @@
 
 
 (function (window) {
-    var ZenQuery;
+    var ZenQuery,
+        config,
+        hasOwn = Object.prototype.hasOwnProperty;
     ZenQuery = {
-
+        //Renders a given zen coding string as html
+        render: function (string) {
+            if (arguments.length != 1)
+                throw new Error('Incorrect Number of Arguments');
+            if (typeof string == 'undefined' || string == null || (typeof string != 'string' && !(string instanceof String)))
+                throw new Error('Invalid Arguments');
+            var html = string;
+            return html;
+        },
     };
 
     // We use the prototype to distinguish between properties that should
@@ -36,6 +46,31 @@
         // Make F QUnit's constructor so that we can add to the prototype later
         ZenQuery.constructor = F;
     }());
+
+    //Extend
+    function extend(a, b) {
+        for (var prop in b) {
+            if (hasOwn.call(b, prop)) {
+                // Avoid "Member not found" error in IE8 caused by messing with window.constructor
+                if (!(prop === "constructor" && a === window)) {
+                    if (b[prop] === undefined) {
+                        delete a[prop];
+                    } else {
+                        a[prop] = b[prop];
+                    }
+                }
+            }
+        }
+        return a;
+    }
+
+    //Config
+    config = {
+        symbols: ['#', '.'],
+    };
+
+    //Add config to ZenQUery
+    extend(ZenQuery, { config: config });
 
     // For browser, export only select globals
     if (typeof window !== "undefined" && window != null) {
