@@ -32,8 +32,21 @@
             if (typeof string == 'undefined' || string == null || (typeof string != 'string' && !(string instanceof String)))
                 throw new Error('Invalid Arguments');
             //If no element, make div the default element
-            var element = string == '' ? 'div' : string;
-            var prefix = '<' + element + '>';
+            var element = string.match(/^[a-z-]+/);
+            if (!element)
+                element = 'div';
+            var classes = string.match(/\.[a-z-]+/g);
+            if (classes && classes.length > 0)
+                classes = ' class="' + classes.join(' ').replace(/\./g, '') + '"';
+            var id = string.match(/#[a-z-]+/);
+            if (id && id.length > 0)
+                id = ' id="' + id.join('').replace('#', '') + '"';
+            var prefix = '<' + element;
+            if (id && id.length > 0)
+                prefix += id;
+            if (classes && classes.length > 0)
+                prefix += classes;
+            prefix += '>';
             var suffix = '</' + element + '>';
             var html = prefix + suffix;
             return html;
@@ -43,7 +56,7 @@
     // We use the prototype to distinguish between properties that should
     // be exposed as globals (and in exports) and those that shouldn't
     (function () {
-        function F() { }
+        function F() { };
         F.prototype = ZenQuery;
         ZenQuery = new F();
 
