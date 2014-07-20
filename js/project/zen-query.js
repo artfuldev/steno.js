@@ -31,26 +31,7 @@
                 throw new Error('Incorrect Number of Arguments');
             if (!ZenQuery.is('string',string))
                 throw new Error('Invalid Arguments');
-            var matches = config.matches;
-            //If no element, make div the default element
-            var element = string.match(matches.element);
-            if (!element)
-                element = 'div';
-            var classes = string.match(matches.classes);
-            if (classes && classes.length > 0)
-                classes = ' class="' + classes.join(' ').replace(/\./g, '') + '"';
-            var id = string.match(matches.id);
-            if (id && id.length > 0)
-                id = ' id="' + id.join('').replace('#', '') + '"';
-            var prefix = '<' + element;
-            if (id && id.length > 0)
-                prefix += id;
-            if (classes && classes.length > 0)
-                prefix += classes;
-            prefix += '>';
-            var suffix = '</' + element + '>';
-            var html = prefix + suffix;
-            return html;
+            return ZenQuery.html(string, {});
         },
     };
 
@@ -136,11 +117,12 @@
         matches: {
             element: /^[a-z-]+/,
             id: /#[a-z-]+/,
-            classes: /\.[a-z-]+/g
+            classes: /\.[a-z-]+/g,
+            attributes: /\[([a-z-]+[=]?['"]?[a-z0-9_\-,\\\"\'\s\.:;]*['"]? ?){1,}\]/ig,
         },
         html: {
             prefix: '',
-            suffix: ''
+            suffix: '',
         }
     };
 
@@ -194,13 +176,33 @@
     // Add private stuff to ZenQuery
     extend(ZenQuery.constructor.prototype, {
 
-        // Complex render method
+        // Complex html render method
         html: function (string, options) {
-            var html = '';
-            if (hasOwn.call(options, 'prefix') || hasOwn.call(options, 'suffix')) {
-                var defaults = ZenQuery.config.html;
-                html = extend({}, defaults, options);
-            }
+            if (arguments.length != 2)
+                throw new Error('Incorrect Number of Arguments');
+            if (!ZenQuery.is('string', string)||!ZenQuery.is('object',options))
+                throw new Error('Invalid Arguments');
+            var defaults = config.html;
+            var settings = extend(true, {}, defaults, options);
+            var matches = config.matches;
+            //If no element, make div the default element
+            var element = string.match(matches.element);
+            if (!element)
+                element = 'div';
+            var classes = string.match(matches.classes);
+            if (classes && classes.length > 0)
+                classes = ' class="' + classes.join(' ').replace(/\./g, '') + '"';
+            var id = string.match(matches.id);
+            if (id && id.length > 0)
+                id = ' id="' + id.join('').replace('#', '') + '"';
+            var prefix = settings.prefix + '<' + element;
+            if (id && id.length > 0)
+                prefix += id;
+            if (classes && classes.length > 0)
+                prefix += classes;
+            prefix += '>';
+            var suffix = '</' + element + '>' + settings.suffix;
+            var html = prefix + suffix;
             return html;
         }
     });
