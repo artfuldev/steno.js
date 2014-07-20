@@ -1,7 +1,7 @@
 ﻿/// <reference path="../lib/jquery-2.1.1.min.js" />
 /// <reference path="../lib/qunit-git.js" />
 /*
- * This file is part of "ZenQuery", (c) Kenshin Himura, 2013.
+ * This file is part of "ZenQuery", (c) Kenshin The Battōsai (Sudarsan Balaji), 2014.
  * 
  * "ZenQuery" is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
