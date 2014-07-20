@@ -1,5 +1,5 @@
 ﻿#ZenQuery
-* Author: Kenshin Himura *(Sudarsan Balaji)*
+* Author: Kenshin The Battōsai *(Sudarsan Balaji)*
 * License: *GNU GPL v3* (see COPYING.txt)
 * Last Updated: 20/07/2014
 * ReadMe Version: 0.2
