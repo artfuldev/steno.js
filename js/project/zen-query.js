@@ -1,6 +1,5 @@
 ﻿/// <reference path="../lib/jquery-2.1.1.min.js" />
 /// <reference path="../lib/qunit-git.js" />
-
 /*
  * This file is part of "ZenQuery", (c) Kenshin Himura, 2013.
  * 
@@ -21,6 +20,9 @@
 
 
 (function (window) {
+
+    //'use strict';
+
     var ZenQuery,
         config,
         hasOwn = Object.prototype.hasOwnProperty;
@@ -28,106 +30,128 @@
     ZenQuery = {
 
         // Returns the element string found in the zencoding string
-        element: function(string) {
-            if (arguments.length != 1)
+        element: function (string) {
+            if (arguments.length !== 1) {
                 throw new Error('Incorrect Number of Arguments');
-            if (!ZenQuery.is('string', string))
+            }
+            if (!ZenQuery.is('string', string)) {
                 throw new Error('Invalid Arguments');
-            var matches = config.matches;
-            var elements = string.match(matches.element);
-            if (ZenQuery.is('null', elements))
+            }
+            var matches = config.matches,
+                elements = string.match(matches.element);
+            if (ZenQuery.is('null', elements)) {
                 return 'div';
+            }
             return elements[0];
         },
 
         // Returns the zencoding string with attributes removed
         // Helpful because data in the attributes might interfere with selection
         // eg: [href="http://thebattosai.in/#"]
-        noAttributes: function(string) {
-            if (arguments.length != 1)
+        noAttributes: function (string) {
+            if (arguments.length !== 1) {
                 throw new Error('Incorrect Number of Arguments');
-            if (!ZenQuery.is('string', string))
+            }
+            if (!ZenQuery.is('string', string)) {
                 throw new Error('Invalid Arguments');
+            }
             var matches = config.matches;
             return string.replace(matches.attributes, '');
         },
 
         // Returns the class string found in the zencoding string
         classes: function (string) {
-            if (arguments.length != 1)
+            if (arguments.length !== 1) {
                 throw new Error('Incorrect Number of Arguments');
-            if (!ZenQuery.is('string', string))
+            }
+            if (!ZenQuery.is('string', string)) {
                 throw new Error('Invalid Arguments');
-            var matches = config.matches;
-            var classes = ZenQuery.noAttributes(string).match(matches.classes);
-            if (ZenQuery.is('null', classes))
+            }
+            var matches = config.matches,
+                classes = ZenQuery.noAttributes(string).match(matches.classes);
+            if (ZenQuery.is('null', classes)) {
                 return '';
+            }
             classes = classes.join(' ').replace(/\./g, '');
             return classes;
         },
 
         // Returns the id string found in the zencoding string
         id: function (string) {
-            if (arguments.length != 1)
+            if (arguments.length !== 1) {
                 throw new Error('Incorrect Number of Arguments');
-            if (!ZenQuery.is('string', string))
+            }
+            if (!ZenQuery.is('string', string)) {
                 throw new Error('Invalid Arguments');
-            var matches = config.matches;
-            var id = ZenQuery.noAttributes(string).match(matches.id);
-            if (ZenQuery.is('null', id))
+            }
+            var matches = config.matches,
+                id = ZenQuery.noAttributes(string).match(matches.id);
+            if (ZenQuery.is('null', id)) {
                 return '';
+            }
             id = id.join(' ').replace('#', '');
             return id;
         },
 
         // Returns the attributes string found in the zencoding string
-        attributes: function(string) {
-            if (arguments.length != 1)
+        attributes: function (string) {
+            if (arguments.length !== 1) {
                 throw new Error('Incorrect Number of Arguments');
-            if (!ZenQuery.is('string', string))
+            }
+            if (!ZenQuery.is('string', string)) {
                 throw new Error('Invalid Arguments');
-            var matches = config.matches;
-            var attributes = string.match(matches.attributes);
-            if (ZenQuery.is('null', attributes))
+            }
+            var matches = config.matches,
+                attributes = string.match(matches.attributes);
+            if (ZenQuery.is('null', attributes)) {
                 return '';
+            }
             attributes = attributes.join('').replace(/\]\[/g, ' ');
             attributes = attributes.match(matches.attribute);
-            if (ZenQuery.is('null', attributes))
+            if (ZenQuery.is('null', attributes)) {
                 return '';
-            for (var i in attributes)
+            }
+            for (var i in attributes) {
                 attributes[i] = ZenQuery.trim(attributes[i]);
+            }
             attributes = attributes.join(' ');
             return attributes;
         },
 
         // Returns the string representation of html of a string with options
         html: function (string, options) {
-            if (arguments.length != 2)
+            if (arguments.length !== 2) {
                 throw new Error('Incorrect Number of Arguments');
-            if (!ZenQuery.is('string', string) || !ZenQuery.is('object', options))
+            }
+            if (!ZenQuery.is('string', string) || !ZenQuery.is('object', options)) {
                 throw new Error('Invalid Arguments');
-            var defaults = config.html;
-            var settings = extend(true, {}, defaults, options);
-            // If no element, make div the default element
-            var element = ZenQuery.element(string);
-            var classes = ZenQuery.classes(string);
-            if (classes)
+            }
+            var defaults = config.html,
+                settings = extend(true, {}, defaults, options),
+                // If no element, make div the default element
+                element = ZenQuery.element(string),
+                classes = ZenQuery.classes(string),
+                id = ZenQuery.id(string);
+            if (classes) {
                 classes = ' class="' + classes + '"';
-            var id = ZenQuery.id(string);
-            if (id)
+            }
+            if (id) {
                 id = ' id="' + id + '"';
-            var prefix = settings.prefix + '<' + element + id + classes + '>';
-            var suffix = '</' + element + '>' + settings.suffix;
-            var html = prefix + suffix;
+            }
+            var prefix = settings.prefix + '<' + element + id + classes + '>',
+                suffix = '</' + element + '>' + settings.suffix,
+                html = prefix + suffix;
             return html;
         },
 
         // Renders a given zen coding string as html
         render: function (string) {
-            if (arguments.length != 1)
+            if (arguments.length !== 1) {
                 throw new Error('Incorrect Number of Arguments');
-            if (!ZenQuery.is('string',string))
+            }
+            if (!ZenQuery.is('string', string)) {
                 throw new Error('Invalid Arguments');
+            }
             return ZenQuery.html(string, {});
         },
     };
@@ -135,7 +159,8 @@
     // We use the prototype to distinguish between properties that should
     // be exposed as globals (and in exports) and those that shouldn't
     (function () {
-        function F() { };
+        function F() {};
+
         F.prototype = ZenQuery;
         ZenQuery = new F();
 
@@ -146,48 +171,53 @@
     // Extend - from jQuery
     function extend() {
 
-        var options, name, src, copy, copyIsArray, clone,
+        var options,
+            name,
+            src,
+            copy,
+            copyIsArray,
+            clone,
             target = arguments[0] || {},
             i = 1,
             length = arguments.length,
             deep = false;
 
         // Handle a deep copy situation
-        if ( typeof target === "boolean" ) {
+        if (typeof target === "boolean") {
             deep = target;
 
             // skip the boolean and the target
-            target = arguments[ i ] || {};
+            target = arguments[i] || {};
             i++;
         }
 
         // Handle case when target is a string or something (possible in deep copy)
-        if ( typeof target !== "object" && !jQuery.isFunction(target) ) {
+        if (typeof target !== "object" && !jQuery.isFunction(target)) {
             target = {};
         }
 
         // extend jQuery itself if only one argument is passed
-        if ( i === length ) {
+        if (i === length) {
             target = this;
             i--;
         }
 
-        for ( ; i < length; i++ ) {
+        for (; i < length; i++) {
             // Only deal with non-null/undefined values
-            if ( (options = arguments[ i ]) != null ) {
+            if ((options = arguments[i]) != null) {
                 // Extend the base object
-                for ( name in options ) {
-                    src = target[ name ];
-                    copy = options[ name ];
+                for (name in options) {
+                    src = target[name];
+                    copy = options[name];
 
                     // Prevent never-ending loop
-                    if ( target === copy ) {
+                    if (target === copy) {
                         continue;
                     }
 
                     // Recurse if we're merging plain objects or arrays
-                    if ( deep && copy && ( jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)) ) ) {
-                        if ( copyIsArray ) {
+                    if (deep && copy && (jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)))) {
+                        if (copyIsArray) {
                             copyIsArray = false;
                             clone = src && jQuery.isArray(src) ? src : [];
 
@@ -196,11 +226,11 @@
                         }
 
                         // Never move original objects, clone them
-                        target[ name ] = jQuery.extend( deep, clone, copy );
+                        target[name] = jQuery.extend(deep, clone, copy);
 
                         // Don't bring in undefined values
-                    } else if ( copy !== undefined ) {
-                        target[ name ] = copy;
+                    } else if (copy !== undefined) {
+                        target[name] = copy;
                     }
                 }
             }
@@ -247,18 +277,18 @@
                 type = match && match[1] || "";
 
             switch (type) {
-                case "Number":
-                    if (isNaN(obj)) {
-                        return "nan";
-                    }
-                    return "number";
-                case "String":
-                case "Boolean":
-                case "Array":
-                case "Date":
-                case "RegExp":
-                case "Function":
-                    return type.toLowerCase();
+            case "Number":
+                if (isNaN(obj)) {
+                    return "nan";
+                }
+                return "number";
+            case "String":
+            case "Boolean":
+            case "Array":
+            case "Date":
+            case "RegExp":
+            case "Function":
+                return type.toLowerCase();
             }
             if (typeof obj === "object") {
                 return "object";
@@ -267,7 +297,7 @@
         },
 
         // Trim
-        trim: function( text ) {
+        trim: function (text) {
             return text == null ?
                 "" :
                 (text + "").replace(config.matches.trim, "");
@@ -280,7 +310,7 @@
 
     // For browser, export only select globals
     if (typeof window !== "undefined" && window != null) {
-        (function() {
+        (function () {
             var i,
                 l,
                 keys = [
