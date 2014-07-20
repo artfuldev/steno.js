@@ -9,7 +9,7 @@
 A work-in-progress library/jquery plugin of sorts to use zen coding (now Emmet) with jquery.
 The main idea is that you should be able to do something like this:
 
-`ZenQuery.render('#main-menu.main[role="menu"]>((a>span{Selected})+(ul.dropdown>li*4))')`
+`$Z.render('#main-menu.main[role="menu"]>((a>span{Selected})+(ul.dropdown>li*4))')`
 
 should output
 
@@ -29,12 +29,12 @@ should output
 
 so that you can then do:
 
-`jQuery('.insert-here').append(ZenQuery.render(zenCodingString));`
+`jQuery('.insert-here').append($Z.render(zenCodingString));`
 
 or, like how I'd like it to be done:
 
 ```
-$Z = ZenQuery.dom; //OR ZenQuery.render
+$Z = $Z.dom; //OR $Z.render
 $('#insert-here').append($Z(zenCodingString));
 ```
 
