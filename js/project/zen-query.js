@@ -27,7 +27,7 @@
 
     ZenQuery = {
 
-        //Returns the element string found in the zencoding string
+        // Returns the element string found in the zencoding string
         element: function(string) {
             if (arguments.length != 1)
                 throw new Error('Incorrect Number of Arguments');
@@ -40,44 +40,67 @@
             return elements[0];
         },
 
-        //Returns the class string found in the zencoding string
+        // Returns the zencoding string with attributes removed
+        // Helpful because data in the attributes might interfere with selection
+        // eg: [href="http://thebattosai.in/#"]
+        noAttributes: function(string) {
+            if (arguments.length != 1)
+                throw new Error('Incorrect Number of Arguments');
+            if (!ZenQuery.is('string', string))
+                throw new Error('Invalid Arguments');
+            var matches = config.matches;
+            return string.replace(matches.attributes, '');
+        },
+
+        // Returns the class string found in the zencoding string
         classes: function (string) {
             if (arguments.length != 1)
                 throw new Error('Incorrect Number of Arguments');
             if (!ZenQuery.is('string', string))
                 throw new Error('Invalid Arguments');
             var matches = config.matches;
-            var classes = string.match(matches.classes);
+            var classes = ZenQuery.noAttributes(string).match(matches.classes);
             if (ZenQuery.is('null', classes))
                 return '';
             classes = classes.join(' ').replace(/\./g, '');
             return classes;
         },
 
-        //Returns the class string found in the zencoding string
+        // Returns the id string found in the zencoding string
         id: function (string) {
             if (arguments.length != 1)
                 throw new Error('Incorrect Number of Arguments');
             if (!ZenQuery.is('string', string))
                 throw new Error('Invalid Arguments');
             var matches = config.matches;
-            var id = string.match(matches.id);
+            var id = ZenQuery.noAttributes(string).match(matches.id);
             if (ZenQuery.is('null', id))
                 return '';
             id = id.join(' ').replace('#', '');
             return id;
         },
 
-        //Renders a given zen coding string as html
-        render: function (string) {
+        // Returns the attributes string found in the zencoding string
+        attributes: function(string) {
             if (arguments.length != 1)
                 throw new Error('Incorrect Number of Arguments');
-            if (!ZenQuery.is('string',string))
+            if (!ZenQuery.is('string', string))
                 throw new Error('Invalid Arguments');
-            return ZenQuery.html(string, {});
+            var matches = config.matches;
+            var attributes = string.match(matches.attributes);
+            if (ZenQuery.is('null', attributes))
+                return '';
+            attributes = attributes.join('').replace(/\]\[/g, ' ');
+            attributes = attributes.match(matches.attribute);
+            if (ZenQuery.is('null', attributes))
+                return '';
+            for (var i in attributes)
+                attributes[i] = ZenQuery.trim(attributes[i]);
+            attributes = attributes.join(' ');
+            return attributes;
         },
 
-        //Gives the html output of a string with options
+        // Returns the string representation of html of a string with options
         html: function (string, options) {
             if (arguments.length != 2)
                 throw new Error('Incorrect Number of Arguments');
@@ -85,8 +108,7 @@
                 throw new Error('Invalid Arguments');
             var defaults = config.html;
             var settings = extend(true, {}, defaults, options);
-            var matches = config.matches;
-            //If no element, make div the default element
+            // If no element, make div the default element
             var element = ZenQuery.element(string);
             var classes = ZenQuery.classes(string);
             if (classes)
@@ -98,7 +120,16 @@
             var suffix = '</' + element + '>' + settings.suffix;
             var html = prefix + suffix;
             return html;
-        }
+        },
+
+        // Renders a given zen coding string as html
+        render: function (string) {
+            if (arguments.length != 1)
+                throw new Error('Incorrect Number of Arguments');
+            if (!ZenQuery.is('string',string))
+                throw new Error('Invalid Arguments');
+            return ZenQuery.html(string, {});
+        },
     };
 
     // We use the prototype to distinguish between properties that should
@@ -112,7 +143,7 @@
         ZenQuery.constructor = F;
     }());
 
-    //Extend - from jQuery
+    // Extend - from jQuery
     function extend() {
 
         var options, name, src, copy, copyIsArray, clone,
@@ -179,13 +210,15 @@
         return target;
     };
 
-    //Config
+    // Config
     config = {
         matches: {
             element: /^[a-z-]+/,
             id: /#[a-z-]+/,
             classes: /\.[a-z-]+/g,
             attributes: /\[(\s?[a-z-]+(=('.*'|".*"))?){1,}\]/ig,
+            attribute: /\s??[a-z-]+(=('[^']*'|"[^"]*"){1})?\s??/ig,
+            trim: /^[\x20\t\r\n\f]+|((?:^|[^\\])(?:\\.)*)[\x20\t\r\n\f]+$/g,
         },
         html: {
             prefix: '',
@@ -233,7 +266,14 @@
             return undefined;
         },
 
-        //additions
+        // Trim
+        trim: function( text ) {
+            return text == null ?
+                "" :
+                (text + "").replace(config.matches.trim, "");
+        },
+
+        // Additions
         extend: extend,
         config: config,
     });
