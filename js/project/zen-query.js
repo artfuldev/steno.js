@@ -146,7 +146,7 @@
                 defaults = ZenQuery.config.element;
             element.name = ZenQuery.name(string);
             element.id = ZenQuery.id(string);
-            element.classes = ZenQuery.classes(string).split(' ');
+            element.classes = ZenQuery.classes(string);
             element.attributes = ZenQuery.attributes(string);
             return ZenQuery.extend(true, {}, defaults, element);
         },
