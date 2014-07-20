@@ -24,7 +24,50 @@
     var ZenQuery,
         config,
         hasOwn = Object.prototype.hasOwnProperty;
+
     ZenQuery = {
+
+        //Returns the element string found in the zencoding string
+        element: function(string) {
+            if (arguments.length != 1)
+                throw new Error('Incorrect Number of Arguments');
+            if (!ZenQuery.is('string', string))
+                throw new Error('Invalid Arguments');
+            var matches = config.matches;
+            var elements = string.match(matches.element);
+            if (ZenQuery.is('null', elements))
+                return 'div';
+            return elements[0];
+        },
+
+        //Returns the class string found in the zencoding string
+        classes: function (string) {
+            if (arguments.length != 1)
+                throw new Error('Incorrect Number of Arguments');
+            if (!ZenQuery.is('string', string))
+                throw new Error('Invalid Arguments');
+            var matches = config.matches;
+            var classes = string.match(matches.classes);
+            if (ZenQuery.is('null', classes))
+                return '';
+            classes = classes.join(' ').replace(/\./g, '');
+            return classes;
+        },
+
+        //Returns the class string found in the zencoding string
+        id: function (string) {
+            if (arguments.length != 1)
+                throw new Error('Incorrect Number of Arguments');
+            if (!ZenQuery.is('string', string))
+                throw new Error('Invalid Arguments');
+            var matches = config.matches;
+            var id = string.match(matches.id);
+            if (ZenQuery.is('null', id))
+                return '';
+            id = id.join(' ').replace('#', '');
+            return id;
+        },
+
         //Renders a given zen coding string as html
         render: function (string) {
             if (arguments.length != 1)
@@ -33,6 +76,29 @@
                 throw new Error('Invalid Arguments');
             return ZenQuery.html(string, {});
         },
+
+        //Gives the html output of a string with options
+        html: function (string, options) {
+            if (arguments.length != 2)
+                throw new Error('Incorrect Number of Arguments');
+            if (!ZenQuery.is('string', string) || !ZenQuery.is('object', options))
+                throw new Error('Invalid Arguments');
+            var defaults = config.html;
+            var settings = extend(true, {}, defaults, options);
+            var matches = config.matches;
+            //If no element, make div the default element
+            var element = ZenQuery.element(string);
+            var classes = ZenQuery.classes(string);
+            if (classes)
+                classes = ' class="' + classes + '"';
+            var id = ZenQuery.id(string);
+            if (id)
+                id = ' id="' + id + '"';
+            var prefix = settings.prefix + '<' + element + id + classes + '>';
+            var suffix = '</' + element + '>' + settings.suffix;
+            var html = prefix + suffix;
+            return html;
+        }
     };
 
     // We use the prototype to distinguish between properties that should
@@ -48,6 +114,7 @@
 
     //Extend - from jQuery
     function extend() {
+
         var options, name, src, copy, copyIsArray, clone,
             target = arguments[0] || {},
             i = 1,
@@ -118,7 +185,7 @@
             element: /^[a-z-]+/,
             id: /#[a-z-]+/,
             classes: /\.[a-z-]+/g,
-            attributes: /\[([a-z-]+[=]?['"]?[a-z0-9_\-,\\\"\'\s\.:;]*['"]? ?){1,}\]/ig,
+            attributes: /\[(\s?[a-z-]+(=('.*'|".*"))?){1,}\]/ig,
         },
         html: {
             prefix: '',
@@ -128,9 +195,6 @@
 
     //Add stuff to ZenQuery
     extend(ZenQuery, {
-
-        //config object
-        config: config,
 
         // Safe object type checking - from QUnit
         is: function (type, obj) {
@@ -169,42 +233,9 @@
             return undefined;
         },
 
-        //extend
+        //additions
         extend: extend,
-    });
-
-    // Add private stuff to ZenQuery
-    extend(ZenQuery.constructor.prototype, {
-
-        // Complex html render method
-        html: function (string, options) {
-            if (arguments.length != 2)
-                throw new Error('Incorrect Number of Arguments');
-            if (!ZenQuery.is('string', string)||!ZenQuery.is('object',options))
-                throw new Error('Invalid Arguments');
-            var defaults = config.html;
-            var settings = extend(true, {}, defaults, options);
-            var matches = config.matches;
-            //If no element, make div the default element
-            var element = string.match(matches.element);
-            if (!element)
-                element = 'div';
-            var classes = string.match(matches.classes);
-            if (classes && classes.length > 0)
-                classes = ' class="' + classes.join(' ').replace(/\./g, '') + '"';
-            var id = string.match(matches.id);
-            if (id && id.length > 0)
-                id = ' id="' + id.join('').replace('#', '') + '"';
-            var prefix = settings.prefix + '<' + element;
-            if (id && id.length > 0)
-                prefix += id;
-            if (classes && classes.length > 0)
-                prefix += classes;
-            prefix += '>';
-            var suffix = '</' + element + '>' + settings.suffix;
-            var html = prefix + suffix;
-            return html;
-        }
+        config: config,
     });
 
     // For browser, export only select globals
