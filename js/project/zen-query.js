@@ -25,12 +25,14 @@
 
     var ZenQuery,
         config,
+        // For IE, to prevent Invalid Calling Object error on toString.call(obj)
+        toString = Object.prototype.toString,
         hasOwn = Object.prototype.hasOwnProperty;
 
     ZenQuery = {
 
-        // Returns the element string found in the zencoding string
-        element: function (string) {
+        // Returns the element name found in the zencoding string
+        name: function (string) {
             if (arguments.length !== 1) {
                 throw new Error('Incorrect Number of Arguments');
             }
@@ -38,11 +40,11 @@
                 throw new Error('Invalid Arguments');
             }
             var matches = config.matches,
-                elements = string.match(matches.element);
-            if (ZenQuery.is('null', elements)) {
+                names = string.match(matches.name);
+            if (ZenQuery.is('null', names)) {
                 return 'div';
             }
-            return elements[0];
+            return names.join('');
         },
 
         // Returns the zencoding string with attributes removed
@@ -56,10 +58,10 @@
                 throw new Error('Invalid Arguments');
             }
             var matches = config.matches;
-            return string.replace(matches.attributes, '');
+            return string.replace(matches.attributes.all, '');
         },
 
-        // Returns the class string found in the zencoding string
+        // Returns the classes found in the zencoding string as an array
         classes: function (string) {
             if (arguments.length !== 1) {
                 throw new Error('Incorrect Number of Arguments');
@@ -70,9 +72,9 @@
             var matches = config.matches,
                 classes = ZenQuery.noAttributes(string).match(matches.classes);
             if (ZenQuery.is('null', classes)) {
-                return '';
+                return [];
             }
-            classes = classes.join(' ').replace(/\./g, '');
+            classes = classes.join(' ').replace(/\./g, '').split(' ');
             return classes;
         },
 
@@ -93,7 +95,7 @@
             return id;
         },
 
-        // Returns the attributes string found in the zencoding string
+        // Returns attributes found in the zencoding string as an object with key value pairs
         attributes: function (string) {
             if (arguments.length !== 1) {
                 throw new Error('Incorrect Number of Arguments');
@@ -101,47 +103,68 @@
             if (!ZenQuery.is('string', string)) {
                 throw new Error('Invalid Arguments');
             }
-            var matches = config.matches,
-                attributes = string.match(matches.attributes);
+            var matches = config.matches.attributes,
+                attributes = string.match(matches.all),
+                array = [],
+                key = '',
+                name = matches.name,
+                value = '',
+                data = matches.value;
             if (ZenQuery.is('null', attributes)) {
-                return '';
+                return {};
             }
             attributes = attributes.join('').replace(/\]\[/g, ' ');
-            attributes = attributes.match(matches.attribute);
-            if (ZenQuery.is('null', attributes)) {
-                return '';
+            array = attributes.match(matches.single);
+            if (ZenQuery.is('null', array)) {
+                return {};
             }
-            for (var i in attributes) {
-                attributes[i] = ZenQuery.trim(attributes[i]);
+            attributes = {};
+            for (var i in array) {
+                array[i] = ZenQuery.trim(array[i]);
+                key = array[i].match(name);
+                if (ZenQuery.is('null', key)) {
+                    continue;
+                }
+                value = array[i].match(data);
+                if (ZenQuery.is('null', value)) {
+                    value = [''];
+                }
+                attributes[key.join('')] = value.join('').replace(/^('|")/, '').replace(/('|")$/, '');
             }
-            attributes = attributes.join(' ');
             return attributes;
         },
 
-        // Returns the string representation of html of a string with options
-        html: function (string, options) {
-            if (arguments.length !== 2) {
+        // Returns an element from a zen coding string
+        element: function(string) {
+            if (arguments.length !== 1) {
                 throw new Error('Incorrect Number of Arguments');
             }
-            if (!ZenQuery.is('string', string) || !ZenQuery.is('object', options)) {
+            if (!ZenQuery.is('string', string)) {
                 throw new Error('Invalid Arguments');
             }
-            var defaults = config.html,
-                settings = extend(true, {}, defaults, options),
-                // If no element, make div the default element
-                element = ZenQuery.element(string),
-                classes = ZenQuery.classes(string),
-                id = ZenQuery.id(string);
-            if (classes) {
-                classes = ' class="' + classes + '"';
+            var element = {},
+                defaults = ZenQuery.config.element;
+            element.name = ZenQuery.name(string);
+            element.id = ZenQuery.id(string);
+            element.classes = ZenQuery.classes(string).split(' ');
+            element.attributes = ZenQuery.attributes(string);
+            return ZenQuery.extend(true, {}, defaults, element);
+        },
+
+        // Returns a dom from a zen coding string
+        dom: function(string) {
+            if (arguments.length != 1) {
+                throw new Error('Incorrect Number of Arguments');
             }
-            if (id) {
-                id = ' id="' + id + '"';
+            if (!ZenQuery.is('string', string)) {
+                throw new Error('Invalid Arguments');
             }
-            var prefix = settings.prefix + '<' + element + id + classes + '>',
-                suffix = '</' + element + '>' + settings.suffix,
-                html = prefix + suffix;
-            return html;
+            // Needs implementation
+        },
+
+        // Returns the string representation of html of a dom
+        html: function (dom) {
+            // Needs implementation
         },
 
         // Renders a given zen coding string as html
@@ -152,7 +175,7 @@
             if (!ZenQuery.is('string', string)) {
                 throw new Error('Invalid Arguments');
             }
-            return ZenQuery.html(string, {});
+            return ZenQuery.html(ZenQuery.dom(string));
         },
     };
 
@@ -168,15 +191,56 @@
         ZenQuery.constructor = F;
     }());
 
-    // Extend - from jQuery
-    function extend() {
+    // Check if Object Has Key
+    function has (key, object) {
+        if (!ZenQuery.is('array', object) && !ZenQuery.is('object', object)) {
+            return false;
+        }
+        return hasOwn.call(object, key);
+    };
 
-        var options,
-            name,
-            src,
-            copy,
-            copyIsArray,
-            clone,
+    // Safe object type checking
+    function is (type, obj) {
+        return objectType(obj) === type;
+    };
+
+    // Object Type
+    function objectType (obj) {
+        if (typeof obj === "undefined") {
+            return "undefined";
+        }
+
+        // Consider: typeof null === object
+        if (obj === null) {
+            return "null";
+        }
+
+        var match = toString.call(obj).match(/^\[object\s(.*)\]$/),
+            type = match && match[1] || "";
+
+        switch (type) {
+            case "Number":
+                if (isNaN(obj)) {
+                    return "nan";
+                }
+                return "number";
+            case "String":
+            case "Boolean":
+            case "Array":
+            case "Date":
+            case "RegExp":
+            case "Function":
+                return type.toLowerCase();
+        }
+        if (typeof obj === "object") {
+            return "object";
+        }
+        return undefined;
+    };
+
+    // Extend
+    function extend() {
+        var options, name, src, copy, copyIsArray, clone,
             target = arguments[0] || {},
             i = 1,
             length = arguments.length,
@@ -192,11 +256,11 @@
         }
 
         // Handle case when target is a string or something (possible in deep copy)
-        if (typeof target !== "object" && !jQuery.isFunction(target)) {
+        if (typeof target !== "object" && !is('function', target)) {
             target = {};
         }
 
-        // extend jQuery itself if only one argument is passed
+        // extend ZenQuery itself if only one argument is passed
         if (i === length) {
             target = this;
             i--;
@@ -216,13 +280,13 @@
                     }
 
                     // Recurse if we're merging plain objects or arrays
-                    if (deep && copy && (jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy)))) {
+                    if (deep && copy && (is('object', copy) || (copyIsArray = is('array', copy)))) {
                         if (copyIsArray) {
                             copyIsArray = false;
-                            clone = src && jQuery.isArray(src) ? src : [];
+                            clone = src && is('array', src) ? src : [];
 
                         } else {
-                            clone = src && jQuery.isPlainObject(src) ? src : {};
+                            clone = src && is('object', src) ? src : {};
                         }
 
                         // Never move original objects, clone them
@@ -242,59 +306,37 @@
 
     // Config
     config = {
+        // RegEx-es thanks to http://regexpal.com/
         matches: {
-            element: /^[a-z-]+/,
+            name: /^[a-z-]+/,
             id: /#[a-z-]+/,
             classes: /\.[a-z-]+/g,
-            attributes: /\[(\s?[a-z-]+(=('.*'|".*"))?){1,}\]/ig,
-            attribute: /\s??[a-z-]+(=('[^']*'|"[^"]*"){1})?\s??/ig,
+            attributes: {
+                all: /\[(\s?[a-z-]+(=('.*'|".*"))?){1,}\]/ig,
+                single: /\s??[a-z-]+(=('[^']*'|"[^"]*"){1})?\s??/ig,
+                name: /^[a-z-]+/,
+                value: /'[^']*'|"[^"]*"/,
+            },
             trim: /^[\x20\t\r\n\f]+|((?:^|[^\\])(?:\\.)*)[\x20\t\r\n\f]+$/g,
         },
         html: {
             prefix: '',
             suffix: '',
+        },
+        dom: {
+            elements:[],
+        },
+        element: {
+            name: 'div',
+            id: '',
+            classes: [],
+            attributes: {},
+            children: [],
         }
     };
 
     //Add stuff to ZenQuery
     extend(ZenQuery, {
-
-        // Safe object type checking - from QUnit
-        is: function (type, obj) {
-            return QUnit.objectType(obj) === type;
-        },
-        objectType: function (obj) {
-            if (typeof obj === "undefined") {
-                return "undefined";
-            }
-
-            // Consider: typeof null === object
-            if (obj === null) {
-                return "null";
-            }
-
-            var match = toString.call(obj).match(/^\[object\s(.*)\]$/),
-                type = match && match[1] || "";
-
-            switch (type) {
-            case "Number":
-                if (isNaN(obj)) {
-                    return "nan";
-                }
-                return "number";
-            case "String":
-            case "Boolean":
-            case "Array":
-            case "Date":
-            case "RegExp":
-            case "Function":
-                return type.toLowerCase();
-            }
-            if (typeof obj === "object") {
-                return "object";
-            }
-            return undefined;
-        },
 
         // Trim
         trim: function (text) {
@@ -306,20 +348,34 @@
         // Additions
         extend: extend,
         config: config,
+        has: has,
+        is: is,
+        objectType: objectType,
     });
 
     // For browser, export only select globals
     if (typeof window !== "undefined" && window != null) {
-        (function () {
-            var i,
-                l,
-                keys = [
-                ];
-            for (i = 0, l = keys.length; i < l; i++) {
-                window[keys[i]] = QUnit[keys[i]];
-            }
+        (function() {
+            var
+                // Map over ZenQuery in case of overwrite
+                _ZenQuery = window.ZenQuery,
+
+                // Map over the $Z in case of overwrite
+                _$Z = window.$Z;
+
+            ZenQuery.noConflict = function(deep) {
+                if (window.$Z === ZenQuery) {
+                    window.$Z = _$Z;
+                }
+                if (deep && window.ZenQuery === ZenQuery) {
+                    window.ZenQuery = _ZenQuery;
+                }
+                return ZenQuery;
+            };
+
+            window.ZenQuery = window.$Z = ZenQuery;
+            return ZenQuery;
         })();
-        window.ZenQuery = ZenQuery;
     }
 
     // Get a reference to the global object, like window in browsers
