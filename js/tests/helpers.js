@@ -3,7 +3,6 @@
 /// <reference path="../project/zen-query.js" />
 
 $Q = QUnit;
-$Z = ZenQuery;
 
 var classes = ['','.dropdown', '.menu.dropdown','.dropdown-menu'];
 var ids = ['','#menu'];
@@ -12,24 +11,31 @@ var attributes = [
     '', '[data-attribute]', '[for=""]', '[href="github.com/#"]', '[title="Something about ZenQuery\'s Awesomeness"]',
     '[filter][title="Something about ZenQuery\'s Awesomeness"]', '[filter title="Something about ZenQuery\'s Awesomeness"]'
 ];
+var attributesObjects = [
+    {}, { 'data-attribute': '' }, { 'for': '' }, { href: 'github.com/#' }, { title: "Something about ZenQuery\'s Awesomeness" },
+    { filter: '', title: "Something about ZenQuery\'s Awesomeness" }, { filter: '', title: "Something about ZenQuery\'s Awesomeness" }
+];
 
 var selectors = [];
 for (var i in elements)
     for (var j in ids)
         for (var k in classes)
             for (var l in attributes) {
+                var classArray = $Z.trim(classes[k].replace(/\./g, ' ')).split(' ');
+                if (classArray.length === 1 && classArray[0] === '')
+                    classArray = [];
                 selectors.push({
                     string: elements[i] + ids[j] + classes[k] + attributes[l],
-                    element: elements[i] == '' ? 'div' : elements[i],
+                    name: elements[i] == '' ? 'div' : elements[i],
                     id: ids[j].replace('#', ''),
-                    classes: $Z.trim(classes[k].replace(/\./g, ' ')),
-                    attributes: $Z.trim(attributes[l].replace(/\]\[/g, ' ').replace(']', '').replace('[', ''))
+                    classes: classArray,
+                    attributes: attributesObjects[l],
                 }); // Correct Order
                 selectors.push({
                     string: elements[i] + attributes[l] + classes[k] + ids[j],
-                    element: elements[i] == '' ? 'div' : elements[i],
+                    name: elements[i] == '' ? 'div' : elements[i],
                     id: ids[j].replace('#', ''),
-                    classes: $Z.trim(classes[k].replace(/\./g, ' ')),
-                    attributes: $Z.trim(attributes[l].replace(/\]\[/g, ' ').replace(']', '').replace('[', ''))
+                    classes: classArray,
+                    attributes: attributesObjects[l],
                 }); // Random Order
             }
