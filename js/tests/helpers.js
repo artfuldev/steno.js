@@ -7,13 +7,13 @@ $Z = ZenQuery;
 
 var classes = ['','.dropdown', '.menu.dropdown','.dropdown-menu'];
 var ids = ['','#menu'];
-var elements = ['','div'];
+var elements = ['', 'div', 'p'];
 var attributes = [
     '', '[data-attribute]', '[for=""]', '[href="github.com/#"]', '[title="Something about ZenQuery\'s Awesomeness"]',
     '[filter][title="Something about ZenQuery\'s Awesomeness"]', '[filter title="Something about ZenQuery\'s Awesomeness"]'
 ];
 
-selectors = [];
+var selectors = [];
 for (var i in elements)
     for (var j in ids)
         for (var k in classes)
