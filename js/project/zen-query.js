@@ -34,10 +34,10 @@
         // Returns the element name found in the zencoding string
         name: function (string) {
             if (arguments.length !== 1) {
-                throw new Error('Incorrect Number of Arguments');
+                ZenQuery.incorrectArgs();
             }
             if (!ZenQuery.is('string', string)) {
-                throw new Error('Invalid Arguments');
+                ZenQuery.invalidArgs();
             }
             var matches = config.matches,
                 names = string.match(matches.name);
@@ -52,10 +52,10 @@
         // eg: [href="http://thebattosai.in/#"]
         noAttributes: function (string) {
             if (arguments.length !== 1) {
-                throw new Error('Incorrect Number of Arguments');
+                ZenQuery.incorrectArgs();
             }
             if (!ZenQuery.is('string', string)) {
-                throw new Error('Invalid Arguments');
+                ZenQuery.invalidArgs();
             }
             var matches = config.matches;
             return string.replace(matches.attributes.all, '');
@@ -64,10 +64,10 @@
         // Returns the classes found in the zencoding string as an array
         classes: function (string) {
             if (arguments.length !== 1) {
-                throw new Error('Incorrect Number of Arguments');
+                ZenQuery.incorrectArgs();
             }
             if (!ZenQuery.is('string', string)) {
-                throw new Error('Invalid Arguments');
+                ZenQuery.invalidArgs();
             }
             var matches = config.matches,
                 classes = ZenQuery.noAttributes(string).match(matches.classes);
@@ -81,10 +81,10 @@
         // Returns the id string found in the zencoding string
         id: function (string) {
             if (arguments.length !== 1) {
-                throw new Error('Incorrect Number of Arguments');
+                ZenQuery.incorrectArgs();
             }
             if (!ZenQuery.is('string', string)) {
-                throw new Error('Invalid Arguments');
+                ZenQuery.invalidArgs();
             }
             var matches = config.matches,
                 id = ZenQuery.noAttributes(string).match(matches.id);
@@ -98,10 +98,10 @@
         // Returns attributes found in the zencoding string as an object with key value pairs
         attributes: function (string) {
             if (arguments.length !== 1) {
-                throw new Error('Incorrect Number of Arguments');
+                ZenQuery.incorrectArgs();
             }
             if (!ZenQuery.is('string', string)) {
-                throw new Error('Invalid Arguments');
+                ZenQuery.invalidArgs();
             }
             var matches = config.matches.attributes,
                 attributes = string.match(matches.all),
@@ -137,10 +137,10 @@
         // Returns an element from a zen coding string
         element: function(string) {
             if (arguments.length !== 1) {
-                throw new Error('Incorrect Number of Arguments');
+                ZenQuery.incorrectArgs();
             }
             if (!ZenQuery.is('string', string)) {
-                throw new Error('Invalid Arguments');
+                ZenQuery.invalidArgs();
             }
             var element = {},
                 defaults = ZenQuery.config.element;
@@ -154,10 +154,10 @@
         // Returns a dom from a zen coding string
         dom: function(string) {
             if (arguments.length != 1) {
-                throw new Error('Incorrect Number of Arguments');
+                ZenQuery.incorrectArgs();
             }
             if (!ZenQuery.is('string', string)) {
-                throw new Error('Invalid Arguments');
+                ZenQuery.invalidArgs();
             }
             // Needs implementation
         },
@@ -170,10 +170,10 @@
         // Renders a given zen coding string as html
         render: function (string) {
             if (arguments.length !== 1) {
-                throw new Error('Incorrect Number of Arguments');
+                ZenQuery.incorrectArgs();
             }
             if (!ZenQuery.is('string', string)) {
-                throw new Error('Invalid Arguments');
+                ZenQuery.invalidArgs();
             }
             return ZenQuery.html(ZenQuery.dom(string));
         },
@@ -343,6 +343,14 @@
             return text == null ?
                 "" :
                 (text + "").replace(config.matches.trim, "");
+        },
+
+        // Errors
+        incorrectArgs: function() {
+            throw new Error('Incorrect Number of Arguments');
+        },
+        invalidArgs: function () {
+            throw new Error('Invalid Arguments');
         },
 
         // Additions
