@@ -30,6 +30,13 @@ for (var i in elements)
                     id: ids[j].replace('#', ''),
                     classes: classArray,
                     attributes: attributesObjects[l],
+                    element: {
+                        name: elements[i] == '' ? 'div' : elements[i],
+                        id: ids[j].replace('#', ''),
+                        classes: classArray,
+                        attributes: attributesObjects[l],
+                        children: [],
+                    }
                 }); // Correct Order
                 selectors.push({
                     string: elements[i] + attributes[l] + classes[k] + ids[j],
@@ -37,5 +44,12 @@ for (var i in elements)
                     id: ids[j].replace('#', ''),
                     classes: classArray,
                     attributes: attributesObjects[l],
+                    element: {
+                        name: elements[i] == '' ? 'div' : elements[i],
+                        id: ids[j].replace('#', ''),
+                        classes: classArray,
+                        attributes: attributesObjects[l],
+                        children: [],
+                    }
                 }); // Random Order
             }

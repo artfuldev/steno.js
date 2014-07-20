@@ -57,3 +57,28 @@ $Q.test('Attributes', function (assert) {
     for (var i in selectors)
         assert.deepEqual($Z.attributes(selectors[i].string), selectors[i].attributes, 'Attributes in \'' + selectors[i].string + '\' are \'' + selectors[i].attributes + '\'');
 });
+$Q.test('Elements', function (assert) {
+    assert.throws(function () { $Z.element(); }, new Error('Incorrect Number of Arguments'), 'Error thrown when no input is passed');
+    assert.throws(function () { $Z.element(1, 2); }, new Error('Incorrect Number of Arguments'), 'Error thrown when more than 1 input is passed');
+    assert.throws(function () { $Z.element(undefined); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Undefined');
+    assert.throws(function () { $Z.element(null); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Null');
+    assert.throws(function () { $Z.element([]); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Array');
+    assert.throws(function () { $Z.element({}); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Object');
+    assert.throws(function () { $Z.element(1); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Number');
+    assert.deepEqual($Z.element('work'), {
+        name: 'work',
+        id: '',
+        classes: [],
+        attributes: {},
+        children: [],
+    }, 'Proper reply when valid arguments are passed - string');
+    assert.deepEqual($Z.element(new String('work')), {
+        name: 'work',
+        id: '',
+        classes: [],
+        attributes: {},
+        children: [],
+    }, 'Proper reply when valid arguments are passed - String');
+    for (var i in selectors)
+        assert.deepEqual($Z.element(selectors[i].string), selectors[i].element, 'Elements in \'' + selectors[i].string + '\' retreived successfully');
+});
