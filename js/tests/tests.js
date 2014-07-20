@@ -16,7 +16,7 @@ $Q.test('Element', function (assert) {
     assert.deepEqual($Z.element('work'), 'work', 'Proper reply when valid arguments are passed - string');
     assert.deepEqual($Z.element(new String('work')), 'work', 'Proper reply when valid arguments are passed - String');
     for (var i in selectors)
-        assert.deepEqual($Z.element(selectors[i].string), selectors[i].element, 'Element in ' + selectors[i].string + ' is "' + selectors[i].element + '"');
+        assert.deepEqual($Z.element(selectors[i].string), selectors[i].element, 'Element in \'' + selectors[i].string + '\' is \'' + selectors[i].element + '\'');
 });
 $Q.test('Id', function (assert) {
     assert.throws(function () { $Z.id(); }, new Error('Incorrect Number of Arguments'), 'Error thrown when no input is passed');
@@ -29,7 +29,7 @@ $Q.test('Id', function (assert) {
     assert.deepEqual($Z.id('work'), '', 'Proper reply when valid arguments are passed - string');
     assert.deepEqual($Z.id(new String('work')), '', 'Proper reply when valid arguments are passed - String');
     for (var i in selectors)
-        assert.deepEqual($Z.id(selectors[i].string), selectors[i].id, 'Id in ' + selectors[i].string + ' is "' + selectors[i].id + '"');
+        assert.deepEqual($Z.id(selectors[i].string), selectors[i].id, 'Id in \'' + selectors[i].string + '\' is \'' + selectors[i].id + '\'');
 });
 $Q.test('Classes', function (assert) {
     assert.throws(function () { $Z.classes(); }, new Error('Incorrect Number of Arguments'), 'Error thrown when no input is passed');
@@ -42,7 +42,7 @@ $Q.test('Classes', function (assert) {
     assert.deepEqual($Z.classes('work'), '', 'Proper reply when valid arguments are passed - string');
     assert.deepEqual($Z.classes(new String('work')), '', 'Proper reply when valid arguments are passed - String');
     for (var i in selectors)
-        assert.deepEqual($Z.classes(selectors[i].string), selectors[i].classes, 'Classes in ' + selectors[i].string + ' are "' + selectors[i].classes + '"');
+        assert.deepEqual($Z.classes(selectors[i].string), selectors[i].classes, 'Classes in \'' + selectors[i].string + '\' are \'' + selectors[i].classes + '\'');
 });
 $Q.test('Attributes', function (assert) {
     assert.throws(function () { $Z.attributes(); }, new Error('Incorrect Number of Arguments'), 'Error thrown when no input is passed');
@@ -55,7 +55,7 @@ $Q.test('Attributes', function (assert) {
     assert.deepEqual($Z.attributes('work'), '', 'Proper reply when valid arguments are passed - string');
     assert.deepEqual($Z.attributes(new String('work')), '', 'Proper reply when valid arguments are passed - String');
     for (var i in selectors)
-        assert.deepEqual($Z.attributes(selectors[i].string), selectors[i].attributes, 'Attributes in ' + selectors[i].string + ' are "' + selectors[i].attributes + '"');
+        assert.deepEqual($Z.attributes(selectors[i].string), selectors[i].attributes, 'Attributes in \'' + selectors[i].string + '\' are \'' + selectors[i].attributes + '\'');
 });
 
 $Q.module("DOM Extractors");
