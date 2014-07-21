@@ -335,7 +335,7 @@
         }
     };
 
-    //Add stuff to ZenQuery
+    // Add stuff to ZenQuery
     extend(ZenQuery, {
 
         // Trim
