@@ -3,7 +3,14 @@
 /// <reference path="../project/zen-query.js" />
 /// <reference path="../tests/helpers.js" />
 
-$Q.module("Single Element Extractors");
+$Q.module("Single Element Extractors", {
+    setup: function() {
+        window.testObjects = initForSingle();
+    },
+    teardown: function() {
+        window.testObjects = [];
+    }
+});
 
 $Q.test('Name', function (assert) {
     assert.throws(function () { $Z.name(); }, new Error('Incorrect Number of Arguments'), 'Error thrown when no input is passed');
@@ -15,8 +22,8 @@ $Q.test('Name', function (assert) {
     assert.throws(function () { $Z.name(1); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Number');
     assert.deepEqual($Z.name('work'), 'work', 'Proper reply when valid arguments are passed - string');
     assert.deepEqual($Z.name(new String('work')), 'work', 'Proper reply when valid arguments are passed - String');
-    for (var i in selectors)
-        assert.deepEqual($Z.name(selectors[i].string), selectors[i].name, 'Element in \'' + selectors[i].string + '\' is \'' + selectors[i].name + '\'');
+    for (var i in testObjects)
+        assert.deepEqual($Z.name(testObjects[i].string), testObjects[i].name, 'Element in \'' + testObjects[i].string + '\' is \'' + testObjects[i].name + '\'');
 });
 $Q.test('Id', function (assert) {
     assert.throws(function () { $Z.id(); }, new Error('Incorrect Number of Arguments'), 'Error thrown when no input is passed');
@@ -28,8 +35,8 @@ $Q.test('Id', function (assert) {
     assert.throws(function () { $Z.id(1); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Number');
     assert.deepEqual($Z.id('work'), '', 'Proper reply when valid arguments are passed - string');
     assert.deepEqual($Z.id(new String('work')), '', 'Proper reply when valid arguments are passed - String');
-    for (var i in selectors)
-        assert.deepEqual($Z.id(selectors[i].string), selectors[i].id, 'Id in \'' + selectors[i].string + '\' is \'' + selectors[i].id + '\'');
+    for (var i in testObjects)
+        assert.deepEqual($Z.id(testObjects[i].string), testObjects[i].id, 'Id in \'' + testObjects[i].string + '\' is \'' + testObjects[i].id + '\'');
 });
 $Q.test('Classes', function (assert) {
     assert.throws(function () { $Z.classes(); }, new Error('Incorrect Number of Arguments'), 'Error thrown when no input is passed');
@@ -41,8 +48,8 @@ $Q.test('Classes', function (assert) {
     assert.throws(function () { $Z.classes(1); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Number');
     assert.deepEqual($Z.classes('work'), [], 'Proper reply when valid arguments are passed - string');
     assert.deepEqual($Z.classes(new String('work')), [], 'Proper reply when valid arguments are passed - String');
-    for (var i in selectors)
-        assert.deepEqual($Z.classes(selectors[i].string), selectors[i].classes, 'Classes in \'' + selectors[i].string + '\' are \'' + selectors[i].classes + '\'');
+    for (var i in testObjects)
+        assert.deepEqual($Z.classes(testObjects[i].string), testObjects[i].classes, 'Classes in \'' + testObjects[i].string + '\' are \'' + testObjects[i].classes + '\'');
 });
 $Q.test('Attributes', function (assert) {
     assert.throws(function () { $Z.attributes(); }, new Error('Incorrect Number of Arguments'), 'Error thrown when no input is passed');
@@ -54,8 +61,8 @@ $Q.test('Attributes', function (assert) {
     assert.throws(function () { $Z.attributes(1); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Number');
     assert.deepEqual($Z.attributes('work'), {}, 'Proper reply when valid arguments are passed - string');
     assert.deepEqual($Z.attributes(new String('work')), {}, 'Proper reply when valid arguments are passed - String');
-    for (var i in selectors)
-        assert.deepEqual($Z.attributes(selectors[i].string), selectors[i].attributes, 'Attributes in \'' + selectors[i].string + '\' are \'' + selectors[i].attributes + '\'');
+    for (var i in testObjects)
+        assert.deepEqual($Z.attributes(testObjects[i].string), testObjects[i].attributes, 'Attributes in \'' + testObjects[i].string + '\' are \'' + testObjects[i].attributes + '\'');
 });
 $Q.test('Elements', function (assert) {
     assert.throws(function () { $Z.element(); }, new Error('Incorrect Number of Arguments'), 'Error thrown when no input is passed');
@@ -77,8 +84,8 @@ $Q.test('Elements', function (assert) {
         attributes: {},
         children: [],
     }, 'Proper reply when valid arguments are passed - String');
-    for (var i in selectors)
-        assert.deepEqual($Z.element(selectors[i].string), selectors[i].element, 'Elements in \'' + selectors[i].string + '\' retreived successfully');
+    for (var i in testObjects)
+        assert.deepEqual($Z.element(testObjects[i].string), testObjects[i].element, 'Elements in \'' + testObjects[i].string + '\' retreived successfully');
 });
 $Q.test('Html', function(assert) {
     assert.throws(function () { $Z.html(); }, new Error('Incorrect Number of Arguments'), 'Error thrown when no input is passed');
@@ -91,9 +98,9 @@ $Q.test('Html', function(assert) {
     assert.throws(function () { $Z.html(1); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Number');
     assert.deepEqual($Z.html($Z.element('work')), '<work></work>', 'Proper reply when valid arguments are passed - element');
     assert.deepEqual($Z.html($Z.element(new String('work'))), '<work></work>', 'Proper reply when valid arguments are passed - element');
-    for (var i in selectors)
-        assert.deepEqual($Z.html($Z.element(selectors[i].string)), selectors[i].html,
-                            'Elements in \'' + selectors[i].string + '\' have html \'' + selectors[i].html + '\'');  
+    for (var i in testObjects)
+        assert.deepEqual($Z.html($Z.element(testObjects[i].string)), testObjects[i].html,
+                            'Elements in \'' + testObjects[i].string + '\' have html \'' + testObjects[i].html + '\'');  
 });
 
 $Q.module("Multiple Element Extractors")
