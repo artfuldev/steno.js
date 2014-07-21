@@ -323,16 +323,53 @@
             prefix: '',
             suffix: '',
         },
-        dom: {
-            elements:[],
-        },
         element: {
             name: 'div',
             id: '',
             classes: [],
             attributes: {},
             children: [],
+        },
+        pairs: {
+            '[': ']',
+            '(': ')',
+            '{': '}'
         }
+    };
+
+    // Dom Class
+    function Dom() {
+
+        // Properties
+        this.parent = null; // Holds parent node
+        this.children = [];
+        this.attributes = {};
+        this.name = '';
+        this.text = '';
+
+        // Zen String
+        this.zen = '';
+
+        // Output
+        this.start = '';
+        this.end = '';
+    };
+    Dom.prototype = {
+
+        // Adds a child at position
+        addChild: function (child, position) {
+            child = child || new Dom();
+            child.parent = this;
+
+            if (is('undefined',position)) {
+                this.children.push(child);
+            } else {
+                this.children.splice(position, 0, child);
+            }
+
+            return child;
+        },
+
     };
 
     // Add stuff to ZenQuery
