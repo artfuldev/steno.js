@@ -66,19 +66,34 @@ $Q.test('Elements', function (assert) {
     assert.throws(function () { $Z.element({}); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Object');
     assert.throws(function () { $Z.element(1); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Number');
     assert.deepEqual($Z.element('work'), {
+        parent: null,
         name: 'work',
-        id: '',
-        classes: [],
         attributes: {},
         children: [],
     }, 'Proper reply when valid arguments are passed - string');
     assert.deepEqual($Z.element(new String('work')), {
+        parent: null,
         name: 'work',
-        id: '',
-        classes: [],
         attributes: {},
         children: [],
     }, 'Proper reply when valid arguments are passed - String');
     for (var i in selectors)
         assert.deepEqual($Z.element(selectors[i].string), selectors[i].element, 'Elements in \'' + selectors[i].string + '\' retreived successfully');
 });
+$Q.test('Html', function(assert) {
+    assert.throws(function () { $Z.html(); }, new Error('Incorrect Number of Arguments'), 'Error thrown when no input is passed');
+    assert.throws(function () { $Z.html(1,2); }, new Error('Incorrect Number of Arguments'), 'Error thrown when more than 1 input is passed');
+    assert.throws(function () { $Z.html(undefined); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Undefined');
+    assert.throws(function () { $Z.html(null); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Null');
+    assert.throws(function () { $Z.html([]); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Array');
+    assert.throws(function () { $Z.html({}); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Empty Object');
+    assert.throws(function () { $Z.html({something:''}); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Object with not the right parameters');
+    assert.throws(function () { $Z.html(1); }, new Error('Invalid Arguments'), 'Error thrown when invalid input is passed - Number');
+    assert.deepEqual($Z.html($Z.element('work')), '<work></work>', 'Proper reply when valid arguments are passed - element');
+    assert.deepEqual($Z.html($Z.element(new String('work'))), '<work></work>', 'Proper reply when valid arguments are passed - element');
+    for (var i in selectors)
+        assert.deepEqual($Z.html($Z.element(selectors[i].string)), selectors[i].html,
+                            'Elements in \'' + selectors[i].string + '\' have html \'' + selectors[i].html + '\'');  
+});
+
+$Q.module("Multiple Element Extractors")
