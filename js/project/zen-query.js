@@ -143,11 +143,21 @@
                 ZenQuery.invalidArgs();
             }
             var element = {},
-                defaults = ZenQuery.config.element;
+                defaults = ZenQuery.config.element,
+                id = ZenQuery.id(string),
+                classes = ZenQuery.classes(string);
             element.name = ZenQuery.name(string);
-            element.id = ZenQuery.id(string);
-            element.classes = ZenQuery.classes(string);
             element.attributes = ZenQuery.attributes(string);
+            if (id) {
+                ZenQuery.extend(true, element.attributes, { id: id });
+            }
+            if (classes.length !== 0 && classes[0]!=='') {
+                if (!element.attributes['class']) {
+                    element.attributes['class'] = classes.join(' ');
+                } else {
+                    element.attributes['class'] += ' ' + classes.join(' ');
+                }
+            }
             return ZenQuery.extend(true, {}, defaults, element);
         },
 
@@ -162,9 +172,24 @@
             // Needs implementation
         },
 
-        // Returns the string representation of html of a dom
-        html: function (dom) {
-            // Needs implementation
+        // Returns the string representation of html of an element
+        html: function(element) {
+            if (arguments.length !== 1)
+                ZenQuery.incorrectArgs();
+            if (!ZenQuery.is('object', element)
+                || !ZenQuery.has('name', element)
+                || !ZenQuery.has('attributes', element))
+                ZenQuery.invalidArgs();
+            var html = '',
+                sortedkeys = [];
+            html += '<' + element.name;
+            for (var key in element.attributes)
+                sortedkeys.push(key);
+            sortedkeys.sort();
+            for(var i in sortedkeys)
+                html += ' ' + sortedkeys[i] + '="' + element.attributes[sortedkeys[i]] + '"';
+            html += '></' + element.name + '>';
+            return html;
         },
 
         // Renders a given zen coding string as html
@@ -236,6 +261,23 @@
             return "object";
         }
         return undefined;
+    };
+
+    // Incorrect Number of Arguments
+    function incorrectArgs() {
+        throw new Error('Incorrect Number of Arguments');
+    };
+
+    // Invalid Arguments
+    function invalidArgs() {
+        throw new Error('Invalid Arguments');
+    };
+
+    // Trim
+    function trim(text) {
+        return text == null ?
+            "" :
+            (text + "").replace(config.matches.trim, "");
     };
 
     // Extend
@@ -319,14 +361,12 @@
             },
             trim: /^[\x20\t\r\n\f]+|((?:^|[^\\])(?:\\.)*)[\x20\t\r\n\f]+$/g,
         },
-        html: {
-            prefix: '',
-            suffix: '',
+        dom: {
+            children: [],
         },
         element: {
+            parent: null,
             name: 'div',
-            id: '',
-            classes: [],
             attributes: {},
             children: [],
         },
@@ -337,58 +377,8 @@
         }
     };
 
-    // Dom Class
-    function Dom() {
-
-        // Properties
-        this.parent = null; // Holds parent node
-        this.children = [];
-        this.attributes = {};
-        this.name = '';
-        this.text = '';
-
-        // Zen String
-        this.zen = '';
-
-        // Output
-        this.start = '';
-        this.end = '';
-    };
-    Dom.prototype = {
-
-        // Adds a child at position
-        addChild: function (child, position) {
-            child = child || new Dom();
-            child.parent = this;
-
-            if (is('undefined',position)) {
-                this.children.push(child);
-            } else {
-                this.children.splice(position, 0, child);
-            }
-
-            return child;
-        },
-
-    };
-
     // Add stuff to ZenQuery
     extend(ZenQuery, {
-
-        // Trim
-        trim: function (text) {
-            return text == null ?
-                "" :
-                (text + "").replace(config.matches.trim, "");
-        },
-
-        // Errors
-        incorrectArgs: function() {
-            throw new Error('Incorrect Number of Arguments');
-        },
-        invalidArgs: function () {
-            throw new Error('Invalid Arguments');
-        },
 
         // Additions
         extend: extend,
@@ -396,6 +386,9 @@
         has: has,
         is: is,
         objectType: objectType,
+        incorrectArgs: incorrectArgs,
+        invalidArgs: invalidArgs,
+        trim: trim,
     });
 
     // For browser, export only select globals
