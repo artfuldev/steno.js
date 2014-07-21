@@ -374,6 +374,33 @@
             '[': ']',
             '(': ')',
             '{': '}'
+        },
+        operators: {
+            nesting: {
+                '>': 'child',
+                '+': 'sibling',
+                '^': 'climb',
+                '*': 'multiply',
+                '(': 'open',
+                ')': 'close',
+            },
+            attribute: {
+                '#': 'id',
+                '.': 'class',
+                '[': 'start',
+                ']': 'stop',
+                '$': 'number',
+                '$@': 'sort-start',
+                '$#': 'iterate'
+            },
+            text: {
+                '{': 'write',
+                '}': 'done',
+                'c{': 'comment'
+            },
+            data: {
+                '!': 'parse',
+            }
         }
     };
 
