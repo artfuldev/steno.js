@@ -58,8 +58,6 @@ Should be able to:
 ###Short Term
 
 * To add whatever possible for now.
-* Complete Basic element, classname, id detection
-* Add attributes
-* Allow switching between attributes in sizzle format and zen coding format
 * Expand to sibling and child selectors
 * Add grouping selectors
+* Add templating options
