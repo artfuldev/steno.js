@@ -76,3 +76,7 @@ function initForSingle() {
     }
     return testObjects;
 }
+
+function initForMultiple() {
+    // Needs Implementation
+}

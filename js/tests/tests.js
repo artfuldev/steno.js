@@ -103,4 +103,11 @@ $Q.test('Html', function(assert) {
                             'Elements in \'' + testObjects[i].string + '\' have html \'' + testObjects[i].html + '\'');  
 });
 
-$Q.module("Multiple Element Extractors")
+$Q.module("Multiple Element Extractors", {
+    setup: function() {
+        window.testObjects = initForMultiple();
+    },
+    teardown: function() {
+        window.testObjects = [];
+    }
+})
