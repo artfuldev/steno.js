@@ -332,7 +332,7 @@
                         }
 
                         // Never move original objects, clone them
-                        target[name] = jQuery.extend(deep, clone, copy);
+                        target[name] = extend(deep, clone, copy);
 
                         // Don't bring in undefined values
                     } else if (copy !== undefined) {
