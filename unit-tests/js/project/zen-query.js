@@ -204,18 +204,6 @@
         },
     };
 
-    // We use the prototype to distinguish between properties that should
-    // be exposed as globals (and in exports) and those that shouldn't
-    (function () {
-        function F() {};
-
-        F.prototype = ZenQuery;
-        ZenQuery = new F();
-
-        // Make F QUnit's constructor so that we can add to the prototype later
-        ZenQuery.constructor = F;
-    }());
-
     // Check if Object Has Key
     function has (key, object) {
         if (!ZenQuery.is('array', object) && !ZenQuery.is('object', object)) {
