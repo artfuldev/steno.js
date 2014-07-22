@@ -161,6 +161,18 @@
             return ZenQuery.extend(true, {}, defaults, element);
         },
 
+        // Adds a child to an element
+        add: function (element, child) {
+            if (arguments.length < 1 || arguments.length > 2)
+                ZenQuery.incorrectArgs();
+            if (!ZenQuery.is('object', element))
+                ZenQuery.invalidArgs();
+            child = child || ZenQuery.extend(true, {}, ZenQuery.config.element);
+            child.parent = element;
+            element.children.push(child);
+            return child;
+        },
+
         // Returns a dom from a zen coding string
         dom: function(string) {
             if (arguments.length != 1) {
@@ -169,7 +181,9 @@
             if (!ZenQuery.is('string', string)) {
                 ZenQuery.invalidArgs();
             }
-            // Needs implementation
+            var root = ZenQuery.extend(true, {}, ZenQuery.config.element);
+            var context = ZenQuery.add(root);
+
         },
 
         // Returns the string representation of html of an element
@@ -349,12 +363,9 @@
             },
             trim: /^[\x20\t\r\n\f]+|((?:^|[^\\])(?:\\.)*)[\x20\t\r\n\f]+$/g,
         },
-        dom: {
-            children: [],
-        },
         element: {
             parent: null,
-            name: 'div',
+            name: '',
             attributes: {},
             children: [],
         },
@@ -404,6 +415,7 @@
         incorrectArgs: incorrectArgs,
         invalidArgs: invalidArgs,
         trim: trim,
+        StringStream: StringStream,
     });
 
     // For browser, export only select globals
