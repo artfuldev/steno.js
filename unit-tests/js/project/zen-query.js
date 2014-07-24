@@ -352,6 +352,7 @@
     config = {
         // RegEx-es thanks to http://regexpal.com/
         matches: {
+            elements: /([a-z]+)?(\.[a-z-]+)?(#[a-z-]+)?(\[(\s?[a-z-]+(=("[^"]*"|'[^']*'))?)*\])*/g,
             name: /^[a-z-]+/,
             id: /#[a-z-]+/,
             classes: /\.[a-z-]+/g,
@@ -415,7 +416,6 @@
         incorrectArgs: incorrectArgs,
         invalidArgs: invalidArgs,
         trim: trim,
-        StringStream: StringStream,
     });
 
     // For browser, export only select globals
