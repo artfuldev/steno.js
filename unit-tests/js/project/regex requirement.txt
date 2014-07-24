@@ -1,0 +1,34 @@
+An element can consist of muliple parts
+name - always present at the start of element and is not hypenated
+#id - can be present anywhere but starts with a # symbol and can be hypenated
+.class1.class-2 - can be present multiple times, starts with a . symbol, and can be hyphenated, can contain numbers
+
+[] - data attributes
+A data attribute can be of the three forms:
+data-attribute-1
+data-attribute-2=""
+data-attribute-3=''
+data-4='there\'s something about this'
+data-something-5="He called him \"God\""
+href="To 'hell' with this"
+title='To "hell" with this'
+
+An element can have more than one data attribute
+In that case,
+element will have
+[attr1][attr-2]
+OR
+[attr1 attr-2]
+WHERE attr1 and attr-2 can be any one of the above mentioned attrs
+
+The following are separators:
+ +>^
+
+Elements can be combined as a single element with ()
+el el2>el3+(el4+el5>el6)^el7
+(el4+el15>el6)
+shoule be considered as a single el for matching
+
+Require a regex which can return matching elements.
+
+Thanks, Sudarsan
