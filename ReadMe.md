@@ -7,7 +7,7 @@
 
 ##Description
 
-A work-in-progress library/jquery plugin of sorts to use zen coding (now Emmet) with jquery.
+A work-in-progress javascript library to use zen coding (now Emmet) to quickly create HTML.
 The main idea is that you should be able to do something like this:
 
 `$Z.render('#main-menu.main[role="menu"]>((a>span{Selected})+(ul.dropdown>li*4))')`
