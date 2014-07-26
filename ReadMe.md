@@ -62,3 +62,9 @@ Should be able to:
 * Expand to sibling and child selectors
 * Add grouping selectors
 * Add templating options
+
+##Thanks
+
+To wonderful authors of libraries like jQuery, qUnit, underscore, backbone, etc,
+whose annotated source code was invaluable. Without such libraries, this project would
+never even have started, and this piece of code would have never seen the light of day.
