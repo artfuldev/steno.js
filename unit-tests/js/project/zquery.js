@@ -2,20 +2,20 @@
 /// <reference path="../lib/qunit-git.js" />
 
 /*
-    * This file is part of "ZenQuery", (c) Kenshin The Battōsai (Sudarsan Balaji), 2014.
+    * This file is part of "zQuery", (c) Kenshin The Battōsai (Sudarsan Balaji), 2014.
     * 
-    * "ZenQuery" is free software: you can redistribute it and/or modify
+    * "zQuery" is free software: you can redistribute it and/or modify
     * it under the terms of the GNU General Public License as published by
     * the Free Software Foundation, either version 3 of the License, or
     * (at your option) any later version.
     * 
-    * "ZenQuery" is distributed in the hope that it will be useful,
+    * "zQuery" is distributed in the hope that it will be useful,
     * but WITHOUT ANY WARRANTY; without even the implied warranty of
     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     * GNU General Public License for more details.
     * 
     * You should have received a copy of the GNU General Public License
-    * along with "ZenQuery".  If not, see <http://www.gnu.org/licenses/>.
+    * along with "zQuery".  If not, see <http://www.gnu.org/licenses/>.
     * 
     */
 
@@ -287,7 +287,7 @@
             target = {};
         }
 
-        // extend ZenQuery itself if only one argument is passed
+        // extend zQuery itself if only one argument is passed
         if (i === length) {
             target = this;
             i--;
@@ -386,7 +386,7 @@
         }
     };
 
-    // Add stuff to ZenQuery
+    // Add stuff to zQuery
     extend(zQuery, {
 
         // Core
@@ -427,7 +427,7 @@
     if (typeof window !== "undefined" && window != null) {
         (function() {
             var
-                // Map over ZenQuery in case of overwrite
+                // Map over zQuery in case of overwrite
                 _zQuery = window.zenQuery,
 
                 // Map over the $Z in case of overwrite

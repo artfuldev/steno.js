@@ -1,9 +1,9 @@
-﻿#ZenQuery
+﻿#zQuery
 
 * Author: Kenshin The Battōsai *(Sudarsan Balaji)*
 * License: *GNU GPL v3* (see COPYING.txt)
-* Last Updated: 21/07/2014
-* ReadMe Version: 0.3
+* Last Updated: 26/07/2014
+* ReadMe Version: 0.4
 
 ##Description
 
@@ -46,8 +46,9 @@ eg: `[title="" href=""]` and `[title=""][href=""]`
 
 Should be able to:
 
-* Can create quick clientside templates when done.
-* Plans to extend to other engines like Handlebars.js
+* Quickly add dom elements or innerHTML to a document.
+* Create quick clientside templates when done.
+* Extend to other engines like Handlebars.js.
 
 ##Goals
 

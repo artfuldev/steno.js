@@ -8,12 +8,12 @@ var classes = ['','.dropdown', '.menu.dropdown','.dropdown-menu'];
 var ids = ['','#menu'];
 var elements = ['', 'div', 'p'];
 var attributes = [
-    '', '[data-attribute]', '[for=""]', '[href="github.com/#"]', '[title="Something about ZenQuery\'s Awesomeness"]',
-    '[filter][title="Something about ZenQuery\'s \\"Awesomeness>+^()\\""]', '[filter title="Something about ZenQuery\'s \\"Awesomeness>+^()\\"" class="haha" id="hehe"]'
+    '', '[data-attribute]', '[for=""]', '[href="github.com/#"]', '[title="Something about zQuery\'s Awesomeness"]',
+    '[filter][title="Something about zQuery\'s \\"Awesomeness>+^()\\""]', '[filter title="Something about zQuery\'s \\"Awesomeness>+^()\\"" class="haha" id="hehe"]'
 ];
 var attributesObjects = [
-    {}, { 'data-attribute': '' }, { 'for': '' }, { href: 'github.com/#' }, { title: "Something about ZenQuery\'s Awesomeness" },
-    { filter: '', title: 'Something about ZenQuery\'s "Awesomeness>+^()"' }, { filter: '', title: 'Something about ZenQuery\'s "Awesomeness>+^()"', 'class': "haha", id: "hehe" }
+    {}, { 'data-attribute': '' }, { 'for': '' }, { href: 'github.com/#' }, { title: "Something about zQuery\'s Awesomeness" },
+    { filter: '', title: 'Something about zQuery\'s "Awesomeness>+^()"' }, { filter: '', title: 'Something about zQuery\'s "Awesomeness>+^()"', 'class': "haha", id: "hehe" }
 ];
 
 function initForSingle() {
