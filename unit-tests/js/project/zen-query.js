@@ -438,7 +438,7 @@
                     window.$Z = _$Z;
                 }
                 if (deep && window.zQuery === zQuery) {
-                    window.zQuery = _zenQuery;
+                    window.zQuery = _zQuery;
                 }
                 return zQuery;
             };
