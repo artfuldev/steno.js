@@ -61,15 +61,6 @@ function initForSingle() {
                         element: element,
                         html: html,
                     }); // Correct Order
-                    testObjects.push({
-                        string: elements[i] + attributes[l] + classes[k] + ids[j],
-                        name: elements[i] == '' ? 'div' : elements[i],
-                        id: id,
-                        classes: classArray,
-                        attributes: attributesObjects[l],
-                        element: element,
-                        html: html,
-                    }); // Random Order
                 }
             }
         }
