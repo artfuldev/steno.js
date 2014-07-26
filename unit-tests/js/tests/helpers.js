@@ -9,11 +9,11 @@ var ids = ['','#menu'];
 var elements = ['', 'div', 'p'];
 var attributes = [
     '', '[data-attribute]', '[for=""]', '[href="github.com/#"]', '[title="Something about ZenQuery\'s Awesomeness"]',
-    '[filter][title="Something about ZenQuery\'s \"Awesomeness>+^()\""]', '[filter title=\'Something about ZenQuery\'s "Awesomeness>+^()"\' class="haha" id="hehe"]'
+    '[filter][title="Something about ZenQuery\'s \\"Awesomeness>+^()\\""]', '[filter title="Something about ZenQuery\'s \\"Awesomeness>+^()\\"" class="haha" id="hehe"]'
 ];
 var attributesObjects = [
     {}, { 'data-attribute': '' }, { 'for': '' }, { href: 'github.com/#' }, { title: "Something about ZenQuery\'s Awesomeness" },
-    { filter: '', title: "Something about ZenQuery's \"Awesomeness>+^()\"" }, { filter: '', title: 'Something about ZenQuery\'s "Awesomeness>+^()"', 'class': 'haha', id: 'hehe' }
+    { filter: '', title: 'Something about ZenQuery\'s "Awesomeness>+^()"' }, { filter: '', title: 'Something about ZenQuery\'s "Awesomeness>+^()"', 'class': "haha", id: "hehe" }
 ];
 
 function initForSingle() {
