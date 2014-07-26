@@ -83,7 +83,6 @@ function initForMultiple() {
             for (var k in classes) {
                 for (var l in attributes) {
                     selectors.push(elements[i] + ids[j] + classes[k] + attributes[l]); // Correct Order
-                    selectors.push(elements[i] + attributes[l] + classes[k] + ids[j]); // Random Order
                 }
             }
         }
