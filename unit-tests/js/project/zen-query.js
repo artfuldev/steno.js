@@ -25,43 +25,25 @@
 
     var ZenQuery,
         config,
+        objProto = Object.prototype,
+        arrayProto = Array.prototype,
         // For IE, to prevent Invalid Calling Object error on toString.call(obj)
-        toString = Object.prototype.toString,
-        hasOwn = Object.prototype.hasOwnProperty;
+        toString = objProto.toString,
+        nativeMap = arrayProto.map,
+        nativeIndexOf = arrayProto.indexOf,
+        nativeSome = arrayProto.some,
+        nativeForEach = arrayProto.forEach,
+        nativeEvery = arrayProto.every,
+        nativeIsArray = arrayProto.isArray,
+        push = arrayProto.push,
+        concat = arrayProto.concat,
+        emptyObj = {},
+        isArray,
+        hasOwn = objProto.hasOwnProperty;
 
     ZenQuery = {
 
-        // Returns the element name found in the zencoding string
-        name: function (string) {
-            if (arguments.length !== 1) {
-                ZenQuery.incorrectArgs();
-            }
-            if (!ZenQuery.is('string', string)) {
-                ZenQuery.invalidArgs();
-            }
-            var matches = config.matches,
-                names = string.match(matches.name);
-            if (ZenQuery.is('null', names)) {
-                return 'div';
-            }
-            return names.join('');
-        },
-
-        // Returns the zencoding string with attributes removed
-        // Helpful because data in the attributes might interfere with selection
-        // eg: [href="http://thebattosai.in/#"]
-        noAttributes: function (string) {
-            if (arguments.length !== 1) {
-                ZenQuery.incorrectArgs();
-            }
-            if (!ZenQuery.is('string', string)) {
-                ZenQuery.invalidArgs();
-            }
-            var matches = config.matches;
-            return string.replace(matches.attributes.all, '');
-        },
-
-        // Returns the classes found in the zencoding string as an array
+        // Returns the classes found in a classes zencoding string partial as an array
         classes: function (string) {
             if (arguments.length !== 1) {
                 ZenQuery.incorrectArgs();
@@ -78,24 +60,7 @@
             return classes;
         },
 
-        // Returns the id string found in the zencoding string
-        id: function (string) {
-            if (arguments.length !== 1) {
-                ZenQuery.incorrectArgs();
-            }
-            if (!ZenQuery.is('string', string)) {
-                ZenQuery.invalidArgs();
-            }
-            var matches = config.matches,
-                id = ZenQuery.noAttributes(string).match(matches.id);
-            if (ZenQuery.is('null', id)) {
-                return '';
-            }
-            id = id.join(' ').replace('#', '');
-            return id;
-        },
-
-        // Returns attributes found in the zencoding string as an object with key value pairs
+        // Returns attributes found in an attributes zencoding string partial as an object with key value pairs
         attributes: function (string) {
             if (arguments.length !== 1) {
                 ZenQuery.incorrectArgs();
@@ -265,6 +230,11 @@
         return undefined;
     };
 
+    // IsArray
+    isArray = nativeIsArray || function (obj) {
+        return is('array', obj);
+    };
+
     // Incorrect Number of Arguments
     function incorrectArgs() {
         throw new Error('Incorrect Number of Arguments');
@@ -280,6 +250,113 @@
         return text == null ?
             "" :
             (text + "").replace(config.matches.trim, "");
+    };
+
+    // Each
+    function each(obj, iterator, context) {
+        if (obj == null) return;
+        if (nativeForEach && obj.forEach === nativeForEach) {
+            obj.forEach(iterator, context);
+        } else if (obj.length === +obj.length) {
+            for (var i = 0, l = obj.length; i < l; i++) {
+                if (iterator.call(context, obj[i], i, obj) === emptyObj) return;
+            }
+        } else {
+            for (var key in obj) {
+                if (has(key, obj)) {
+                    if (iterator.call(context, obj[key], key, obj) === emptyObj) return;
+                }
+            }
+        }
+    };
+
+    // Map
+    function map(obj, iterator, context) {
+        var results = [];
+        if (obj == null) return results;
+        if (nativeMap && obj.map === nativeMap) return obj.map(iterator, context);
+        each(obj, function(value, index, list) {
+            results.push(iterator.call(context, value, index, list));
+        });
+        return results;
+    };
+
+    // Identity
+    function identity(value) {
+        return value;
+    };
+
+    // Any
+    function any(obj, iterator, context) {
+        iterator || (iterator = identity);
+        var result = false;
+        if (is('null', obj)) return result;
+        if (nativeSome && obj.some === nativeSome) return obj.some(iterator, context);
+        each(obj, function(value, index, list) {
+            if (result || (result = iterator.call(context, value, index, list))) return emptyObj;
+        });
+        return !!result;
+    };
+
+    // Contains
+    function contains(obj, target) {
+        if (obj == null) return false;
+        if (nativeIndexOf && obj.indexOf === nativeIndexOf) return obj.indexOf(target) != -1;
+        return any(obj, function(value) {
+            return value === target;
+        });
+    };
+
+    // Unique
+    function unique(array, isSorted, iterator, context) {
+        if (is('function', isSorted)) {
+            context = iterator;
+            iterator = isSorted;
+            isSorted = false;
+        }
+        var initial = iterator ? map(array, iterator, context) : array;
+        var results = [];
+        var seen = [];
+        each(initial, function (value, index) {
+            if (isSorted ? (!index || seen[seen.length - 1] !== value) : contains(seen, value)) {
+                seen.push(value);
+                results.push(array[index]);
+            }
+        });
+        return results;
+    };
+
+    // Every
+    function every(obj, iterator, context) {
+        iterator || (iterator = identity);
+        var result = true;
+        if (is('null', obj)) return result;
+        if (nativeEvery && obj.every === nativeEvery) return obj.every(iterator, context);
+        each(obj, function(value, index, list) {
+            if (!(result = result && iterator.call(context, value, index, list))) return emptyObj;
+        });
+        return !!result;
+    };
+
+    // Flatten
+    function flatten(input, shallow, output) {
+        output || (output = []);
+        if (shallow && every(input, isArray)) {
+            return concat.apply(output, input);
+        }
+        each(input, function (value) {
+            if (is('array',value) || is('object',value)) {
+                shallow ? push.apply(output, value) : flatten(value, shallow, output);
+            } else {
+                output.push(value);
+            }
+        });
+        return output;
+    };
+
+    // Union
+    function union() {
+        return unique(flatten(arguments, true));
     };
 
     // Extend
@@ -412,9 +489,19 @@
         has: has,
         is: is,
         objectType: objectType,
+        isArray: isArray,
         incorrectArgs: incorrectArgs,
         invalidArgs: invalidArgs,
         trim: trim,
+        each: each,
+        map: map,
+        identity: identity,
+        any: any,
+        contains: contains,
+        unique: unique,
+        every: every,
+        flatten: flatten,
+        union: union,
     });
 
     // For browser, export only select globals
