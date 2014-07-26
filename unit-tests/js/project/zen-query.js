@@ -1,29 +1,30 @@
 ﻿/// <reference path="../lib/jquery-2.1.1.min.js" />
 /// <reference path="../lib/qunit-git.js" />
+
 /*
- * This file is part of "ZenQuery", (c) Kenshin The Battōsai (Sudarsan Balaji), 2014.
- * 
- * "ZenQuery" is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * "ZenQuery" is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with "ZenQuery".  If not, see <http://www.gnu.org/licenses/>.
- * 
- */
+    * This file is part of "ZenQuery", (c) Kenshin The Battōsai (Sudarsan Balaji), 2014.
+    * 
+    * "ZenQuery" is free software: you can redistribute it and/or modify
+    * it under the terms of the GNU General Public License as published by
+    * the Free Software Foundation, either version 3 of the License, or
+    * (at your option) any later version.
+    * 
+    * "ZenQuery" is distributed in the hope that it will be useful,
+    * but WITHOUT ANY WARRANTY; without even the implied warranty of
+    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    * GNU General Public License for more details.
+    * 
+    * You should have received a copy of the GNU General Public License
+    * along with "ZenQuery".  If not, see <http://www.gnu.org/licenses/>.
+    * 
+    */
 
 
 (function (window) {
 
     //'use strict';
 
-    var ZenQuery,
+    var zQuery,
         config,
         objProto = Object.prototype,
         arrayProto = Array.prototype,
@@ -41,7 +42,7 @@
         isArray,
         hasOwn = objProto.hasOwnProperty;
 
-    ZenQuery = {};
+    zQuery = {};
 
     // Returns the classes found in a classes zencoding string partial as an array
     function zenClasses(string) {
@@ -386,7 +387,7 @@
     };
 
     // Add stuff to ZenQuery
-    extend(ZenQuery, {
+    extend(zQuery, {
 
         // Core
         classes: zenClasses,
@@ -395,7 +396,7 @@
         add: zenAdd,
 
         // Config
-        
+    
         config: config,
 
         // Utilities
@@ -427,23 +428,23 @@
         (function() {
             var
                 // Map over ZenQuery in case of overwrite
-                _ZenQuery = window.ZenQuery,
+                _zQuery = window.zenQuery,
 
                 // Map over the $Z in case of overwrite
                 _$Z = window.$Z;
 
-            ZenQuery.noConflict = function(deep) {
-                if (window.$Z === ZenQuery) {
+            zQuery.noConflict = function(deep) {
+                if (window.$Z === zQuery) {
                     window.$Z = _$Z;
                 }
-                if (deep && window.ZenQuery === ZenQuery) {
-                    window.ZenQuery = _ZenQuery;
+                if (deep && window.zQuery === zQuery) {
+                    window.zQuery = _zenQuery;
                 }
-                return ZenQuery;
+                return zQuery;
             };
 
-            window.ZenQuery = window.$Z = ZenQuery;
-            return ZenQuery;
+            window.zQuery = window.$Z = zQuery;
+            return zQuery;
         })();
     }
 
