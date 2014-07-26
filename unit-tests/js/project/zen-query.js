@@ -41,151 +41,56 @@
         isArray,
         hasOwn = objProto.hasOwnProperty;
 
-    ZenQuery = {
+    ZenQuery = {};
 
-        // Returns the classes found in a classes zencoding string partial as an array
-        classes: function (string) {
-            if (arguments.length !== 1) {
-                ZenQuery.incorrectArgs();
-            }
-            if (!ZenQuery.is('string', string)) {
-                ZenQuery.invalidArgs();
-            }
-            var matches = config.matches,
-                classes = ZenQuery.noAttributes(string).match(matches.classes);
-            if (ZenQuery.is('null', classes)) {
-                return [];
-            }
-            classes = classes.join(' ').replace(/\./g, '').split(' ');
-            return classes;
-        },
+    // Returns the classes found in a classes zencoding string partial as an array
+    function zenClasses(string) {
+        if (arguments.length !== 1) {
+            incorrectArgs();
+        }
+        if (!is('string', string)) {
+            invalidArgs();
+        }
+        // Needs Implementation
+    };
 
-        // Returns attributes found in an attributes zencoding string partial as an object with key value pairs
-        attributes: function (string) {
-            if (arguments.length !== 1) {
-                ZenQuery.incorrectArgs();
-            }
-            if (!ZenQuery.is('string', string)) {
-                ZenQuery.invalidArgs();
-            }
-            var matches = config.matches.attributes,
-                attributes = string.match(matches.all),
-                array = [],
-                key = '',
-                name = matches.name,
-                value = '',
-                data = matches.value;
-            if (ZenQuery.is('null', attributes)) {
-                return {};
-            }
-            attributes = attributes.join('').replace(/\]\[/g, ' ');
-            array = attributes.match(matches.single);
-            if (ZenQuery.is('null', array)) {
-                return {};
-            }
-            attributes = {};
-            for (var i in array) {
-                array[i] = ZenQuery.trim(array[i]);
-                key = array[i].match(name);
-                if (ZenQuery.is('null', key)) {
-                    continue;
-                }
-                value = array[i].match(data);
-                if (ZenQuery.is('null', value)) {
-                    value = [''];
-                }
-                attributes[key.join('')] = value.join('').replace(/^('|")/, '').replace(/('|")$/, '');
-            }
-            return attributes;
-        },
+    // Returns attributes found in an attributes zencoding string partial as an object with key value pairs
+    function zenAttributes(string) {
+        if (arguments.length !== 1) {
+            incorrectArgs();
+        }
+        if (!is('string', string)) {
+            invalidArgs();
+        }
+        // Needs Implementation
+    };
 
-        // Returns an element from a zen coding string
-        element: function(string) {
-            if (arguments.length !== 1) {
-                ZenQuery.incorrectArgs();
-            }
-            if (!ZenQuery.is('string', string)) {
-                ZenQuery.invalidArgs();
-            }
-            var element = {},
-                defaults = ZenQuery.config.element,
-                id = ZenQuery.id(string),
-                classes = ZenQuery.classes(string);
-            element.name = ZenQuery.name(string);
-            element.attributes = ZenQuery.attributes(string);
-            if (id) {
-                ZenQuery.extend(true, element.attributes, { id: id });
-            }
-            if (classes.length !== 0 && classes[0]!=='') {
-                if (!element.attributes['class']) {
-                    element.attributes['class'] = classes.join(' ');
-                } else {
-                    element.attributes['class'] += ' ' + classes.join(' ');
-                }
-            }
-            return ZenQuery.extend(true, {}, defaults, element);
-        },
+    // Returns an element from a zen coding string
+    function zenElement(string) {
+        if (arguments.length !== 1) {
+            incorrectArgs();
+        }
+        if (!is('string', string)) {
+            invalidArgs();
+        }
+        // Needs Implementation
+    };
 
-        // Adds a child to an element
-        add: function (element, child) {
-            if (arguments.length < 1 || arguments.length > 2)
-                ZenQuery.incorrectArgs();
-            if (!ZenQuery.is('object', element))
-                ZenQuery.invalidArgs();
-            child = child || ZenQuery.extend(true, {}, ZenQuery.config.element);
-            child.parent = element;
-            element.children.push(child);
-            return child;
-        },
-
-        // Returns a dom from a zen coding string
-        dom: function(string) {
-            if (arguments.length != 1) {
-                ZenQuery.incorrectArgs();
-            }
-            if (!ZenQuery.is('string', string)) {
-                ZenQuery.invalidArgs();
-            }
-            var root = ZenQuery.extend(true, {}, ZenQuery.config.element);
-            var context = ZenQuery.add(root);
-
-        },
-
-        // Returns the string representation of html of an element
-        html: function(element) {
-            if (arguments.length !== 1)
-                ZenQuery.incorrectArgs();
-            if (!ZenQuery.is('object', element)
-                || !ZenQuery.has('name', element)
-                || !ZenQuery.has('attributes', element))
-                ZenQuery.invalidArgs();
-            var html = '',
-                sortedkeys = [];
-            html += '<' + element.name;
-            for (var key in element.attributes)
-                sortedkeys.push(key);
-            sortedkeys.sort();
-            for(var i in sortedkeys)
-                html += ' ' + sortedkeys[i] + '="' + element.attributes[sortedkeys[i]] + '"';
-            html += '></' + element.name + '>';
-            return html;
-        },
-
-        // Renders a given zen coding string as html
-        render: function (string) {
-            if (arguments.length !== 1) {
-                ZenQuery.incorrectArgs();
-            }
-            if (!ZenQuery.is('string', string)) {
-                ZenQuery.invalidArgs();
-            }
-            return ZenQuery.html(ZenQuery.dom(string));
-        },
+    // Adds a child to an element
+    function zenAdd(element, child) {
+        if (arguments.length < 1 || arguments.length > 2)
+            incorrectArgs();
+        if (!is('object', element))
+            invalidArgs();
+        child = child || extend(true, {}, config.element);
+        child.parent = element;
+        element.children.push(child);
+        return child;
     };
 
     // Check if Object Has Key
     function has (key, object) {
-        if (!ZenQuery.is('array', object) && !ZenQuery.is('object', object)) {
+        if (!is('array', object) && !is('object', object)) {
             return false;
         }
         return hasOwn.call(object, key);
@@ -483,16 +388,29 @@
     // Add stuff to ZenQuery
     extend(ZenQuery, {
 
-        // Additions
-        extend: extend,
+        // Core
+        classes: zenClasses,
+        attributes: zenAttributes,
+        element: zenElement,
+        add: zenAdd,
+
+        // Config
+        
         config: config,
+
+        // Utilities
+        extend: extend,
         has: has,
         is: is,
         objectType: objectType,
         isArray: isArray,
+        trim: trim,
+
+        // Errors
         incorrectArgs: incorrectArgs,
         invalidArgs: invalidArgs,
-        trim: trim,
+
+        // Array Helpers
         each: each,
         map: map,
         identity: identity,
