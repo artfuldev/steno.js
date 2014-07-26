@@ -351,16 +351,15 @@
     // Config
     config = {
         // RegEx-es thanks to http://regexpal.com/
+        // And RegEx Magic http://www.regexmagic.com/
         matches: {
-            elements: /([a-z]+)?(\.[a-z-]+)?(#[a-z-]+)?(\[(\s?[a-z-]+(=("[^"]*"|'[^']*'))?)*\])*/g,
-            name: /^[a-z-]+/,
-            id: /#[a-z-]+/,
-            classes: /\.[a-z-]+/g,
-            attributes: {
-                all: /\[(\s?[a-z-]+(=('.*'|".*"))?){1,}\]/ig,
-                single: /\s??[a-z-]+(=('[^']*'|"[^"]*"){1})?\s??/ig,
-                name: /^[a-z-]+/,
-                value: /'[^']*'|"[^"]*"/,
+            element: {
+                // Capture Groups: If Element, Name, Id, Classes with dots, Attributes
+                complete: /( |\+|\^|>|([a-z]+)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*))/g,
+                // Capture Group: ClassName
+                classes: /\.([a-z-]+)/g,
+                // Capture Groups: Name, Value
+                attributes: /([a-z-]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
             },
             trim: /^[\x20\t\r\n\f]+|((?:^|[^\\])(?:\\.)*)[\x20\t\r\n\f]+$/g,
         },
