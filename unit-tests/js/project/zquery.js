@@ -187,8 +187,14 @@
 
     // Validate Arguments
     function validateArgs(args, types, doesThrow) {
+
         if (doesThrow === undefined || doesThrow === null || !is('boolean', doesThrow))
             doesThrow = true;
+
+        // Handle special case when arguments is undefined and type contains undefined
+        if (is('object', args) && args.length == 0 && is('array', types) && types[0].toString().indexOf('undefined') > -1)
+            return true;
+
         if (!is('object', args) || !is('array', types) || types.length != args.length) {
             if (doesThrow) {
                 throw 'Invalid Function Call';
@@ -210,10 +216,10 @@
 
     // Trim
     function trim(text) {
-        validateArgs(arguments, ['string']);
-        return text == null ?
-            "" :
-            (text + "").replace(config.matches.trim, "");
+        if (validateArgs(arguments, ['null|undefined'], false))
+            return '';
+        validateArgs(arguments, ['string|boolean|number']);
+        return text.toString().replace(config.matches.trim, "");
     };
 
     // Invlaid to Value (Nullify to Value)
@@ -228,9 +234,8 @@
 
     // Random
     function random(array) {
-        if (is('array', array) && array.length)
-            return array[Math.floor(Math.random() * array.length)];
-        return Math.random(array);
+        validateArgs(arguments, ['array']);
+        return array[Math.floor(Math.random() * array.length)];
     };
 
     // Extend
@@ -247,7 +252,7 @@
             deep = false;
 
         // Handle a deep copy situation
-        if (typeof target === "boolean") {
+        if (is('boolean', target)) {
             deep = target;
 
             // skip the boolean and the target
@@ -256,7 +261,7 @@
         }
 
         // Handle case when target is a string or something (possible in deep copy)
-        if (typeof target !== "object" && !is('function', target)) {
+        if (!is('object|function', target)) {
             target = {};
         }
 
