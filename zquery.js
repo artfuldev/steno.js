@@ -315,7 +315,9 @@
         // And RegEx Magic http://www.regexmagic.com/
         matches: {
             element: {
-                // Capture Groups: Element, Name, Id, Classes with dots, Attributes
+                // Capture Groups:
+                    // Operator
+                    // Element, Name, Id, Classes with dots, Attributes
                 complete: /( |\+|\^|>|([a-z]+)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*))/g,
                 // Capture Group: ClassName
                 classes: /\.([a-z-]+)/g,
