@@ -1,6 +1,5 @@
 ﻿/// <reference path="../lib/jquery-2.1.1.min.js" />
 /// <reference path="../lib/qunit-git.js" />
-
 /*
     * This file is part of "zQuery", (c) Kenshin The Battōsai (Sudarsan Balaji), 2014.
     * 
@@ -20,69 +19,112 @@
     */
 
 
-(function (window) {
+(function(window) {
 
     //'use strict';
 
-    var zQuery,
+    // Required variables
+    var zQuery = {},
         config,
-        objProto = Object.prototype,
-        arrayProto = Array.prototype,
-        // For IE, to prevent Invalid Calling Object error on toString.call(obj)
-        toString = objProto.toString,
-        nativeMap = arrayProto.map,
-        nativeIndexOf = arrayProto.indexOf,
-        nativeSome = arrayProto.some,
-        nativeForEach = arrayProto.forEach,
-        nativeEvery = arrayProto.every,
-        nativeIsArray = arrayProto.isArray,
-        push = arrayProto.push,
-        concat = arrayProto.concat,
-        emptyObj = {},
-        isArray,
-        hasOwn = objProto.hasOwnProperty;
 
-    zQuery = {};
+        // Short for prototypes
+        objProto = Object.prototype,
+
+        // Shortform for native methodss
+        hasOwn = objProto.hasOwnProperty,
+
+        // For IE, to prevent Invalid Calling Object error on toString.call(obj)
+        toString = objProto.toString;
+
+
+    // Core functions start with zen
 
     // Returns the classes found in a classes zencoding string partial as an array
+    // Input-Output sample '.menu.dropdown' : ['menu','dropdown']
     function zenClasses(string) {
-        if (arguments.length !== 1) {
-            incorrectArgs();
+
+        // Validate Arguments
+        validateArgs(arguments, ['string']);
+
+        // Return Matches
+        var regEx = new RegExp(config.matches.element.classes),
+            matches = [],
+            match;
+        while (match = regEx.exec(string)) {
+            matches.push(match[1]);
         }
-        if (!is('string', string)) {
-            invalidArgs();
-        }
-        // Needs Implementation
+        return matches.join(' ');
     };
 
     // Returns attributes found in an attributes zencoding string partial as an object with key value pairs
     function zenAttributes(string) {
-        if (arguments.length !== 1) {
-            incorrectArgs();
+
+        // Validate Arguments
+        validateArgs(arguments, ['string']);
+
+        // Return Matches
+        var regEx = new RegExp(config.matches.element.attributes),
+            matches = {},
+            match;
+        while (match = regEx.exec(string)) {
+            matches[match[1]] = match[2];
         }
-        if (!is('string', string)) {
-            invalidArgs();
-        }
-        // Needs Implementation
+
+        // Convert all non matches to empty strings
+        invalidToValue(matches, '');
+
+        return matches;
     };
 
-    // Returns an element from a zen coding string
+    // Returns an element from a zen coding string of a single html element
     function zenElement(string) {
-        if (arguments.length !== 1) {
-            incorrectArgs();
+
+        //Validate Arguments
+        validateArgs(arguments, ['string']);
+
+        // Match RegEx to retrieve element
+        var regEx = new RegExp(config.matches.element.complete),
+            // Find only first match - FOR NOW
+            match = regEx.exec(string),
+            zClasses,
+            zAttributes;
+
+        // Convert all non matches to empty strings
+        invalidToValue(match, '');
+
+        // If no element name is found, it should be div
+        if (match[2] == '')
+            match[2] = 'div';
+
+        // Get Classes
+        zClasses = zenClasses(match[4]);
+
+        // Get Attributes
+        zAttributes = zenAttributes(match[5]);
+
+        // Make id as an attribute, id specified takes precedence over that in attributes tag
+        if (match[3])
+            zAttributes.id = match[3];
+
+        // If zClasses is non-empty, make class as an attribute and add classes. Duplicates not removed.
+        if (zClasses) {
+            if (!zAttributes.class) {
+                zAttributes.class = zClasses;
+            } else {
+                zAttributes.class = zClasses + ' ' + zAttributes.class;
+            }
         }
-        if (!is('string', string)) {
-            invalidArgs();
-        }
-        // Needs Implementation
+
+        // Build and return the element, now that the name and attributes are done
+        return {
+            name: match[2],
+            attributes: zAttributes
+        };
     };
 
     // Adds a child to an element
     function zenAdd(element, child) {
-        if (arguments.length < 1 || arguments.length > 2)
-            incorrectArgs();
-        if (!is('object', element))
-            invalidArgs();
+        validateArgs(arguments, ['object', 'object']);
         child = child || extend(true, {}, config.element);
         child.parent = element;
         element.children.push(child);
@@ -90,7 +132,7 @@
     };
 
     // Check if Object Has Key
-    function has (key, object) {
+    function has(key, object) {
         if (!is('array', object) && !is('object', object)) {
             return false;
         }
@@ -98,12 +140,12 @@
     };
 
     // Safe object type checking
-    function is (type, obj) {
+    function is(type, obj) {
         return objectType(obj) === type;
     };
 
     // Object Type
-    function objectType (obj) {
+    function objectType(obj) {
         if (typeof obj === "undefined") {
             return "undefined";
         }
@@ -117,18 +159,18 @@
             type = match && match[1] || "";
 
         switch (type) {
-            case "Number":
-                if (isNaN(obj)) {
-                    return "nan";
-                }
-                return "number";
-            case "String":
-            case "Boolean":
-            case "Array":
-            case "Date":
-            case "RegExp":
-            case "Function":
-                return type.toLowerCase();
+        case "Number":
+            if (isNaN(obj)) {
+                return "nan";
+            }
+            return "number";
+        case "String":
+        case "Boolean":
+        case "Array":
+        case "Date":
+        case "RegExp":
+        case "Function":
+            return type.toLowerCase();
         }
         if (typeof obj === "object") {
             return "object";
@@ -136,19 +178,14 @@
         return undefined;
     };
 
-    // IsArray
-    isArray = nativeIsArray || function (obj) {
-        return is('array', obj);
-    };
-
-    // Incorrect Number of Arguments
-    function incorrectArgs() {
-        throw new Error('Incorrect Number of Arguments');
-    };
-
-    // Invalid Arguments
-    function invalidArgs() {
-        throw new Error('Invalid Arguments');
+    // Validate Arguments
+    function validateArgs(args, types) {
+        if (!is('object', args) || !is('array', types) || types.length != args.length)
+            throw 'Invalid Function Call';
+        for (var i in args)
+            if (!is(types[i], args[i]))
+                throw 'Invalid Function Call';
+        return true;
     };
 
     // Trim
@@ -158,116 +195,31 @@
             (text + "").replace(config.matches.trim, "");
     };
 
-    // Each
-    function each(obj, iterator, context) {
-        if (obj == null) return;
-        if (nativeForEach && obj.forEach === nativeForEach) {
-            obj.forEach(iterator, context);
-        } else if (obj.length === +obj.length) {
-            for (var i = 0, l = obj.length; i < l; i++) {
-                if (iterator.call(context, obj[i], i, obj) === emptyObj) return;
-            }
-        } else {
-            for (var key in obj) {
-                if (has(key, obj)) {
-                    if (iterator.call(context, obj[key], key, obj) === emptyObj) return;
-                }
-            }
-        }
+    // Invlaid to Valid
+    function invalidToValue(obj, value) {
+        if (!is('object', obj) && !is('array', obj))
+            return obj;
+        for (var i in obj)
+            if (obj[i] === undefined || obj[i] === null)
+                obj[i] = value;
+        return obj;
     };
 
-    // Map
-    function map(obj, iterator, context) {
-        var results = [];
-        if (obj == null) return results;
-        if (nativeMap && obj.map === nativeMap) return obj.map(iterator, context);
-        each(obj, function(value, index, list) {
-            results.push(iterator.call(context, value, index, list));
-        });
-        return results;
-    };
-
-    // Identity
-    function identity(value) {
-        return value;
-    };
-
-    // Any
-    function any(obj, iterator, context) {
-        iterator || (iterator = identity);
-        var result = false;
-        if (is('null', obj)) return result;
-        if (nativeSome && obj.some === nativeSome) return obj.some(iterator, context);
-        each(obj, function(value, index, list) {
-            if (result || (result = iterator.call(context, value, index, list))) return emptyObj;
-        });
-        return !!result;
-    };
-
-    // Contains
-    function contains(obj, target) {
-        if (obj == null) return false;
-        if (nativeIndexOf && obj.indexOf === nativeIndexOf) return obj.indexOf(target) != -1;
-        return any(obj, function(value) {
-            return value === target;
-        });
-    };
-
-    // Unique
-    function unique(array, isSorted, iterator, context) {
-        if (is('function', isSorted)) {
-            context = iterator;
-            iterator = isSorted;
-            isSorted = false;
-        }
-        var initial = iterator ? map(array, iterator, context) : array;
-        var results = [];
-        var seen = [];
-        each(initial, function (value, index) {
-            if (isSorted ? (!index || seen[seen.length - 1] !== value) : contains(seen, value)) {
-                seen.push(value);
-                results.push(array[index]);
-            }
-        });
-        return results;
-    };
-
-    // Every
-    function every(obj, iterator, context) {
-        iterator || (iterator = identity);
-        var result = true;
-        if (is('null', obj)) return result;
-        if (nativeEvery && obj.every === nativeEvery) return obj.every(iterator, context);
-        each(obj, function(value, index, list) {
-            if (!(result = result && iterator.call(context, value, index, list))) return emptyObj;
-        });
-        return !!result;
-    };
-
-    // Flatten
-    function flatten(input, shallow, output) {
-        output || (output = []);
-        if (shallow && every(input, isArray)) {
-            return concat.apply(output, input);
-        }
-        each(input, function (value) {
-            if (is('array',value) || is('object',value)) {
-                shallow ? push.apply(output, value) : flatten(value, shallow, output);
-            } else {
-                output.push(value);
-            }
-        });
-        return output;
-    };
-
-    // Union
-    function union() {
-        return unique(flatten(arguments, true));
+    // Random
+    function random(array) {
+        if (is('array', array) && array.length)
+            return array[Math.floor(Math.random() * array.length)];
+        return Math.random(array);
     };
 
     // Extend
     function extend() {
-        var options, name, src, copy, copyIsArray, clone,
+        var options,
+            name,
+            src,
+            copy,
+            copyIsArray,
+            clone,
             target = arguments[0] || {},
             i = 1,
             length = arguments.length,
@@ -337,7 +289,7 @@
         // And RegEx Magic http://www.regexmagic.com/
         matches: {
             element: {
-                // Capture Groups: If Element, Name, Id, Classes with dots, Attributes
+                // Capture Groups: Element, Name, Id, Classes with dots, Attributes
                 complete: /( |\+|\^|>|([a-z]+)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*))/g,
                 // Capture Group: ClassName
                 classes: /\.([a-z-]+)/g,
@@ -396,7 +348,7 @@
         add: zenAdd,
 
         // Config
-    
+
         config: config,
 
         // Utilities
@@ -404,23 +356,12 @@
         has: has,
         is: is,
         objectType: objectType,
-        isArray: isArray,
         trim: trim,
-
-        // Errors
-        incorrectArgs: incorrectArgs,
-        invalidArgs: invalidArgs,
+        validate: validateArgs,
 
         // Array Helpers
-        each: each,
-        map: map,
-        identity: identity,
-        any: any,
-        contains: contains,
-        unique: unique,
-        every: every,
-        flatten: flatten,
-        union: union,
+        random: random,
+        nullify: invalidToValue,
     });
 
     // For browser, export only select globals
@@ -449,6 +390,6 @@
     }
 
     // Get a reference to the global object, like window in browsers
-}((function () {
+}((function() {
     return this;
 })()));
