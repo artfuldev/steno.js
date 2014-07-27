@@ -7,6 +7,29 @@
 window.$Q = QUnit;
 window.$H = window.Helpers = {};
 
+
+// Object Type, Is
+$H.types = {
+    'null': null,
+    'undefined': undefined,
+    'object': {},
+    'array': [],
+    'function': function () { },
+    'string': '',
+    'number': 12,
+    'boolean': true,
+    'date': new Date(),
+    'regexp': new RegExp()
+};
+
+// Has
+$H.obj = {
+    'key': 'value',
+    'key-two': 'value-two'
+}
+$H.arr = [1, 2];
+$H.arr['key'] = 'value';
+
 // Validate Args
 $H.arguments = function() { return arguments; };
 
