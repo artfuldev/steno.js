@@ -4,10 +4,10 @@
 /// <reference path="../tests/tests.js"/>
 
 $Q.module('Requirements');
-$Q.test('Basic Requirements', function (assert) {
+$Q.test('Basic Requirements', function(assert) {
     assert.expect(11);
-    assert.ok(typeof window !== 'undefined', 'Window reference is obtainable');
-    assert.ok(window !== null, 'Window is not null');
+    assert.notStrictEqual(typeof window, 'undefined', 'Window reference is obtainable');
+    assert.notStrictEqual(window, null, 'Window is not null');
     assert.ok(Array.prototype, 'Array.prototype is defined');
     assert.ok(Object.prototype, 'Object.prototype is defined');
     assert.ok(Object.prototype.hasOwnProperty, 'Object.prototype.hasOwnProperty is defined');

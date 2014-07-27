@@ -4,30 +4,30 @@
 /// <reference path="../tests/tests.js"/>
 
 $Q.module('Utilities');
-$Q.test('$Z.objectType', function (assert) {
+$Q.test('$Z.objectType', function(assert) {
     assert.expect(22);
-    assert.ok($Z.objectType(null) === 'null', 'null identified correctly');
-    assert.ok($Z.objectType(undefined) === 'undefined', 'undefined identified correctly');
-    assert.ok($Z.objectType() === 'undefined', 'Empty identified correctly as undefined');
-    assert.ok($Z.objectType(1) === 'number', 'number identified correctly');
-    assert.ok($Z.objectType(new Number(1)) === 'number', 'Number identified correctly as number');
-    assert.ok($Z.objectType(parseInt('a')) === 'nan', 'nan identified correctly');
-    assert.ok($Z.objectType('') === 'string', 'empty string identified correctly');
-    assert.ok($Z.objectType('ha ha ha') === 'string', 'string identified correctly');
-    assert.ok($Z.objectType(new String('ha ha ha')) === 'string', 'String identified correctly as string');
-    assert.ok($Z.objectType({}) === 'object', 'empty object identified correctly as object');
-    assert.ok($Z.objectType({ key: 'value' }) === 'object', 'object identified correctly');
-    assert.ok($Z.objectType(new Object()) === 'object', 'Object identified correctly as object');
-    assert.ok($Z.objectType([]) === 'array', 'empty array identified correctly as array');
-    assert.ok($Z.objectType([1, '2', function() {}, { key: 'value' }]) === 'array', 'array identified correctly as array');
-    assert.ok($Z.objectType(new Array()) === 'array', 'Array identified correctly as array');
-    assert.ok($Z.objectType(function (){}) === 'function', 'function identified correctly');
-    assert.ok($Z.objectType(new Function()) === 'function', 'Function identified correctly as function');
-    assert.ok($Z.objectType(/regex/igm) === 'regexp', 'regexp identified correctly');
-    assert.ok($Z.objectType(new RegExp("hell", "g")) === 'regexp', 'RegExp identified correctly as regexp');
-    assert.ok($Z.objectType(new Date()) === 'date', 'Date identified correctly as date');
-    assert.ok($Z.objectType(true) === 'boolean', 'boolean identified correctly');
-    assert.ok($Z.objectType(new Boolean()) === 'boolean', 'Boolean identified correctly as boolean');
+    assert.strictEqual($Z.objectType(null), 'null', 'null identified correctly');
+    assert.strictEqual($Z.objectType(undefined), 'undefined', 'undefined identified correctly');
+    assert.strictEqual($Z.objectType(), 'undefined', 'Empty identified correctly as undefined');
+    assert.strictEqual($Z.objectType(1), 'number', 'number identified correctly');
+    assert.strictEqual($Z.objectType(new Number(1)), 'number', 'Number identified correctly as number');
+    assert.strictEqual($Z.objectType(parseInt('a')), 'nan', 'nan identified correctly');
+    assert.strictEqual($Z.objectType(''), 'string', 'empty string identified correctly');
+    assert.strictEqual($Z.objectType('ha ha ha'), 'string', 'string identified correctly');
+    assert.strictEqual($Z.objectType(new String('ha ha ha')), 'string', 'String identified correctly as string');
+    assert.strictEqual($Z.objectType({}), 'object', 'empty object identified correctly as object');
+    assert.strictEqual($Z.objectType({ key: 'value' }), 'object', 'object identified correctly');
+    assert.strictEqual($Z.objectType(new Object()), 'object', 'Object identified correctly as object');
+    assert.strictEqual($Z.objectType([]), 'array', 'empty array identified correctly as array');
+    assert.strictEqual($Z.objectType([1, '2', function() {}, { key: 'value' }]), 'array', 'array identified correctly as array');
+    assert.strictEqual($Z.objectType(new Array()), 'array', 'Array identified correctly as array');
+    assert.strictEqual($Z.objectType(function() {}), 'function', 'function identified correctly');
+    assert.strictEqual($Z.objectType(new Function()), 'function', 'Function identified correctly as function');
+    assert.strictEqual($Z.objectType(/regex/igm), 'regexp', 'regexp identified correctly');
+    assert.strictEqual($Z.objectType(new RegExp("hell", "g")), 'regexp', 'RegExp identified correctly as regexp');
+    assert.strictEqual($Z.objectType(new Date()), 'date', 'Date identified correctly as date');
+    assert.strictEqual($Z.objectType(true), 'boolean', 'boolean identified correctly');
+    assert.strictEqual($Z.objectType(new Boolean()), 'boolean', 'Boolean identified correctly as boolean');
 });
 $Q.test('$Z.is', function(assert) {
     assert.expect(24);
@@ -56,44 +56,44 @@ $Q.test('$Z.is', function(assert) {
     assert.ok($Z.is('number|string', 1), 'Multi-Type Checking: 1 identified correctly as number|string');
     assert.ok($Z.is('number|string', '1'), 'Multi-Type Checking: \'1\' identified correctly as number|string');
 });
-$Q.test('$Z.has', function (assert) {
+$Q.test('$Z.has', function(assert) {
     assert.expect(10);
-    var obj =  {
+    var obj = {
         'key': 'value',
         'key-two': 'value-two'
     }
     var arr = [1, 2];
     arr['key'] = 'value';
-    assert.ok($Z.has('key', obj) === true, 'Matches for Object');
-    assert.ok($Z.has('key-two', obj) === true, 'Matches for Object');
-    assert.ok($Z.has('key-three', obj) === false, 'Returns false for bad key of Object');
-    assert.ok($Z.has('1', arr) === true, 'Matches for Array - String Index');
-    assert.ok($Z.has('0', arr) === true, 'Matches for Array');
-    assert.ok($Z.has(1, arr) === true, 'Matches for Array - Numeric Index');
-    assert.ok($Z.has(0, arr) === true, 'Matches for Array');
-    assert.ok($Z.has(2, arr) === false, 'Returns false for bad key of Array');
-    assert.ok($Z.has('key', arr) === true, 'Matches for Array');
-    assert.ok($Z.has('key-three', arr) === false, 'Returns false for bad key of Array');
+    assert.strictEqual($Z.has('key', obj), true, 'Matches for Object');
+    assert.strictEqual($Z.has('key-two', obj), true, 'Matches for Object');
+    assert.strictEqual($Z.has('key-three', obj), false, 'Returns false for bad key of Object');
+    assert.strictEqual($Z.has('1', arr), true, 'Matches for Array - String Index');
+    assert.strictEqual($Z.has('0', arr), true, 'Matches for Array');
+    assert.strictEqual($Z.has(1, arr), true, 'Matches for Array - Numeric Index');
+    assert.strictEqual($Z.has(0, arr), true, 'Matches for Array');
+    assert.strictEqual($Z.has(2, arr), false, 'Returns false for bad key of Array');
+    assert.strictEqual($Z.has('key', arr), true, 'Matches for Array');
+    assert.strictEqual($Z.has('key-three', arr), false, 'Returns false for bad key of Array');
 });
-$Q.test('$Z.validate', function (assert) {
+$Q.test('$Z.validate', function(assert) {
     assert.expect(14);
-    var args = function () { return arguments; };
-    assert.throws(function () { $Z.validate(); }, 'Invalid Function Call', 'Error thrown when not enough arguments are passed');
-    assert.throws(function () { $Z.validate(1); }, 'Invalid Function Call', 'Error thrown when less than 2 arguments is passed');
-    assert.throws(function () { $Z.validate(1, 2, 3); }, 'Invalid Function Call', 'Error thrown when more than 2 arguments is passed');
-    assert.throws(function () { $Z.validate(1, 2); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
-    assert.throws(function () { $Z.validate([1], 2); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
-    assert.throws(function () { $Z.validate(1, [2]); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
-    assert.throws(function () { $Z.validate([1], [2]); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
-    assert.throws(function () { $Z.validate(args(1), [2]); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
-    assert.throws(function () { $Z.validate(args(1, 2), [2]); }, 'Invalid Function Call', 'Error thrown when length of arguments is not equal to length of types');
+    var args = function() { return arguments; };
+    assert.throws(function() { $Z.validate(); }, 'Invalid Function Call', 'Error thrown when not enough arguments are passed');
+    assert.throws(function() { $Z.validate(1); }, 'Invalid Function Call', 'Error thrown when less than 2 arguments is passed');
+    assert.throws(function() { $Z.validate(1, 2, 3); }, 'Invalid Function Call', 'Error thrown when more than 2 arguments is passed');
+    assert.throws(function() { $Z.validate(1, 2); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
+    assert.throws(function() { $Z.validate([1], 2); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
+    assert.throws(function() { $Z.validate(1, [2]); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
+    assert.throws(function() { $Z.validate([1], [2]); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
+    assert.throws(function() { $Z.validate(args(1), [2]); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
+    assert.throws(function() { $Z.validate(args(1, 2), [2]); }, 'Invalid Function Call', 'Error thrown when length of arguments is not equal to length of types');
     assert.ok($Z.validate(args(1), ['number']), 'Works for 1 argument');
     assert.ok($Z.validate(args(1, {}), ['number', 'object']), 'Works for more than 1 argument');
     assert.ok($Z.validate(args(1), ['number|string']), 'Works for multiple types');
-    assert.ok($Z.validate(args(1, 2), [2], false) === false, 'Returns false instead of throwing error when canThrow is passed as false');
-    assert.ok($Z.validate(args(), ['undefined'], false) === true, 'undefined works for empty arguments');
+    assert.strictEqual($Z.validate(args(1, 2), [2], false), false, 'Returns false instead of throwing error when canThrow is passed as false');
+    assert.strictEqual($Z.validate(args(), ['undefined'], false), true, 'undefined works for empty arguments');
 });
-$Q.test('$Z.trim', function (assert) {
+$Q.test('$Z.trim', function(assert) {
     assert.expect(13);
     var nbsp = String.fromCharCode(160);
     assert.equal($Z.trim("hello  "), "hello", "trailing space");
@@ -110,7 +110,7 @@ $Q.test('$Z.trim', function (assert) {
     assert.equal($Z.trim("\uFEFF"), "", "zwsp should be trimmed");
     assert.equal($Z.trim("\uFEFF \xA0! | \uFEFF"), "! |", "leading/trailing should be trimmed");
 });
-$Q.test('$Z.nullify', function (assert) {
+$Q.test('$Z.nullify', function(assert) {
     assert.expect(10);
     assert.deepEqual($Z.nullify([null, 0, 12], 8), [8, 0, 12], 'Can insert number');
     assert.deepEqual($Z.nullify([null, 0, 12], '8'), ['8', 0, 12], 'Can insert string');
@@ -123,12 +123,12 @@ $Q.test('$Z.nullify', function (assert) {
     assert.deepEqual($Z.nullify([null, undefined, 0, 12], 8), [8, 8, 0, 12], 'Works with both');
     assert.deepEqual($Z.nullify([null, undefined, 0, 12, undefined, null], 8), [8, 8, 0, 12, 8, 8], 'Works with both, in repetition and in disorder');
 });
-$Q.test('$Z.random', function (assert) {
+$Q.test('$Z.random', function(assert) {
     assert.expect(2);
-    assert.ok($Z.random([1])==1, 'Identity');
+    assert.strictEqual($Z.random([1]), 1, 'Identity');
     assert.ok(0 < $Z.random([1, 2, 3, 4, 5]) < 6, 'Correct Random Element Selection');
 });
-$Q.test("$Z.extend", function (assert) {
+$Q.test("$Z.extend", function(assert) {
     assert.expect(1);
     assert.ok(true, 'Derived from the heavily-tested jQuery.extend, so skipped');
 });
