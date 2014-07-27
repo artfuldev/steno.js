@@ -3,22 +3,50 @@
 /// <reference path="../project/zen-query.js" />
 /// <reference path="../tests/helpers.js" />
 
+// TODO: Remove helpers.js
+// TODO: Split Modules into separate JS files
+
+$Q.module('Requirements');
+$Q.test('Basic Requirements', function (assert) {
+    assert.ok(typeof window !== 'undefined', 'Window reference is obtainable');
+    assert.ok(window !== null, 'Window is not null');
+    assert.ok(Array.prototype, 'Array.prototype is defined');
+    assert.ok(Object.prototype, 'Object.prototype is defined');
+    assert.ok(Object.prototype.hasOwnProperty, 'Object.prototype.hasOwnProperty is defined');
+    assert.ok(Object.prototype.toString, 'Object.prototype.toString is defined');
+    assert.ok(Array.prototype.push, 'Array.prototype.push is defined');
+    assert.ok(Function.prototype.apply, 'Function.prototype.apply is defined');
+    assert.ok(RegExp, 'RegExp is defined');
+    assert.ok(zQuery, 'zQuery is defined');
+    assert.ok($Z, '$Z is defined');
+});
 
 $Q.module('Utilities', {
     setup: function() {
         window.types = $H.types;
         window.obj = $H.obj;
         window.arr = $H.arr;
+        window.trim = $H.trim;
+        window.validate = $H.validate;
+        window.nullify = $H.nullify;
+        window.random = $H.random;
+        window.extend = $H.extend;
     },
     teardown: function() {
         delete window.types;
         delete window.obj;
         delete window.arr;
+        delete window.trim;
+        delete window.validate;
+        delete window.nullify;
+        delete window.random;
+        delete window.extend;
     },
 });
 $Q.test('Object Type', function(assert) {
     for (var i in types)
-        assert.ok($Z.objectType(types[i]) === i, i + ' identified correctly');
+        if (i.toString().indexOf('|') === -1)
+            assert.ok($Z.objectType(types[i]) === i, i + ' identified correctly');
 });
 $Q.test('Is', function(assert) {
     for (var i in types)
@@ -46,20 +74,24 @@ $Q.test('Validate Arguments', function (assert) {
     assert.throws(function () { $Z.validate([1], [2]); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
     assert.throws(function () { $Z.validate($H.arguments(1), [2]); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
     assert.throws(function () { $Z.validate($H.arguments(1,2), [2]); }, 'Invalid Function Call', 'Error thrown when length of arguments is not equal to length of types');
-    assert.ok($Z.validate($H.arguments(1), ['number']), 'Number identified correctly');
-    assert.ok($Z.validate($H.arguments('string'), ['string']), 'String identified correctly');
-    assert.ok($Z.validate($H.arguments({}), ['object']), 'Object identified correctly');
-    assert.ok($Z.validate($H.arguments([]), ['array']), 'Array identified correctly');
+    for (var i in validate.arguments)
+        assert.ok($Z.validate(validate.arguments[i], validate.types[i]) === true, '\'' + validate.arguments[i] + '\' validated as \'' + validate.types[i] + '\'');
     assert.ok($Z.validate($H.arguments(1, {}), ['number', 'object']), 'Works for more than 1 argument');
+    assert.ok($Z.validate($H.arguments(1), ['number|string']), 'Works for multiple types');
+    assert.ok($Z.validate($H.arguments(1, 2), [2], false) === false, 'Returns false instead of throwing error when canThrow is passed as false');
 });
 $Q.test('Trim', function(assert) {
-    assert.expect(0);
+    for (var i in trim)
+        assert.ok($Z.trim(i) === trim[i], '\'' + i + '\' trimmed to \'' + trim[i] + '\'');
 });
 $Q.test('Nullify', function (assert) {
-    assert.expect(0);
+    for (var i in nullify)
+        assert.deepEqual($Z.nullify.apply(null, nullify[i].arguments), nullify[i].result, nullify[i].message);
 });
 $Q.test('Random', function (assert) {
-    assert.expect(0);
+    for(var j=0;j<5;j++)
+        for (var i in random)
+            assert.ok(random[i].test($Z.random(random[i].array)), 'Correct Random Element Selection from ' + random[i].array);
 });
 $Q.test('Extend', function (assert) {
     assert.expect(0);
