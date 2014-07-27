@@ -224,10 +224,10 @@
 
     // Invlaid to Value (Nullify to Value)
     function invalidToValue(obj, value) {
-        if (!is('object', obj) && !is('array', obj))
+        if (!is('object|array', obj))
             return obj;
         for (var i in obj)
-            if (obj[i] === undefined || obj[i] === null)
+            if (is('undefined|null', obj[i]))
                 obj[i] = value;
         return obj;
     };
