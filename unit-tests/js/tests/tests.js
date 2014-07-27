@@ -3,6 +3,7 @@
 /// <reference path="../project/zen-query.js" />
 /// <reference path="../tests/helpers.js" />
 
+
 $Q.module('Utilities', {
     setup: function() {
         window.types = $H.types;
@@ -15,8 +16,6 @@ $Q.module('Utilities', {
         delete window.arr;
     },
 });
-
-
 $Q.test('Object Type', function(assert) {
     for (var i in types)
         assert.ok($Z.objectType(types[i]) === i, i + ' identified correctly');
@@ -66,6 +65,7 @@ $Q.test('Extend', function (assert) {
     assert.expect(0);
 });
 
+
 $Q.module('Single Element Extractors', {
     setup: function() {
         window.classes = $H.classes;
@@ -78,7 +78,6 @@ $Q.module('Single Element Extractors', {
         delete window.elements;
     }
 });
-
 $Q.test('Classes', function (assert) {
     for (var i in classes)
         assert.deepEqual($Z.classes(i), classes[i], 'Classes in \'' + i + '\' are \'' + classes[i] + '\'');
