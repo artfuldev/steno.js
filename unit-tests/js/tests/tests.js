@@ -4,10 +4,39 @@
 /// <reference path="../tests/helpers.js" />
 
 $Q.module('Utilities', {
-    setup: function() {},
-    teardown: function() {},
+    setup: function() {
+        window.types = $H.types;
+        window.obj = $H.obj;
+        window.arr = $H.arr;
+    },
+    teardown: function() {
+        delete window.types;
+        delete window.obj;
+        delete window.arr;
+    },
 });
 
+
+$Q.test('Object Type', function(assert) {
+    for (var i in types)
+        assert.ok($Z.objectType(types[i]) === i, i + ' identified correctly');
+});
+$Q.test('Is', function(assert) {
+    for (var i in types)
+        assert.ok($Z.is(i, types[i]) === true, 'typeof ' + JSON.stringify(types[i]) + ' identified correctly as ' + i);
+});
+$Q.test('Has', function(assert) {
+    assert.ok($Z.has('key', obj) === true, 'Matches for Object');
+    assert.ok($Z.has('key-two', obj) === true, 'Matches for Object');
+    assert.ok($Z.has('key-three', obj) === false, 'Returns false for bad key of Object');
+    assert.ok($Z.has('1', arr) === true, 'Matches for Array - String Index');
+    assert.ok($Z.has('0', arr) === true, 'Matches for Array');
+    assert.ok($Z.has(1, arr) === true, 'Matches for Array - Numeric Index');
+    assert.ok($Z.has(0, arr) === true, 'Matches for Array');
+    assert.ok($Z.has(2, arr) === false, 'Returns false for bad key of Array');
+    assert.ok($Z.has('key', arr) === true, 'Matches for Array');
+    assert.ok($Z.has('key-three', arr) === false, 'Returns false for bad key of Array');
+});
 $Q.test('Validate Arguments', function (assert) {
     assert.throws(function () { $Z.validate(); }, 'Invalid Function Call', 'Error thrown when no arguments are passed');
     assert.throws(function () { $Z.validate(1); }, 'Invalid Function Call', 'Error thrown when less than 2 arguments is passed');
@@ -23,6 +52,18 @@ $Q.test('Validate Arguments', function (assert) {
     assert.ok($Z.validate($H.arguments({}), ['object']), 'Object identified correctly');
     assert.ok($Z.validate($H.arguments([]), ['array']), 'Array identified correctly');
     assert.ok($Z.validate($H.arguments(1, {}), ['number', 'object']), 'Works for more than 1 argument');
+});
+$Q.test('Trim', function(assert) {
+    assert.expect(0);
+});
+$Q.test('Nullify', function (assert) {
+    assert.expect(0);
+});
+$Q.test('Random', function (assert) {
+    assert.expect(0);
+});
+$Q.test('Extend', function (assert) {
+    assert.expect(0);
 });
 
 $Q.module('Single Element Extractors', {
