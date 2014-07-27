@@ -132,16 +132,23 @@
     };
 
     // Check if Object Has Key
-    function has(key, object) {
-        if (!is('array', object) && !is('object', object)) {
+    function has(key, obj) {
+        if (!validateArgs(arguments, ['string|number', 'object|array'], false))
             return false;
-        }
-        return hasOwn.call(object, key);
+        return hasOwn.call(obj, key);
     };
 
     // Safe object type checking
     function is(type, obj) {
-        return objectType(obj) === type;
+        var types = type.toString().split('|'),
+            match = false;
+        for (var i in types) {
+            if (objectType(obj) === types[i]) {
+                match = true;
+                break;
+            }
+        }
+        return match;
     };
 
     // Object Type
@@ -179,17 +186,31 @@
     };
 
     // Validate Arguments
-    function validateArgs(args, types) {
-        if (!is('object', args) || !is('array', types) || types.length != args.length)
-            throw 'Invalid Function Call';
-        for (var i in args)
-            if (!is(types[i], args[i]))
+    function validateArgs(args, types, doesThrow) {
+        if (doesThrow === undefined || doesThrow === null || !is('boolean', doesThrow))
+            doesThrow = true;
+        if (!is('object', args) || !is('array', types) || types.length != args.length) {
+            if (doesThrow) {
                 throw 'Invalid Function Call';
+            } else {
+                return false;
+            }
+        }
+        for (var i in args) {
+            if (!is(types[i], args[i])) {
+                if (doesThrow) {
+                    throw 'Invalid Function Call';
+                } else {
+                    return false;
+                }
+            }
+        }
         return true;
     };
 
     // Trim
     function trim(text) {
+        validateArgs(arguments, ['string']);
         return text == null ?
             "" :
             (text + "").replace(config.matches.trim, "");
@@ -296,7 +317,7 @@
                 // Capture Groups: Name, Value
                 attributes: /([a-z-]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
             },
-            trim: /^[\x20\t\r\n\f]+|((?:^|[^\\])(?:\\.)*)[\x20\t\r\n\f]+$/g,
+            trim: /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
         },
         element: {
             parent: null,
