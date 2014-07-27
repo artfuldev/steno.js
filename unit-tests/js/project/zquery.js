@@ -195,7 +195,7 @@
             (text + "").replace(config.matches.trim, "");
     };
 
-    // Invlaid to Valid
+    // Invlaid to Value (Nullify to Value)
     function invalidToValue(obj, value) {
         if (!is('object', obj) && !is('array', obj))
             return obj;
