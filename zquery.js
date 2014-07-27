@@ -108,10 +108,10 @@
 
         // If zClasses is non-empty, make class as an attribute and add classes. Duplicates not removed.
         if (zClasses) {
-            if (!zAttributes.class) {
-                zAttributes.class = zClasses;
+            if (!zAttributes['class']) {
+                zAttributes['class'] = zClasses;
             } else {
-                zAttributes.class = zClasses + ' ' + zAttributes.class;
+                zAttributes['class'] = zClasses + ' ' + zAttributes['class'];
             }
         }
 
@@ -322,15 +322,15 @@
                 // Capture Group: ClassName
                 classes: /\.([a-z-]+)/g,
                 // Capture Groups: Name, Value
-                attributes: /([a-z-]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
+                attributes: /([a-z-]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g
             },
-            trim: /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
+            trim: /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g
         },
         element: {
             parent: null,
             name: '',
             attributes: {},
-            children: [],
+            children: []
         },
         pairs: {
             '[': ']',
@@ -344,7 +344,7 @@
                 '^': 'climb',
                 '*': 'multiply',
                 '(': 'open',
-                ')': 'close',
+                ')': 'close'
             },
             attribute: {
                 '#': 'id',
@@ -361,7 +361,7 @@
                 'c{': 'comment'
             },
             data: {
-                '!': 'parse',
+                '!': 'parse'
             }
         }
     };
@@ -389,7 +389,7 @@
 
         // Array Helpers
         random: random,
-        nullify: invalidToValue,
+        nullify: invalidToValue
     });
 
     // For browser, export only select globals
