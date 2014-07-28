@@ -4,7 +4,7 @@
 /// <reference path="../tests/tests.js" />
 
 $Q.module('Core');
-$Q.test('Classes', function (assert) {
+$Q.test('Z.classes', function (assert) {
     assert.expect(5);
     assert.equal($Z.classes(''), '', 'Empty String');
     assert.equal($Z.classes('.menu'), 'menu', 'Single Class');
@@ -12,7 +12,7 @@ $Q.test('Classes', function (assert) {
     assert.equal($Z.classes('.menu.item'), 'menu item', 'Multiple Classes');
     assert.equal($Z.classes('.menu-item.item-empty'), 'menu-item item-empty', 'Multiple Hyphenated Classes');
 });
-$Q.test('Attributes', function (assert) {
+$Q.test('$Z.attributes', function (assert) {
     assert.expect(7);
     var attributes = {
         '': {},
@@ -34,7 +34,7 @@ $Q.test('Attributes', function (assert) {
     for (var i in attributes)
         assert.deepEqual($Z.attributes(i), attributes[i], 'Attributes in \'' + i + '\' are \'' + JSON.stringify(attributes[i]) + '\'');
 });
-$Q.test('Elements', function (assert) {
+$Q.test('$Z.element', function (assert) {
     assert.expect(14);
     var pureElements = {
         'work': { name: 'work', attributes: {} },
@@ -78,4 +78,13 @@ $Q.test('Elements', function (assert) {
     for (i in elements)
         assert.deepEqual($Z.element(i), elements[i], 'Elements in \'' + i + '\' retreived successfully as ' + JSON.stringify(elements[i]));
 
+});
+$Q.test('$Z.dom', function(assert) {
+    assert.expect(1);
+    assert.deepEqual($Z.dom('ul#id.class>li[value="1"]+li[value="2"]'),
+        {
+
+        },
+        'ul#id.class>li[value="1"]+li[value="2"]' + ' extracted correctly'
+    );
 });
