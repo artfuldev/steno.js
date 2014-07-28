@@ -148,7 +148,8 @@
             element,
             regEx = new RegExp(config.matches.element.complete),
             matches = [],
-            invalid = false;
+            invalid = false,
+            lastIndex;
 
         // Retreive Elements and Operators
         while (match = regEx.exec(string)) {
@@ -156,8 +157,18 @@
             // Convert all non matches to empty strings
             invalidToValue(match, '');
 
+            // Check for last index to break infinite loop
+            // Also delete the last empty match element
+            if (match.index === lastIndex) {
+                matches.splice(matches.length - 1, 1);
+                break;
+            }
+
             // Retreive matches
             matches.push(match);
+
+            // Store lastIndex
+            lastIndex = match.index;
         }
 
         // If even number of matches is found, the dom is invalid
@@ -168,8 +179,8 @@
             invalid = true;
         }
         if(!invalid) {
-            for (i = 0; i < matches.length; i++) {
-                if ((i % 2 === 0) && (matches[i][0].length !== 1) && (' +>^'.indexOf(matches[i][0]) === -1)) {
+            for (i = 0; i < matches.length; i+=2) {
+                if ((matches[i][0].length === 1) && (' +>^'.indexOf(matches[i][0]) > -1)) {
                     invalid = true;
                     break;
                 }
@@ -221,8 +232,12 @@
 
     // Adds a child to an element
     function zenAdd(element, child) {
+        if (is('undefined|null', child)) {
+            child = extend(true, {}, config.element);
+            arguments[1] = child;
+            arguments.length++;
+        }
         validateArgs(arguments, ['object', 'object']);
-        child = child || extend(true, {}, config.element);
         child.parent = element;
         element.children.push(child);
         return child;
@@ -335,8 +350,19 @@
         return array[Math.floor(Math.random() * array.length)];
     };
 
+    // Make Array (List)
+    function makeArray( obj ) {
+        var arr = [];
+        if ( !is('null|undefined',obj) ) {
+            for (var i in obj)
+                arr[i] = obj[i];
+        }
+        return arr;
+    };
+
     // Extend
     function extend() {
+
         var options,
             name,
             src,
@@ -438,6 +464,7 @@
         classes: zenClasses,
         attributes: zenAttributes,
         element: zenElement,
+        dom: zenDom,
         add: zenAdd,
 
         // Config
@@ -454,7 +481,8 @@
 
         // Array Helpers
         random: random,
-        nullify: invalidToValue
+        nullify: invalidToValue,
+        list: makeArray
     });
 
     // For browser, export only select globals
