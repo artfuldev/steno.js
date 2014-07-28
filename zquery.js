@@ -77,10 +77,18 @@
     };
 
     // Returns an element from a zen coding string of a single html element
-    function zenElement(string) {
+    function zenElement(string, pure) {
+
+        // Returns pure {name:'', attributes{}} object if true
+        // Otherwise returns an extended one
+        if (is('undefined|null', pure)) {
+            arguments[1] = false;
+            arguments.length++;
+            pure = false;
+        }
 
         //Validate Arguments
-        validateArgs(arguments, ['string']);
+        validateArgs(arguments, ['string','boolean']);
 
         // Match RegEx to retrieve element
         var regEx = new RegExp(config.matches.element.complete),
@@ -116,10 +124,99 @@
         }
 
         // Build and return the element, now that the name and attributes are done
+        if(!pure)
+        return extend(true, {}, config.element, {
+            name: match[2],
+            attributes: zAttributes
+        });
         return {
             name: match[2],
             attributes: zAttributes
         };
+    };
+
+    // Returns a custom dom object from a zen coding string of a html dom
+    function zenDom(string) {
+
+        //Validate Arguments
+        validateArgs(arguments, ['string']);
+
+        // Initialize
+        var i,
+            dom,
+            match,
+            element,
+            regEx = new RegExp(config.matches.element.complete),
+            matches = [],
+            invalid = false;
+
+        // Retreive Elements and Operators
+        while (match = regEx.exec(string)) {
+
+            // Convert all non matches to empty strings
+            invalidToValue(match, '');
+
+            // Retreive matches
+            matches.push(match);
+        }
+
+        // If even number of matches is found, the dom is invalid
+        // Because, dom can only be of the form [element][operator][element]...[operator][element]
+        // If the dom starts with or ends with an operator
+        // then the dom is again invalid
+        if (matches.length % 2 === 0) {
+            invalid = true;
+        }
+        if(!invalid) {
+            for (i = 0; i < matches.length; i++) {
+                if ((i % 2 === 0) && (matches[i][0].length !== 1) && (' +>^'.indexOf(matches[i][0]) === -1)) {
+                    invalid = true;
+                    break;
+                }
+            }
+        }
+        if (invalid)
+            throw 'Invalid Zen String';
+
+        // If you came this far, create first element and add to dom
+        dom = extend(true, {}, config.element);
+        element = zenAdd(dom);
+        element = extend(true, element, zenElement(matches[0][1], true));
+
+        // Loop through to create dom
+        // Don't use for...in loop
+        // We need to manipulate the i iterator
+        for (i = 1; i < matches.length-1; i++) {
+            switch (matches[i][0]) {
+
+                // Child
+                case ' ':
+                case '>':
+                    element = zenAdd(element, zenDom(matches[++i][1]));
+                    break;
+
+                // Sibling
+                case '+':
+                    if (is('null|undefined', element.parent))
+                        element.parent = extend(true, {}, config.element);
+                    element = zenAdd(element.parent, zenDom(matches[++i][1]));
+                    break;
+
+                // Up One level
+                case '^':
+                    var parent = element.parent || element;
+                    element = zenAdd(parent.parent || parent, zenDom(matches[++i][1]));
+                    break;
+
+                // If none found, throw error
+                // This should never happen
+                default:
+                    throw 'Invalid Dom Structure';
+            }
+        }
+
+        // Return Generated Dom
+        return dom;
     };
 
     // Adds a child to an element
@@ -331,38 +428,6 @@
             name: '',
             attributes: {},
             children: []
-        },
-        pairs: {
-            '[': ']',
-            '(': ')',
-            '{': '}'
-        },
-        operators: {
-            nesting: {
-                '>': 'child',
-                '+': 'sibling',
-                '^': 'climb',
-                '*': 'multiply',
-                '(': 'open',
-                ')': 'close'
-            },
-            attribute: {
-                '#': 'id',
-                '.': 'class',
-                '[': 'start',
-                ']': 'stop',
-                '$': 'number',
-                '$@': 'sort-start',
-                '$#': 'iterate'
-            },
-            text: {
-                '{': 'write',
-                '}': 'done',
-                'c{': 'comment'
-            },
-            data: {
-                '!': 'parse'
-            }
         }
     };
 
