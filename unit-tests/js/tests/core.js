@@ -13,26 +13,53 @@ $Q.test('Z.classes', function (assert) {
     assert.equal($Z.classes('.menu-item.item-empty'), 'menu-item item-empty', 'Multiple Hyphenated Classes');
 });
 $Q.test('$Z.attributes', function (assert) {
-    assert.expect(7);
-    var attributes = {
-        '': {},
-        '[data-attribute]': { 'data-attribute': '' },
-        '[for=""]': { 'for': ''},
-        '[href="github.com/#"]': { href: 'github.com/#' },
-        '[title="Something about zQuery\'s Awesomeness"]': { title: 'Something about zQuery\'s Awesomeness' },
-        '[filter][title="Something about zQuery\'s \\"Awesomeness>+^()\\""]': {
-            filter: '',
-            title: 'Something about zQuery\'s \\"Awesomeness>+^()\\"'
-        },
-        '[filter title="Something about zQuery\'s \\"Awesomeness>+^()\\"" class="haha" id="hehe"]': {
-            filter: '',
-            title: 'Something about zQuery\'s \\"Awesomeness>+^()\\"',
-            'class': 'haha',
-            id: 'hehe'
-        }
-    }
-    for (var i in attributes)
-        assert.deepEqual($Z.attributes(i), attributes[i], 'Attributes in \'' + i + '\' are \'' + JSON.stringify(attributes[i]) + '\'');
+    assert.expect(8);
+    var string, result;
+
+    string = '';
+    result = {};
+    assert.deepEqual($Z.attributes(string), result, 'Empty String');
+
+    string= '[data-attribute]';
+    result = { 'data-attribute': '' };
+    assert.deepEqual($Z.attributes(string), result, 'Boolean Attribute');
+
+    string = '[for=""]';
+    result = { 'for': ''};
+    assert.deepEqual($Z.attributes(string), result, 'Empty-Valued Attribute');
+
+    string = '[title="Something about zQuery\'s Awesomeness"]';
+    result={ title: 'Something about zQuery\'s Awesomeness' };
+    assert.deepEqual($Z.attributes(string), result, 'Attribute with value');
+
+    string = '[href="github.com/#"]';
+    result = { href: 'github.com/#' };
+    assert.deepEqual($Z.attributes(string), result, 'Attribute with value containing . and #');
+
+    string = '[filter][title="Something about zQuery\'s \\"Awesomeness>+^()\\""]';
+    result = {
+        filter: '',
+        title: 'Something about zQuery\'s \\"Awesomeness>+^()\\"'
+    };
+    assert.deepEqual($Z.attributes(string), result, 'Attribute with value containing escaped " and operators');
+
+    string = '[filter title="Something about zQuery\'s \\"Awesomeness>+^()\\"" class="haha" id="hehe"]';
+    result = {
+        filter: '',
+        title: 'Something about zQuery\'s \\"Awesomeness>+^()\\"',
+        'class': 'haha',
+        id: 'hehe'
+    };
+    assert.deepEqual($Z.attributes(string), result, 'Multiple Attributes in ZenCoding Format');
+
+    string = '[filter][title="Something about zQuery\'s \\"Awesomeness>+^()\\""][class="haha"][id="hehe"]';
+    result = {
+        filter: '',
+        title: 'Something about zQuery\'s \\"Awesomeness>+^()\\"',
+        'class': 'haha',
+        id: 'hehe'
+    };
+    assert.deepEqual($Z.attributes(string), result, 'Multiple Attributes in Sizzle Format');
 });
 $Q.test('$Z.element', function (assert) {
     assert.expect(14);
