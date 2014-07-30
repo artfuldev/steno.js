@@ -360,6 +360,77 @@
         return arr;
     };
 
+    // Alternative Extend
+    function altExtend() {
+        var extension,
+            key,
+            src,
+            copy,
+            clone,
+            target = arguments[0]|| {},
+            i=1,
+            length = arguments.length,
+            deep = false;
+
+        // Handle deep copy
+        if (is('boolean', target)) {
+            deep = target;
+
+            // Move on to next argument
+            target = arguments[i++] || {};
+        }
+        
+        // If target is not a primitive, create empty object
+        if (typeof target !== 'object' && !is('function', target)) {
+            target = {};
+        }
+
+        // Extend zQuery when only one argument is passed
+        if (i === length) {
+            target = this;
+            i--;
+        }
+
+        // Iterate for all arguments
+        for (; i < length; i++) {
+            extension = arguments[i];
+
+            // Weed out null and undefined arguments
+            if (extension != null) {
+                
+                // Extend the target
+                for (key in extension) {
+                    src = target[key];
+                    copy = extension[key];
+
+                    // Recurse for objects and arrays
+                    if (deep && copy && (typeof copy === 'object' || is('array', copy))) {
+
+                        // If array, create array, else create empty object
+                        if (is('array', copy))
+                            clone = src && is('array', src) ? src : [];
+                        else
+                            clone = src && (typeof src === 'object') ? src : {};
+
+                        // Clone objects
+                        target[key] = altExtend(deep, clone, copy);
+
+                        // If primitive or shallow copy,
+                        // Set value unless undefined (preserve nulls)
+                    } else if (copy !== undefined) {
+                        target[key] = copy;
+                    }
+
+
+                }
+
+            }
+        }
+
+        // Return the extended object
+        return target;
+    };
+
     // Extend
     function extend() {
 
@@ -468,10 +539,10 @@
         add: zenAdd,
 
         // Config
-
         config: config,
 
         // Utilities
+        extend2: altExtend,
         extend: extend,
         has: has,
         is: is,
