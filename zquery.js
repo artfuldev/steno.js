@@ -148,7 +148,8 @@
             element,
             regEx = new RegExp(config.matches.element.complete),
             matches = [],
-            invalid = false;
+            invalid = false,
+            lastIndex;
 
         // Retreive Elements and Operators
         while (match = regEx.exec(string)) {
@@ -156,8 +157,18 @@
             // Convert all non matches to empty strings
             invalidToValue(match, '');
 
+            // Check for last index to break infinite loop
+            // Also delete the last empty match element
+            if (match.index === lastIndex) {
+                matches.splice(matches.length - 1, 1);
+                break;
+            }
+
             // Retreive matches
             matches.push(match);
+
+            // Store lastIndex
+            lastIndex = match.index;
         }
 
         // If even number of matches is found, the dom is invalid
@@ -168,8 +179,8 @@
             invalid = true;
         }
         if(!invalid) {
-            for (i = 0; i < matches.length; i++) {
-                if ((i % 2 === 0) && (matches[i][0].length !== 1) && (' +>^'.indexOf(matches[i][0]) === -1)) {
+            for (i = 0; i < matches.length; i+=2) {
+                if ((matches[i][0].length === 1) && (' +>^'.indexOf(matches[i][0]) > -1)) {
                     invalid = true;
                     break;
                 }
@@ -221,8 +232,12 @@
 
     // Adds a child to an element
     function zenAdd(element, child) {
+        if (is('undefined|null', child)) {
+            child = extend(true, {}, config.element);
+            arguments[1] = child;
+            arguments.length++;
+        }
         validateArgs(arguments, ['object', 'object']);
-        child = child || extend(true, {}, config.element);
         child.parent = element;
         element.children.push(child);
         return child;
@@ -240,7 +255,26 @@
         var types = type.toString().split('|'),
             match = false;
         for (var i in types) {
-            if (objectType(obj) === types[i]) {
+            if (types[i] === 'plain object') {
+
+                // Not plain objects:
+                // From jQuery
+                // - Any object or value whose internal [[Class]] property is not "[object Object]"
+                // - DOM nodes
+                // - window
+                if (!is('object', obj) || obj.nodeType || obj === obj.window) {
+                    return false;
+                }
+
+                if (obj.constructor &&
+                    !hasOwn.call(obj.constructor.prototype, "isPrototypeOf")) {
+                    return false;
+                }
+
+                // If the function hasn't returned already, we're confident that
+                // |obj| is a plain object, created by {} or constructed with new Object
+                return true;
+            } else if (objectType(obj) === types[i]) {
                 match = true;
                 break;
             }
@@ -335,74 +369,87 @@
         return array[Math.floor(Math.random() * array.length)];
     };
 
+    // Make Array (List)
+    function makeArray( obj ) {
+        var arr = [];
+        if ( !is('null|undefined',obj) ) {
+            for (var i in obj)
+                arr[i] = obj[i];
+        }
+        return arr;
+    };
+
     // Extend
     function extend() {
-        var options,
-            name,
+        var extension,
+            key,
             src,
             copy,
-            copyIsArray,
             clone,
-            target = arguments[0] || {},
-            i = 1,
+            target = arguments[0]|| {},
+            i=1,
             length = arguments.length,
             deep = false;
 
-        // Handle a deep copy situation
+        // Handle deep copy
         if (is('boolean', target)) {
             deep = target;
 
-            // skip the boolean and the target
-            target = arguments[i] || {};
-            i++;
+            // Move on to next argument
+            target = arguments[i++] || {};
         }
-
-        // Handle case when target is a string or something (possible in deep copy)
-        if (!is('object|function', target)) {
+        
+        // If target is not a primitive, create empty object
+        if (typeof target !== 'object' && !is('function', target)) {
             target = {};
         }
 
-        // extend zQuery itself if only one argument is passed
-        if (i === length) {
-            target = this;
-            i--;
-        }
+        // Maybe introduce at a later date?
+        // Extend zQuery when only one argument is passed
+        //if (i === length) {
+        //    target = this;
+        //    i--;
+        //}
 
+        // Iterate for all arguments
         for (; i < length; i++) {
-            // Only deal with non-null/undefined values
-            if ((options = arguments[i]) != null) {
-                // Extend the base object
-                for (name in options) {
-                    src = target[name];
-                    copy = options[name];
+            extension = arguments[i];
 
-                    // Prevent never-ending loop
-                    if (target === copy) {
+            // Weed out null and undefined arguments
+            if (extension != null) {
+                
+                // Extend the target
+                for (key in extension) {
+                    src = target[key];
+                    copy = extension[key];
+
+                    // Prevent recursive references from creating an infinite loop
+                    if (copy === target) {
                         continue;
                     }
 
-                    // Recurse if we're merging plain objects or arrays
-                    if (deep && copy && (is('object', copy) || (copyIsArray = is('array', copy)))) {
-                        if (copyIsArray) {
-                            copyIsArray = false;
+                    // Recurse for objects and arrays
+                    if (deep && copy && (is('plain object',copy) || is('array', copy))) {
+
+                        // If array, create array, else create empty object
+                        if (is('array', copy))
                             clone = src && is('array', src) ? src : [];
+                        else
+                            clone = src && (is('plain object', src)) ? src : {};
 
-                        } else {
-                            clone = src && is('object', src) ? src : {};
-                        }
+                        // Clone objects
+                        target[key] = extend(deep, clone, copy);
 
-                        // Never move original objects, clone them
-                        target[name] = extend(deep, clone, copy);
-
-                        // Don't bring in undefined values
+                        // If primitive or shallow copy,
+                        // Set value unless undefined (preserve nulls)
                     } else if (copy !== undefined) {
-                        target[name] = copy;
+                        target[key] = copy;
                     }
                 }
             }
         }
 
-        // Return the modified object
+        // Return the extended object
         return target;
     };
 
@@ -438,10 +485,10 @@
         classes: zenClasses,
         attributes: zenAttributes,
         element: zenElement,
+        dom: zenDom,
         add: zenAdd,
 
         // Config
-
         config: config,
 
         // Utilities
@@ -454,7 +501,8 @@
 
         // Array Helpers
         random: random,
-        nullify: invalidToValue
+        nullify: invalidToValue,
+        list: makeArray
     });
 
     // For browser, export only select globals
