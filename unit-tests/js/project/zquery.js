@@ -255,7 +255,26 @@
         var types = type.toString().split('|'),
             match = false;
         for (var i in types) {
-            if (objectType(obj) === types[i]) {
+            if (types[i] === 'plain object') {
+
+                // Not plain objects:
+                // From jQuery
+                // - Any object or value whose internal [[Class]] property is not "[object Object]"
+                // - DOM nodes
+                // - window
+                if (!is('object', obj) || obj.nodeType || obj === obj.window) {
+                    return false;
+                }
+
+                if (obj.constructor &&
+                    !hasOwn.call(obj.constructor.prototype, "isPrototypeOf")) {
+                    return false;
+                }
+
+                // If the function hasn't returned already, we're confident that
+                // |obj| is a plain object, created by {} or constructed with new Object
+                return true;
+            } else if (objectType(obj) === types[i]) {
                 match = true;
                 break;
             }
@@ -360,8 +379,8 @@
         return arr;
     };
 
-    // Alternative Extend
-    function altExtend() {
+    // Extend
+    function extend() {
         var extension,
             key,
             src,
@@ -385,11 +404,12 @@
             target = {};
         }
 
+        // Maybe introduce at a later date?
         // Extend zQuery when only one argument is passed
-        if (i === length) {
-            target = this;
-            i--;
-        }
+        //if (i === length) {
+        //    target = this;
+        //    i--;
+        //}
 
         // Iterate for all arguments
         for (; i < length; i++) {
@@ -403,103 +423,33 @@
                     src = target[key];
                     copy = extension[key];
 
+                    // Prevent recursive references from creating an infinite loop
+                    if (copy === target) {
+                        continue;
+                    }
+
                     // Recurse for objects and arrays
-                    if (deep && copy && (typeof copy === 'object' || is('array', copy))) {
+                    if (deep && copy && (is('plain object',copy) || is('array', copy))) {
 
                         // If array, create array, else create empty object
                         if (is('array', copy))
                             clone = src && is('array', src) ? src : [];
                         else
-                            clone = src && (typeof src === 'object') ? src : {};
+                            clone = src && (is('plain object', src)) ? src : {};
 
                         // Clone objects
-                        target[key] = altExtend(deep, clone, copy);
+                        target[key] = extend(deep, clone, copy);
 
                         // If primitive or shallow copy,
                         // Set value unless undefined (preserve nulls)
                     } else if (copy !== undefined) {
                         target[key] = copy;
                     }
-
-
                 }
-
             }
         }
 
         // Return the extended object
-        return target;
-    };
-
-    // Extend
-    function extend() {
-
-        var options,
-            name,
-            src,
-            copy,
-            copyIsArray,
-            clone,
-            target = arguments[0] || {},
-            i = 1,
-            length = arguments.length,
-            deep = false;
-
-        // Handle a deep copy situation
-        if (is('boolean', target)) {
-            deep = target;
-
-            // skip the boolean and the target
-            target = arguments[i] || {};
-            i++;
-        }
-
-        // Handle case when target is a string or something (possible in deep copy)
-        if (!is('object|function', target)) {
-            target = {};
-        }
-
-        // extend zQuery itself if only one argument is passed
-        if (i === length) {
-            target = this;
-            i--;
-        }
-
-        for (; i < length; i++) {
-            // Only deal with non-null/undefined values
-            if ((options = arguments[i]) != null) {
-                // Extend the base object
-                for (name in options) {
-                    src = target[name];
-                    copy = options[name];
-
-                    // Prevent never-ending loop
-                    if (target === copy) {
-                        continue;
-                    }
-
-                    // Recurse if we're merging plain objects or arrays
-                    if (deep && copy && (is('object', copy) || (copyIsArray = is('array', copy)))) {
-                        if (copyIsArray) {
-                            copyIsArray = false;
-                            clone = src && is('array', src) ? src : [];
-
-                        } else {
-                            clone = src && is('object', src) ? src : {};
-                        }
-
-                        // Never move original objects, clone them
-                        target[name] = extend(deep, clone, copy);
-
-                        // Don't bring in undefined values
-                    } else if (copy !== undefined) {
-                        target[name] = copy;
-                    }
-                }
-            }
-        }
-
-        // Return the modified object
         return target;
     };
 
@@ -542,7 +492,6 @@
         config: config,
 
         // Utilities
-        extend2: altExtend,
         extend: extend,
         has: has,
         is: is,
