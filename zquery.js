@@ -230,6 +230,19 @@
         return dom;
     };
 
+    // Cleans Up a $Z dom object
+    function cleanUp(dom) {
+        validateArgs(arguments, ['plain object']);
+
+        var parent = dom.parent;
+        if(parent!=null)
+            if (parent.children.length === 1 && parent.name === '')
+                parent = dom;
+
+        return parent;
+
+    };
+
     // Adds a child to an element
     function zenAdd(element, child) {
         if (is('undefined|null', child)) {
