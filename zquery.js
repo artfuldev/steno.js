@@ -19,7 +19,7 @@
     */
 
 
-(function(window) {
+(function (window) {
 
     //'use strict';
 
@@ -88,7 +88,7 @@
         }
 
         //Validate Arguments
-        validateArgs(arguments, ['string','boolean']);
+        validateArgs(arguments, ['string', 'boolean']);
 
         // Match RegEx to retrieve element
         var regEx = new RegExp(config.matches.element.complete),
@@ -124,11 +124,11 @@
         }
 
         // Build and return the element, now that the name and attributes are done
-        if(!pure)
-        return extend(true, {}, config.element, {
-            name: match[2],
-            attributes: zAttributes
-        });
+        if (!pure)
+            return extend(true, {}, config.element, {
+                name: match[2],
+                attributes: zAttributes
+            });
         return {
             name: match[2],
             attributes: zAttributes
@@ -178,8 +178,8 @@
         if (matches.length % 2 === 0) {
             invalid = true;
         }
-        if(!invalid) {
-            for (i = 0; i < matches.length; i+=2) {
+        if (!invalid) {
+            for (i = 0; i < matches.length; i += 2) {
                 if ((matches[i][0].length === 1) && (' +>^'.indexOf(matches[i][0]) > -1)) {
                     invalid = true;
                     break;
@@ -194,63 +194,68 @@
         element = zenAdd(dom);
         element = extend(true, element, zenElement(matches[0][1], true));
 
-        // Loop through to create dom
-        // Don't use for...in loop
-        // We need to manipulate the i iterator
-        for (i = 1; i < matches.length-1; i++) {
+        // Loop through matches
+        // Don't use for..in loop
+        // because we need to be able to manipulate the i
+        for(i=1;i<=matches.length-1;i++) {
             switch (matches[i][0]) {
 
                 // Child
-                case ' ':
-                case '>':
-                    element = zenAdd(element, zenDom(matches[++i][1]));
-                    break;
+            case ' ':
+            case '>':
+                element = zenAdd(element, zenElement(matches[++i][0]));
+                break;
 
-                // Sibling
-                case '+':
-                    if (is('null|undefined', element.parent))
-                        element.parent = extend(true, {}, config.element);
-                    element = zenAdd(element.parent, zenDom(matches[++i][1]));
-                    break;
+            // Sibling
+            case '+':
+                if (is('null|undefined', element.parent))
+                    element.parent = extend(true, {}, config.element);
+                element = zenAdd(element.parent, zenElement(matches[++i][0]));
+                break;
 
-                // Up One level
-                case '^':
-                    var parent = element.parent || element;
-                    element = zenAdd(parent.parent || parent, zenDom(matches[++i][1]));
-                    break;
+            // Up One level
+            case '^':
+                var parent = element.parent || element;
+                element = zenAdd(parent.parent || parent, zenElement(matches[++i][0]));
+                break;
 
-                // If none found, throw error
-                // This should never happen
-                default:
-                    throw 'Invalid Dom Structure';
+            // This should never happen since we already did a lot of checks
+            default:
+                throw 'Something wrong happened';
             }
         }
 
-        // Return Generated Dom
-        return dom;
+        // Return element if dom is just an empty holder,
+        // otherwise return dom
+        if (dom.name === '' && dom.children.length === 1) {
+            dom = dom.children[0];
+            dom.parent = null;
+        }
+
+        return zenRedo(dom);
     };
 
-    // Cleans Up a $Z dom object
-    function cleanUp(dom) {
-        validateArgs(arguments, ['plain object']);
+    // Restructures a dom so that the parent is returned
+    function zenRedo(dom) {
+        validateArgs(arguments, ['$Z.dom']);
 
-        var parent = dom.parent;
-        if(parent!=null)
-            if (parent.children.length === 1 && parent.name === '')
-                parent = dom;
-
-        return parent;
-
+        var temp = dom,
+            parent = temp.parent;
+        while (parent != null) {
+            temp = parent;
+            parent = temp.parent;
+        }
+        return temp;
     };
 
-    // Adds a child to an element
+    // Adds a child to a $Z.dom element
     function zenAdd(element, child) {
         if (is('undefined|null', child)) {
             child = extend(true, {}, config.element);
             arguments[1] = child;
             arguments.length++;
         }
-        validateArgs(arguments, ['object', 'object']);
+        validateArgs(arguments, ['$Z.dom', '$Z.dom']);
         child.parent = element;
         element.children.push(child);
         return child;
@@ -258,8 +263,6 @@
 
     // Check if Object Has Key
     function has(key, obj) {
-        if (!validateArgs(arguments, ['string|number', 'object|array'], false))
-            return false;
         return hasOwn.call(obj, key);
     };
 
@@ -270,23 +273,34 @@
         for (var i in types) {
             if (types[i] === 'plain object') {
 
-                // Not plain objects:
-                // From jQuery
+                // Not plain objects
                 // - Any object or value whose internal [[Class]] property is not "[object Object]"
                 // - DOM nodes
                 // - window
-                if (!is('object', obj) || obj.nodeType || obj === obj.window) {
-                    return false;
+                if (objectType(obj)!=='object' || obj.nodeType || obj===obj.window) {
+                    continue;
                 }
-
                 if (obj.constructor &&
-                    !hasOwn.call(obj.constructor.prototype, "isPrototypeOf")) {
-                    return false;
+                        !has('isPrototypeOf',obj.constructor.prototype)) {
+                    continue;
                 }
 
                 // If the function hasn't returned already, we're confident that
                 // |obj| is a plain object, created by {} or constructed with new Object
-                return true;
+                match = true;
+                break;
+            } else if (types[i] === '$Z.dom') {
+
+                // $Z dom object
+                if (is('plain object', obj)
+                        && has('children', obj) && is('array', obj.children)
+                        && has('parent', obj) && is('null|object', obj.parent)
+                        && has('name', obj) && is('string', obj.name)
+                        && has('attributes', obj) && is('object', obj.attributes)) {
+                    match = true;
+                    break;
+                }
+                    
             } else if (objectType(obj) === types[i]) {
                 match = true;
                 break;
@@ -310,18 +324,18 @@
             type = match && match[1] || "";
 
         switch (type) {
-        case "Number":
-            if (isNaN(obj)) {
-                return "nan";
-            }
-            return "number";
-        case "String":
-        case "Boolean":
-        case "Array":
-        case "Date":
-        case "RegExp":
-        case "Function":
-            return type.toLowerCase();
+            case "Number":
+                if (isNaN(obj)) {
+                    return "nan";
+                }
+                return "number";
+            case "String":
+            case "Boolean":
+            case "Array":
+            case "Date":
+            case "RegExp":
+            case "Function":
+                return type.toLowerCase();
         }
         if (typeof obj === "object") {
             return "object";
@@ -383,9 +397,9 @@
     };
 
     // Make Array (List)
-    function makeArray( obj ) {
+    function makeArray(obj) {
         var arr = [];
-        if ( !is('null|undefined',obj) ) {
+        if (!is('null|undefined', obj)) {
             for (var i in obj)
                 arr[i] = obj[i];
         }
@@ -399,8 +413,8 @@
             src,
             copy,
             clone,
-            target = arguments[0]|| {},
-            i=1,
+            target = arguments[0] || {},
+            i = 1,
             length = arguments.length,
             deep = false;
 
@@ -411,7 +425,7 @@
             // Move on to next argument
             target = arguments[i++] || {};
         }
-        
+
         // If target is not a primitive, create empty object
         if (typeof target !== 'object' && !is('function', target)) {
             target = {};
@@ -430,7 +444,7 @@
 
             // Weed out null and undefined arguments
             if (extension != null) {
-                
+
                 // Extend the target
                 for (key in extension) {
                     src = target[key];
@@ -442,7 +456,7 @@
                     }
 
                     // Recurse for objects and arrays
-                    if (deep && copy && (is('plain object',copy) || is('array', copy))) {
+                    if (deep && copy && (is('plain object', copy) || is('array', copy))) {
 
                         // If array, create array, else create empty object
                         if (is('array', copy))
@@ -473,8 +487,8 @@
         matches: {
             element: {
                 // Capture Groups:
-                    // Operator
-                    // Element, Name, Id, Classes with dots, Attributes
+                // Operator
+                // Element, Name, Id, Classes with dots, Attributes
                 complete: /( |\+|\^|>|([a-z]+)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*))/g,
                 // Capture Group: ClassName
                 classes: /\.([a-z-]+)/g,
@@ -520,7 +534,7 @@
 
     // For browser, export only select globals
     if (typeof window !== "undefined" && window != null) {
-        (function() {
+        (function () {
             var
                 // Map over zQuery in case of overwrite
                 _zQuery = window.zenQuery,
@@ -528,7 +542,7 @@
                 // Map over the $Z in case of overwrite
                 _$Z = window.$Z;
 
-            zQuery.noConflict = function(deep) {
+            zQuery.noConflict = function (deep) {
                 if (window.$Z === zQuery) {
                     window.$Z = _$Z;
                 }
@@ -544,6 +558,6 @@
     }
 
     // Get a reference to the global object, like window in browsers
-}((function() {
+}((function () {
     return this;
 })()));

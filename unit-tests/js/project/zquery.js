@@ -191,7 +191,7 @@
 
         // If you came this far, create first element and add to dom
         dom = extend(true, {}, config.element);
-        element = zenAdd(dom).children[0];
+        element = zenAdd(dom);
         element = extend(true, element, zenElement(matches[0][1], true));
 
         // Loop through matches
@@ -211,7 +211,6 @@
                 if (is('null|undefined', element.parent))
                     element.parent = extend(true, {}, config.element);
                 element = zenAdd(element.parent, zenElement(matches[++i][0]));
-                element = element.parent;
                 break;
 
             // Up One level
@@ -227,13 +226,26 @@
         }
 
         // Return element if dom is just an empty holder,
-        // otherwise return dom's children
+        // otherwise return dom
         if (dom.name === '' && dom.children.length === 1) {
-            dom = element;
-            element.parent = null;
+            dom = dom.children[0];
+            dom.parent = null;
         }
 
-        return dom;
+        return zenRedo(dom);
+    };
+
+    // Restructures a dom so that the parent is returned
+    function zenRedo(dom) {
+        validateArgs(arguments, ['$Z.dom']);
+
+        var temp = dom,
+            parent = temp.parent;
+        while (parent != null) {
+            temp = parent;
+            parent = temp.parent;
+        }
+        return temp;
     };
 
     // Adds a child to a $Z.dom element
@@ -246,7 +258,7 @@
         validateArgs(arguments, ['$Z.dom', '$Z.dom']);
         child.parent = element;
         element.children.push(child);
-        return element;
+        return child;
     };
 
     // Check if Object Has Key
