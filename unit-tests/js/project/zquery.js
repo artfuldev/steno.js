@@ -396,16 +396,6 @@
         return array[Math.floor(Math.random() * array.length)];
     };
 
-    // Make Array (List)
-    function makeArray(obj) {
-        var arr = [];
-        if (!is('null|undefined', obj)) {
-            for (var i in obj)
-                arr[i] = obj[i];
-        }
-        return arr;
-    };
-
     // Extend
     function extend() {
         var extension,
@@ -529,7 +519,6 @@
         // Array Helpers
         random: random,
         nullify: invalidToValue,
-        list: makeArray
     });
 
     // For browser, export only select globals
