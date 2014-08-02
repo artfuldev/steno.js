@@ -493,26 +493,7 @@
     extend(zQuery, {
 
         // Core
-        classes: zenClasses,
-        attributes: zenAttributes,
-        element: zenElement,
         dom: zenDom,
-        add: zenAdd,
-
-        // Config
-        config: config,
-
-        // Utilities
-        extend: extend,
-        has: has,
-        is: is,
-        objectType: objectType,
-        trim: trim,
-        validate: validateArgs,
-
-        // Array Helpers
-        random: random,
-        nullify: invalidToValue
     });
 
     // For browser, export only select globals
