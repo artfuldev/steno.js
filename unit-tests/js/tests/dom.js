@@ -40,7 +40,7 @@ $Q.test('Single Element - ul#id.class', function(assert) {
     });
     assert.deepEqual(result, expected, 'dom built successfully for ' + string);
 });
-$Q.test('Two Elements - Operator -  (space) - Child', function(assert) {
+$Q.test(' (space) - Descend', function(assert) {
     
     // Expectations
     assert.expect(8);
@@ -67,7 +67,7 @@ $Q.test('Two Elements - Operator -  (space) - Child', function(assert) {
     assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of div');
     assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of div');
 });
-$Q.test('Two Elements - Operator - > - Child', function(assert) {
+$Q.test('> - Descend', function(assert) {
     
     // Expectations
     assert.expect(8);
@@ -94,7 +94,7 @@ $Q.test('Two Elements - Operator - > - Child', function(assert) {
     assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of div');
     assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of div');
 });
-$Q.test('Two Elements - Operator - + - Sibling', function(assert) {
+$Q.test('+ - Add', function(assert) {
 
     // Expectation
     assert.expect(12);
@@ -128,7 +128,7 @@ $Q.test('Two Elements - Operator - + - Sibling', function(assert) {
     assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of div');
 });
-$Q.test('Two Elements - Operator - ^ - Climb Up - Works like Sibling case parent is not available', function (assert) {
+$Q.test('^ - Ascend - Works like Sibling case parent is not available', function (assert) {
 
     // Expectation
     assert.expect(12);
@@ -162,8 +162,14 @@ $Q.test('Two Elements - Operator - ^ - Climb Up - Works like Sibling case parent
     assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of div');
 });
-$Q.test('Three Elements - Operator - ^ - Climb Up', function (assert) {
-
+$Q.test('>> - Double Descend', function(assert) {
+    assert.expect(0);
+});
+$Q.test('>+ - Descend and Add', function (assert) {
+    assert.expect(0);
+});
+$Q.test('>^ - Descend and Ascend', function (assert) {
+    
     // Expectation
     assert.expect(12);
 
@@ -180,7 +186,7 @@ $Q.test('Three Elements - Operator - ^ - Climb Up', function (assert) {
     });
     $Z.extend(ul, {
         parent: expected,
-        children:[li]
+        children: [li]
     });
     $Z.extend(expected, ul);
 
@@ -201,6 +207,24 @@ $Q.test('Three Elements - Operator - ^ - Climb Up', function (assert) {
     assert.strictEqual(result.children[1].children.length, expected.children[1].children.length, 'No of children of div');
     assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of div');
+});
+$Q.test('++ - Double Add', function (assert) {
+    assert.expect(0);
+});
+$Q.test('+> - Add and Descend' , function (assert) {
+    assert.expect(0);
+});
+$Q.test('+^ - Add and Ascend - Works like Double Add', function (assert) {
+    assert.expect(0);
+});
+$Q.test('^^ - Double Ascend - Works like Double Add', function (assert) {
+    assert.expect(0);
+});
+$Q.test('^+ - Ascend and Add - Works like Double Add', function (assert) {
+    assert.expect(0);
+});
+$Q.test('^> - Ascend and Descend - Works like Add and Descend', function (assert) {
+    assert.expect(0);
 });
 
 
