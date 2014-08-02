@@ -241,17 +241,55 @@
         return temp;
     };
 
-    // Adds a child to a $Z.dom element
+    // Adds a child to a $Z dom element
     function zenAdd(element, child) {
+
+        // Add empty child if not provided
         if (is('undefined|null', child)) {
             child = extend(true, {}, config.element);
             arguments[1] = child;
             arguments.length++;
         }
+
+        // Validate
         validateArgs(arguments, ['$Z.dom', '$Z.dom']);
+
+        // Add child-parent links
         child.parent = element;
         element.children.push(child);
+
         return child;
+    };
+
+    // Returns the html of a $Z dom element
+    function zenHtml(dom) {
+
+        // Validate
+        validateArgs(arguments, ['$Z.dom']);
+
+        // Variables
+        var i,
+            prefix = '',
+            inner = '',
+            suffix = '';
+
+        // Form html
+        // If name is available, add dom html
+        if (dom.name) {
+            prefix += '<' + dom.name;
+            for (i in dom.attributes) {
+                prefix += ' ' + i + '="' + dom.attributes[i] + '"';
+            }
+            prefix += '>';
+            suffix = '</' + dom.name + '>' + suffix;
+        }
+        // Add contents
+        for (i in dom.children) {
+            inner += zenHtml(dom.children[i]);
+        }
+
+        // Return string
+        return prefix + inner + suffix;
     };
 
     // Check if Object Has Key
