@@ -1,5 +1,4 @@
-﻿/// <reference path="../lib/qunit-git.js" />
-/*
+﻿/*
     * This file is part of "zQuery", (c) Kenshin The Battōsai (Sudarsan Balaji), 2014.
     * 
     * "zQuery" is free software: you can redistribute it and/or modify
@@ -147,8 +146,7 @@
             element,
             regEx = new RegExp(config.matches.element.complete),
             matches = [],
-            invalid = false,
-            lastIndex;
+            invalid = false;
 
         // Retreive Elements and Operators
         while (match = regEx.exec(string)) {
@@ -231,7 +229,7 @@
 
     // Restructures a dom so that the parent is returned
     function zenRedo(dom) {
-        validateArgs(arguments, ['$Z.dom']);
+        validateArgs(arguments, ['zen dom']);
 
         var temp = dom,
             parent = temp.parent;
@@ -242,17 +240,58 @@
         return temp;
     };
 
-    // Adds a child to a $Z.dom element
+    // Adds a child to a $Z dom element
     function zenAdd(element, child) {
+
+        // Add empty child if not provided
         if (is('undefined|null', child)) {
             child = extend(true, {}, config.element);
             arguments[1] = child;
             arguments.length++;
         }
-        validateArgs(arguments, ['$Z.dom', '$Z.dom']);
+
+        // Validate
+        validateArgs(arguments, ['zen dom', 'zen dom']);
+
+        // Add child-parent links
         child.parent = element;
         element.children.push(child);
+
         return child;
+    };
+
+    // Returns the html of a $Z dom element
+    function zenHtml(dom) {
+
+        // Validate
+        validateArgs(arguments, ['string|zen dom']);
+
+        if (is('string', dom))
+            return zenHtml(zenDom(dom));
+
+        // Variables
+        var i,
+            prefix = '',
+            inner = '',
+            suffix = '';
+
+        // Form html
+        // If name is available, add dom html
+        if (dom.name) {
+            prefix += '<' + dom.name;
+            for (i in dom.attributes) {
+                prefix += ' ' + i + '="' + dom.attributes[i] + '"';
+            }
+            prefix += '>';
+            suffix = '</' + dom.name + '>' + suffix;
+        }
+        // Add contents
+        for (i in dom.children) {
+            inner += zenHtml(dom.children[i]);
+        }
+
+        // Return string
+        return prefix + inner + suffix;
     };
 
     // Check if Object Has Key
@@ -283,7 +322,7 @@
                 // |obj| is a plain object, created by {} or constructed with new Object
                 match = true;
                 break;
-            } else if (types[i] === '$Z.dom') {
+            } else if (types[i] === 'zen dom') {
 
                 // $Z dom object
                 if (is('plain object', obj)
@@ -493,7 +532,18 @@
     extend(zQuery, {
 
         // Core
-        dom: zenDom,
+        html: zenHtml,
+
+        // Utilities
+        extend: extend,
+        has: has,
+        is: is,
+        trim: trim,
+        validate: validateArgs,
+
+        // Array Helpers
+        random: random,
+        nullify: invalidToValue
     });
 
     // For browser, export only select globals

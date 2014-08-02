@@ -2,8 +2,9 @@
 
 * Author: Kenshin The Battōsai *(Sudarsan Balaji)*
 * License: *GNU GPL v3* (see COPYING.txt)
-* Last Updated: 26/07/2014
-* ReadMe Version: 0.4
+* Library Version: 0.1.0
+* Last Updated: 02/08/2014
+* ReadMe Version: 0.5
 
 ##Description
 
@@ -35,7 +36,7 @@ so that you can then do:
 or, like how I'd like it to be done:
 
 ```
-$Z = $Z.dom; //OR $Z.render
+$Z = zQuery.html;
 $('#insert-here').append($Z(zenCodingString));
 ```
 
@@ -59,8 +60,8 @@ Should be able to:
 ###Short Term
 
 * To add whatever possible for now.
-* Expand to sibling and child selectors
 * Add grouping selectors
+* Add multipliers
 * Add templating options
 
 ##Thanks
