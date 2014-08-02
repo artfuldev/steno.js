@@ -267,7 +267,7 @@
         validateArgs(arguments, ['string|zen dom']);
 
         if (is('string', dom))
-            return zenHtml(zenDom(string));
+            return zenHtml(zenDom(dom));
 
         // Variables
         var i,
