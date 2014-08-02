@@ -146,8 +146,7 @@
             element,
             regEx = new RegExp(config.matches.element.complete),
             matches = [],
-            invalid = false,
-            lastIndex;
+            invalid = false;
 
         // Retreive Elements and Operators
         while (match = regEx.exec(string)) {
@@ -230,7 +229,7 @@
 
     // Restructures a dom so that the parent is returned
     function zenRedo(dom) {
-        validateArgs(arguments, ['$Z.dom']);
+        validateArgs(arguments, ['zen dom']);
 
         var temp = dom,
             parent = temp.parent;
@@ -252,7 +251,7 @@
         }
 
         // Validate
-        validateArgs(arguments, ['$Z.dom', '$Z.dom']);
+        validateArgs(arguments, ['zen dom', 'zen dom']);
 
         // Add child-parent links
         child.parent = element;
@@ -265,7 +264,7 @@
     function zenHtml(dom) {
 
         // Validate
-        validateArgs(arguments, ['$Z.dom']);
+        validateArgs(arguments, ['zen dom']);
 
         // Variables
         var i,
@@ -290,6 +289,13 @@
 
         // Return string
         return prefix + inner + suffix;
+    };
+
+    // Returns the html of a zen coding string
+    function zenHtmlFromString(string) {
+        
+        // Validate
+        validateArgs(arguments, ['string']);
     };
 
     // Check if Object Has Key
@@ -320,7 +326,7 @@
                 // |obj| is a plain object, created by {} or constructed with new Object
                 match = true;
                 break;
-            } else if (types[i] === '$Z.dom') {
+            } else if (types[i] === 'zen dom') {
 
                 // $Z dom object
                 if (is('plain object', obj)
