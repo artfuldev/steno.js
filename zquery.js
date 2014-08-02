@@ -501,7 +501,7 @@
         (function () {
             var
                 // Map over zQuery in case of overwrite
-                _zQuery = window.zenQuery,
+                _zQuery = window.zQuery,
 
                 // Map over the $Z in case of overwrite
                 _$Z = window.$Z;
