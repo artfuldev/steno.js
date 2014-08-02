@@ -121,3 +121,22 @@ $Q.test('$Z.element', function (assert) {
         assert.deepEqual($Z.element(i), elements[i], 'Elements in \'' + i + '\' retreived successfully as ' + JSON.stringify(elements[i]));
 
 });
+$Q.test('$Z.redo', function(assert) {
+    
+    // Expecatations
+    assert.expect(2);
+
+    // Variables
+    var element = $Z.config.element,
+    expected = $Z.extend(true, {}, element),
+    ul = $Z.extend(true, {}, element, { name: 'ul' }),
+    li = $Z.extend(true, {}, element, { name: 'li' }),
+    li2 = $Z.extend(true, {}, element, { name: 'li2' });
+    $Z.extend(li, { parent: ul });
+    $Z.extend(li2, { parent: ul });
+    $Z.extend(ul, { children: [li, li2] });
+    $Z.extend(expected, ul);
+
+    assert.deepEqual($Z.redo(li), expected, 'Climbed from li to ul');
+    assert.deepEqual($Z.redo(li2), expected, 'Climbed from li2 to ul');
+});

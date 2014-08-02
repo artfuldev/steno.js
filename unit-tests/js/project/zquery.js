@@ -496,6 +496,7 @@
         attributes: zenAttributes,
         element: zenElement,
         dom: zenDom,
+        redo: zenRedo,
         add: zenAdd,
 
         // Config
