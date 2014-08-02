@@ -19,7 +19,7 @@
     */
 
 
-(function(window) {
+(function (window) {
 
     //'use strict';
 
@@ -88,7 +88,7 @@
         }
 
         //Validate Arguments
-        validateArgs(arguments, ['string','boolean']);
+        validateArgs(arguments, ['string', 'boolean']);
 
         // Match RegEx to retrieve element
         var regEx = new RegExp(config.matches.element.complete),
@@ -124,11 +124,11 @@
         }
 
         // Build and return the element, now that the name and attributes are done
-        if(!pure)
-        return extend(true, {}, config.element, {
-            name: match[2],
-            attributes: zAttributes
-        });
+        if (!pure)
+            return extend(true, {}, config.element, {
+                name: match[2],
+                attributes: zAttributes
+            });
         return {
             name: match[2],
             attributes: zAttributes
@@ -148,6 +148,7 @@
             element,
             regEx = new RegExp(config.matches.element.complete),
             matches = [],
+
             invalid = false,
             lastIndex;
 
@@ -178,8 +179,8 @@
         if (matches.length % 2 === 0) {
             invalid = true;
         }
-        if(!invalid) {
-            for (i = 0; i < matches.length; i+=2) {
+        if (!invalid) {
+            for (i = 0; i < matches.length; i += 2) {
                 if ((matches[i][0].length === 1) && (' +>^'.indexOf(matches[i][0]) > -1)) {
                     invalid = true;
                     break;
@@ -197,7 +198,7 @@
         // Loop through to create dom
         // Don't use for...in loop
         // We need to manipulate the i iterator
-        for (i = 1; i < matches.length-1; i++) {
+        for (i = 1; i < matches.length - 1; i++) {
             switch (matches[i][0]) {
 
                 // Child
@@ -206,28 +207,42 @@
                     element = zenAdd(element, zenDom(matches[++i][1]));
                     break;
 
-                // Sibling
+                    // Sibling
                 case '+':
                     if (is('null|undefined', element.parent))
                         element.parent = extend(true, {}, config.element);
                     element = zenAdd(element.parent, zenDom(matches[++i][1]));
+                    element = element.parent;
                     break;
 
-                // Up One level
+                    // Up One level
                 case '^':
                     var parent = element.parent || element;
                     element = zenAdd(parent.parent || parent, zenDom(matches[++i][1]));
                     break;
 
-                // If none found, throw error
-                // This should never happen
+                    // This should never happen since we already did checks
                 default:
-                    throw 'Invalid Dom Structure';
+                    throw 'Something wrong happened';
             }
         }
 
-        // Return Generated Dom
-        return dom;
+        // Return element if dom is just an empty holder,
+        // otherwise return dom
+        return ((dom.name === '') && (dom.children.length === 1)) ? extend(true, element, { parent: null }) : dom;
+    };
+
+    // Cleans Up a $Z dom object
+    function cleanUp(dom) {
+        validateArgs(arguments, ['plain object']);
+
+        var parent = dom.parent;
+        if (parent != null)
+            if (parent.children.length === 1 && parent.name === '')
+                parent = dom;
+
+        return parent;
+
     };
 
     // Adds a child to an element
@@ -297,18 +312,18 @@
             type = match && match[1] || "";
 
         switch (type) {
-        case "Number":
-            if (isNaN(obj)) {
-                return "nan";
-            }
-            return "number";
-        case "String":
-        case "Boolean":
-        case "Array":
-        case "Date":
-        case "RegExp":
-        case "Function":
-            return type.toLowerCase();
+            case "Number":
+                if (isNaN(obj)) {
+                    return "nan";
+                }
+                return "number";
+            case "String":
+            case "Boolean":
+            case "Array":
+            case "Date":
+            case "RegExp":
+            case "Function":
+                return type.toLowerCase();
         }
         if (typeof obj === "object") {
             return "object";
@@ -370,9 +385,9 @@
     };
 
     // Make Array (List)
-    function makeArray( obj ) {
+    function makeArray(obj) {
         var arr = [];
-        if ( !is('null|undefined',obj) ) {
+        if (!is('null|undefined', obj)) {
             for (var i in obj)
                 arr[i] = obj[i];
         }
@@ -386,8 +401,8 @@
             src,
             copy,
             clone,
-            target = arguments[0]|| {},
-            i=1,
+            target = arguments[0] || {},
+            i = 1,
             length = arguments.length,
             deep = false;
 
@@ -398,7 +413,7 @@
             // Move on to next argument
             target = arguments[i++] || {};
         }
-        
+
         // If target is not a primitive, create empty object
         if (typeof target !== 'object' && !is('function', target)) {
             target = {};
@@ -417,7 +432,7 @@
 
             // Weed out null and undefined arguments
             if (extension != null) {
-                
+
                 // Extend the target
                 for (key in extension) {
                     src = target[key];
@@ -429,7 +444,7 @@
                     }
 
                     // Recurse for objects and arrays
-                    if (deep && copy && (is('plain object',copy) || is('array', copy))) {
+                    if (deep && copy && (is('plain object', copy) || is('array', copy))) {
 
                         // If array, create array, else create empty object
                         if (is('array', copy))
@@ -460,8 +475,8 @@
         matches: {
             element: {
                 // Capture Groups:
-                    // Operator
-                    // Element, Name, Id, Classes with dots, Attributes
+                // Operator
+                // Element, Name, Id, Classes with dots, Attributes
                 complete: /( |\+|\^|>|([a-z]+)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*))/g,
                 // Capture Group: ClassName
                 classes: /\.([a-z-]+)/g,
@@ -507,7 +522,7 @@
 
     // For browser, export only select globals
     if (typeof window !== "undefined" && window != null) {
-        (function() {
+        (function () {
             var
                 // Map over zQuery in case of overwrite
                 _zQuery = window.zenQuery,
@@ -515,7 +530,7 @@
                 // Map over the $Z in case of overwrite
                 _$Z = window.$Z;
 
-            zQuery.noConflict = function(deep) {
+            zQuery.noConflict = function (deep) {
                 if (window.$Z === zQuery) {
                     window.$Z = _$Z;
                 }
@@ -531,6 +546,6 @@
     }
 
     // Get a reference to the global object, like window in browsers
-}((function() {
+}((function () {
     return this;
 })()));
