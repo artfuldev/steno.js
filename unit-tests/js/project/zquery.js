@@ -296,6 +296,8 @@
         
         // Validate
         validateArgs(arguments, ['string']);
+
+        return zenHtml(zenDom(string));
     };
 
     // Check if Object Has Key
@@ -540,6 +542,8 @@
         attributes: zenAttributes,
         element: zenElement,
         dom: zenDom,
+        string: zenHtml,
+        html: zenHtmlFromString,
         redo: zenRedo,
         add: zenAdd,
 
