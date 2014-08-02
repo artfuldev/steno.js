@@ -128,7 +128,7 @@ $Q.test('+ - Add', function(assert) {
     assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of div');
 });
-$Q.test('^ - Ascend - Works like Sibling case parent is not available', function (assert) {
+$Q.test('^ - Ascend - Works like Add', function (assert) {
 
     // Expectation
     assert.expect(12);
