@@ -264,7 +264,10 @@
     function zenHtml(dom) {
 
         // Validate
-        validateArgs(arguments, ['zen dom']);
+        validateArgs(arguments, ['string|zen dom']);
+
+        if (is('string', dom))
+            return zenHtml(zenDom(string));
 
         // Variables
         var i,
@@ -289,15 +292,6 @@
 
         // Return string
         return prefix + inner + suffix;
-    };
-
-    // Returns the html of a zen coding string
-    function zenHtmlFromString(string) {
-        
-        // Validate
-        validateArgs(arguments, ['string']);
-
-        return zenHtml(zenDom(string));
     };
 
     // Check if Object Has Key
@@ -542,8 +536,7 @@
         attributes: zenAttributes,
         element: zenElement,
         dom: zenDom,
-        string: zenHtml,
-        html: zenHtmlFromString,
+        html: zenHtml,
         redo: zenRedo,
         add: zenAdd,
 
