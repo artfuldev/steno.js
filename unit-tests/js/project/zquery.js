@@ -136,17 +136,10 @@
     };
 
     // Returns a custom dom object from a zen coding string of a html dom
-    function zenDom(string, restructure) {
-
-        // If final, use restructure
-        if (!is('boolean', restructure)) {
-            restructure = true;
-            arguments[1] = restructure;
-            arguments.length++;
-        }
+    function zenDom(string) {
 
         //Validate Arguments
-        validateArgs(arguments, ['string','boolean']);
+        validateArgs(arguments, ['string']);
 
         // Initialize
         var i,
@@ -155,8 +148,6 @@
             element,
             regEx = new RegExp(config.matches.element.complete),
             matches = [],
-            nextString,
-            matchStrings = [],
             invalid = false,
             lastIndex;
 
@@ -179,14 +170,6 @@
             // Store lastIndex
             lastIndex = match.index;
         }
-
-        // Add matching strings
-        for (i in matches) {
-            matchStrings.push(matches[i][0]);
-        }
-
-        // Add nextString
-        nextString = matchStrings.splice(2, matchStrings.length).join('');
 
         // If even number of matches is found, the dom is invalid
         // Because, dom can only be of the form [element][operator][element]...[operator][element]
@@ -211,28 +194,30 @@
         element = zenAdd(dom).children[0];
         element = extend(true, element, zenElement(matches[0][1], true));
 
-        // Just check next element/operator
-        // Loop is created recursively
-        if (matches.length > 1) {
-            switch (matches[1][0]) {
+        // Loop through matches
+        // Don't use for..in loop
+        // because we need to be able to manipulate the i
+        for(i=1;i<=matches.length-1;i++) {
+            switch (matches[i][0]) {
 
                 // Child
             case ' ':
             case '>':
-                element = zenAdd(element, zenDom(nextString, false));;
+                element = zenAdd(element, zenElement(matches[++i][0]));
                 break;
 
             // Sibling
             case '+':
                 if (is('null|undefined', element.parent))
                     element.parent = extend(true, {}, config.element);
-                element = zenAdd(element.parent, zenDom(nextString, false)).children[element.children.length - 1];
+                element = zenAdd(element.parent, zenElement(matches[++i][0]));
+                element = element.parent;
                 break;
 
             // Up One level
             case '^':
                 var parent = element.parent || element;
-                element = zenAdd(parent.parent || parent, zenDom(nextString, false)).children[element.children.length - 1];
+                element = zenAdd(parent.parent || parent, zenElement(matches[++i][0]));
                 break;
 
             // This should never happen since we already did a lot of checks
@@ -243,37 +228,24 @@
 
         // Return element if dom is just an empty holder,
         // otherwise return dom's children
-        dom = (dom.name === '' && dom.children.length === 1) ? element : dom.children;
-        return restructure ? zenRedo(dom) : dom;
+        if (dom.name === '' && dom.children.length === 1) {
+            dom = element;
+            element.parent = null;
+        }
+
+        return dom;
     };
 
-    // Restructure a $Z dom
-    // To convert array of children to dom
-    // And to set null parent reference
-    function zenRedo(dom) {
-        validateArgs(arguments, ['array|$Z.dom']);
-        if (is('array', dom))
-            dom = extend(true, {}, config.element, { children: dom });
-        dom.parent = null;
-        return dom;
-    }
-
     // Adds a child to a $Z.dom element
-    function zenAdd(element, children) {
-        if (is('undefined|null', children)) {
-            children = extend(true, {}, config.element);
-            arguments[1] = children;
+    function zenAdd(element, child) {
+        if (is('undefined|null', child)) {
+            child = extend(true, {}, config.element);
+            arguments[1] = child;
             arguments.length++;
         }
-        if (!is('array', children)) {
-            arguments[1] = children = [children];
-        }
-        validateArgs(arguments, ['$Z.dom', 'array']);
-        for (var i in children) {
-            var child = children[i];
-            child.parent = element;
-            element.children.push(child);
-        }
+        validateArgs(arguments, ['$Z.dom', '$Z.dom']);
+        child.parent = element;
+        element.children.push(child);
         return element;
     };
 
@@ -529,7 +501,6 @@
         attributes: zenAttributes,
         element: zenElement,
         dom: zenDom,
-        redo: zenRedo,
         add: zenAdd,
 
         // Config
