@@ -10,14 +10,23 @@ $Q.module('DOM', {
             window.ul = $Z.extend(true, {}, element, { name: 'ul' });
             window.li = $Z.extend(true, {}, element, { name: 'li' });
             window.a = $Z.extend(true, {}, element, { name: 'a' });
-            window.li2 = $Z.extend(true, {}, element, { name: 'li2' });
+            window.li2 = $Z.extend(true, {}, element, { name: 'li' });
             window.div = $Z.extend(true, {}, element, { name: 'div' });
         };
-
+    },
+    teardown: function() {
+        window.init = undefined;
+        window.element = undefined;
+        window.expected = undefined;
+        window.ul = undefined;
+        window.li = undefined;
+        window.a = undefined;
+        window.li2 = undefined;
+        window.div = undefined;
     }
 });
 
-$Q.test('Single Element - ul#id.class', function(assert) {
+$Q.test('ul#id.class - Single', function(assert) {
 
     // Expectations
     assert.expect(1);
@@ -36,7 +45,7 @@ $Q.test('Single Element - ul#id.class', function(assert) {
     });
     assert.deepEqual(result, expected, 'dom built successfully for ' + string);
 });
-$Q.test(' (space) - Descend', function(assert) {
+$Q.test('ul div - Descend', function(assert) {
     
     // Expectations
     assert.expect(8);
@@ -63,7 +72,7 @@ $Q.test(' (space) - Descend', function(assert) {
     assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of div');
     assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of div');
 });
-$Q.test('> - Descend', function(assert) {
+$Q.test('ul>div - Descend', function(assert) {
     
     // Expectations
     assert.expect(8);
@@ -90,7 +99,7 @@ $Q.test('> - Descend', function(assert) {
     assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of div');
     assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of div');
 });
-$Q.test('+ - Add', function(assert) {
+$Q.test('ul+div - Add', function(assert) {
 
     // Expectation
     assert.expect(12);
@@ -124,7 +133,7 @@ $Q.test('+ - Add', function(assert) {
     assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of div');
 });
-$Q.test('^ - Ascend - Works like Add', function (assert) {
+$Q.test('ul^div - Ascend', function (assert) {
 
     // Expectation
     assert.expect(12);
@@ -158,7 +167,7 @@ $Q.test('^ - Ascend - Works like Add', function (assert) {
     assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of div');
 });
-$Q.test('>> - Double Descend', function(assert) {
+$Q.test('ul>li>div - Double Descend', function(assert) {
 
     // Expectation
     assert.expect(12);
@@ -197,16 +206,50 @@ $Q.test('>> - Double Descend', function(assert) {
     assert.strictEqual(JSON.stringify(result.children[0].children[0].attributes), JSON.stringify(expected.children[0].children[0].attributes), 'Attributes of div');
     assert.strictEqual(result.children[0].children[0].name, expected.children[0].children[0].name, 'Name of div');
 });
-$Q.test('>+ - Descend and Add', function (assert) {
-    assert.expect(0);
+$Q.test('ul>li+li - Descend and Add', function (assert) {
+    // Expectation
+    assert.expect(12);
+
+    // Variables and Initialization
+    var string = 'ul>li+li',
+        result = $Z.dom(string);
+    init();
+    window.expected = $Z.extend(true, {}, element);
+    $Z.extend(li, {
+        parent: ul
+    });
+    $Z.extend(li2, {
+        parent: ul,
+    });
+    $Z.extend(ul, {
+        children: [li, li2]
+    });
+    $Z.extend(expected, ul);
+
+    // Assertions
+    // UL
+    assert.strictEqual(result.parent, expected.parent, 'Parent of ul');
+    assert.strictEqual(result.children.length, expected.children.length, 'No of children of ul');
+    assert.strictEqual(JSON.stringify(result.attributes), JSON.stringify(expected.attributes), 'Attributes of ul');
+    assert.strictEqual(result.name, expected.name, 'Name of ul');
+    // LI
+    assert.deepEqual(result.children[0].parent, expected.children[0].parent, 'Parent of li');
+    assert.strictEqual(result.children[0].children.length, expected.children[0].children.length, 'No of children of li');
+    assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of li');
+    assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of li');
+    // DIV
+    assert.deepEqual(result.children[1].parent, expected.children[1].parent, 'Parent of li2');
+    assert.strictEqual(result.children[1].children.length, expected.children[1].children.length, 'No of children of li2');
+    assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of li2');
+    assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of li2');
 });
-$Q.test('>^ - Descend and Ascend', function (assert) {
+$Q.test('ul>li^div - Descend and Ascend', function (assert) {
     
     // Expectation
     assert.expect(16);
 
     // Variables and Initialization
-    var string = 'ul li^div',
+    var string = 'ul>li^div',
         result = $Z.dom(string);
     init();
     window.expected = $Z.extend(true, {}, element);
@@ -246,194 +289,275 @@ $Q.test('>^ - Descend and Ascend', function (assert) {
     assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of div');
 });
-$Q.test('++ - Double Add', function (assert) {
-    assert.expect(0);
-});
-$Q.test('+> - Add and Descend' , function (assert) {
-    assert.expect(0);
-});
-$Q.test('+^ - Add and Ascend - Works like Double Add', function (assert) {
-    assert.expect(0);
-});
-$Q.test('^^ - Double Ascend - Works like Double Add', function (assert) {
-    assert.expect(0);
-});
-$Q.test('^+ - Ascend and Add - Works like Double Add', function (assert) {
-    assert.expect(0);
-});
-$Q.test('^> - Ascend and Descend - Works like Add and Descend', function (assert) {
-    assert.expect(0);
-});
+$Q.test('li+a+div - Double Add', function (assert) {
 
+    // Expectation
+    assert.expect(16);
 
-/*
-$Q.test('$Z.dom(ul#id.class>li[value="1"]+li[value="2"])', function(assert) {
-
-    // Expectations
-    assert.expect(12);
-
-    // Variables
-    var dom,
-        string = 'ul#id.class>li[value="1"]+li[value="2"]',
-        ul = {},
-        li1 = {
-            name: 'li',
-            attributes: {
-                value: '1'
-            },
-            children: [],
-            parent: ul
-        },
-
-        li2 = {
-            name: 'li',
-            attributes: {
-                value: '2'
-            },
-            children: [],
-            parent: ul
-        };
-    ul = $Z.extend(true, ul, {
-        name: 'ul',
-        attributes: {
-            'class': 'class',
-            id: 'id'
-        },
-        parent: null,
-        children: [li1, li2]
+    // Variables and Initialization
+    var string = 'li+a+div',
+        result = $Z.dom(string);
+    init();
+    window.expected = $Z.extend(true, {}, element);
+    $Z.extend(div, {
+        parent: expected
     });
-    dom = $Z.dom(string);
+    $Z.extend(li, {
+        parent: expected
+    });
+    $Z.extend(a, {
+        parent: expected
+    });
+    $Z.extend(expected, {
+        children: [li, a, div]
+    });
 
     // Assertions
-
-    // Parent
-    assert.equal(dom.name, ul.name, 'Name Extracted');
-    assert.deepEqual(dom.attributes, ul.attributes, 'Attributes Extracted');
-    assert.equal(dom.parent, null, 'Parent is null');
-    assert.equal(dom.children.length, 2, 'No of children');
-
-    // Children
-    assert.equal(dom.children[0].name, li1.name, 'Name Extracted');
-    assert.deepEqual(dom.children[0].attributes, li1.attributes, 'Attributes Extracted');
-    assert.equal(dom.children[0].parent, dom, 'Parent is dom');
-    assert.equal(dom.children[0].children.length, 0, 'No of children');
-    assert.equal(dom.children[1].name, li2.name, 'Name Extracted');
-    assert.deepEqual(dom.children[1].attributes, li2.attributes, 'Attributes Extracted');
-    assert.equal(dom.children[1].parent, dom, 'Parent is dom');
-    assert.equal(dom.children[1].children.length, 0, 'No of children');
+    // DOM
+    assert.strictEqual(result.parent, expected.parent, 'Parent of DOM');
+    assert.strictEqual(result.children.length, expected.children.length, 'No of children of DOM');
+    assert.strictEqual(JSON.stringify(result.attributes), JSON.stringify(expected.attributes), 'Attributes of DOM');
+    assert.strictEqual(result.name, expected.name, 'Name of DOM');
+    // LI
+    assert.deepEqual(result.children[0].parent, expected.children[0].parent, 'Parent of li');
+    assert.strictEqual(result.children[0].children.length, expected.children[0].children.length, 'No of children of li');
+    assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of li');
+    assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of li');
+    // A
+    assert.deepEqual(result.children[1].parent, expected.children[1].parent, 'Parent of a');
+    assert.strictEqual(result.children[1].children.length, expected.children[1].children.length, 'No of children of a');
+    assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of a');
+    assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of a');
+    // DIV
+    assert.deepEqual(result.children[2].parent, expected.children[2].parent, 'Parent of div');
+    assert.strictEqual(result.children[2].children.length, expected.children[2].children.length, 'No of children of div');
+    assert.strictEqual(JSON.stringify(result.children[2].attributes), JSON.stringify(expected.children[2].attributes), 'Attributes of div');
+    assert.strictEqual(result.children[2].name, expected.children[2].name, 'Name of div');
 });
-$Q.test('$Z.dom(ul#id.class li[value="1"]+li[value="2"])', function (assert) {
+$Q.test('li+li>div - Add and Descend' , function (assert) {
+    
+    // Expectation
+    assert.expect(16);
 
-    // Expectations
-    assert.expect(12);
-
-    // Variables
-    var dom,
-        string = 'ul#id.class li[value="1"]+li[value="2"]',
-        ul = {},
-        li1 = {
-            name: 'li',
-            attributes: {
-                value: '1'
-            },
-            children: [],
-            parent: ul
-        },
-
-        li2 = {
-            name: 'li',
-            attributes: {
-                value: '2'
-            },
-            children: [],
-            parent: ul
-        };
-    ul = $Z.extend(true, ul, {
-        name: 'ul',
-        attributes: {
-            'class': 'class',
-            id: 'id'
-        },
-        parent: null,
-        children: [li1, li2]
+    // Variables and Initialization
+    var string = 'li+li>div',
+        result = $Z.dom(string);
+    init();
+    window.expected = $Z.extend(true, {}, element);
+    $Z.extend(div, {
+        parent: li2
     });
-    dom = $Z.dom(string);
+    $Z.extend(li2, {
+        parent: expected,
+        children: [div]
+    });
+    $Z.extend(li, {
+        parent: expected
+    });
+    $Z.extend(expected, {
+        children: [li, li2]
+    });
 
     // Assertions
-
-    // Parent
-    assert.equal(dom.name, ul.name, 'Name Extracted');
-    assert.deepEqual(dom.attributes, ul.attributes, 'Attributes Extracted');
-    assert.equal(dom.parent, null, 'Parent is null');
-    assert.equal(dom.children.length, 2, 'No of children');
-
-    // Children
-    assert.equal(dom.children[0].name, li1.name, 'Name Extracted');
-    assert.deepEqual(dom.children[0].attributes, li1.attributes, 'Attributes Extracted');
-    assert.equal(dom.children[0].parent, dom, 'Parent is dom');
-    assert.equal(dom.children[0].children.length, 0, 'No of children');
-    assert.equal(dom.children[1].name, li2.name, 'Name Extracted');
-    assert.deepEqual(dom.children[1].attributes, li2.attributes, 'Attributes Extracted');
-    assert.equal(dom.children[1].parent, dom, 'Parent is dom');
-    assert.equal(dom.children[1].children.length, 0, 'No of children');
+    // DOM
+    assert.strictEqual(result.parent, expected.parent, 'Parent of DOM');
+    assert.strictEqual(result.children.length, expected.children.length, 'No of children of DOM');
+    assert.strictEqual(JSON.stringify(result.attributes), JSON.stringify(expected.attributes), 'Attributes of DOM');
+    assert.strictEqual(result.name, expected.name, 'Name of DOM');
+    // LI
+    assert.deepEqual(result.children[0].parent, expected.children[0].parent, 'Parent of li');
+    assert.strictEqual(result.children[0].children.length, expected.children[0].children.length, 'No of children of li');
+    assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of li');
+    assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of li');
+    // LI2
+    assert.deepEqual(result.children[1].parent, expected.children[1].parent, 'Parent of li2');
+    assert.strictEqual(result.children[1].children.length, expected.children[1].children.length, 'No of children of li2');
+    assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of li2');
+    assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of li2');
+    // DIV
+    assert.deepEqual(result.children[1].children[0].parent, expected.children[1].children[0].parent, 'Parent of div');
+    assert.strictEqual(result.children[1].children[0].children.length, expected.children[1].children[0].children.length, 'No of children of div');
+    assert.strictEqual(JSON.stringify(result.children[1].children[0].attributes), JSON.stringify(expected.children[1].children[0].attributes), 'Attributes of div');
+    assert.strictEqual(result.children[1].children[0].name, expected.children[1].children[0].name, 'Name of div');
 });
-$Q.test('$Z.dom(ul#id.class li[value="1"] a[title="Click Here" href="http://google.com"])', function (assert) {
+$Q.test('li+a^div - Add and Ascend - Works like Double Add', function (assert) {
 
-    // Expectations
-    assert.expect(12);
+    // Expectation
+    assert.expect(16);
 
-    // Variables
-    var dom,
-        string = 'ul#id.class li[value="1"] a[title="Click Here" href="http://google.com"]',
-        ul = {},
-        li = {},
-        a = {};
-    li = $Z.extend(true, li, {
-        name: 'li',
-        attributes: {
-            value: '1'
-        },
-        children: [a],
-        parent: ul
+    // Variables and Initialization
+    var string = 'li+a^div',
+        result = $Z.dom(string);
+    init();
+    window.expected = $Z.extend(true, {}, element);
+    $Z.extend(div, {
+        parent: expected
     });
-    a = $Z.extend(true, a, {
-        name: 'a',
-        attributes: {
-            title: 'Click Here',
-            href: 'http://google.com'
-        },
-        children: [],
-        parent: li
+    $Z.extend(li, {
+        parent: expected
     });
-    ul = $Z.extend(true, ul, {
-        name: 'ul',
-        attributes: {
-            'class': 'class',
-            id: 'id'
-        },
-        parent: null,
-        children: [li]
+    $Z.extend(a, {
+        parent: expected
     });
-    dom = $Z.dom(string);
+    $Z.extend(expected, {
+        children: [li, a, div]
+    });
 
     // Assertions
-
-    // Parent
-    assert.equal(dom.name, ul.name, 'ul Name Extracted');
-    assert.deepEqual(dom.attributes, ul.attributes, 'ul Attributes Extracted');
-    assert.equal(dom.parent, null, 'ul Parent is null');
-    assert.equal(dom.children.length, ul.children.length, 'ul No of children');
-
-    // Children - Level 1
-    assert.equal(dom.children[0].name, li.name, 'li Name Extracted');
-    assert.deepEqual(dom.children[0].attributes, li.attributes, 'li Attributes Extracted');
-    assert.equal(dom.children[0].parent, dom, 'li Parent is ul');
-    assert.equal(dom.children[0].children.length, li.children.length, 'li No of children');
-
-    // Children - Level 2
-    assert.equal(dom.children[0].children[0].name, a.name, 'a Name Extracted');
-    assert.deepEqual(dom.children[0].children[0].attributes, a.attributes, 'a Attributes Extracted');
-    assert.equal(dom.children[0].children[0].parent, dom.children[0], 'a Parent is li');
-    assert.equal(dom.children[0].children[0].children.length, a.children.length, 'a No of children');
+    // DOM
+    assert.strictEqual(result.parent, expected.parent, 'Parent of DOM');
+    assert.strictEqual(result.children.length, expected.children.length, 'No of children of DOM');
+    assert.strictEqual(JSON.stringify(result.attributes), JSON.stringify(expected.attributes), 'Attributes of DOM');
+    assert.strictEqual(result.name, expected.name, 'Name of DOM');
+    // LI
+    assert.deepEqual(result.children[0].parent, expected.children[0].parent, 'Parent of li');
+    assert.strictEqual(result.children[0].children.length, expected.children[0].children.length, 'No of children of li');
+    assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of li');
+    assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of li');
+    // A
+    assert.deepEqual(result.children[1].parent, expected.children[1].parent, 'Parent of a');
+    assert.strictEqual(result.children[1].children.length, expected.children[1].children.length, 'No of children of a');
+    assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of a');
+    assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of a');
+    // DIV
+    assert.deepEqual(result.children[2].parent, expected.children[2].parent, 'Parent of div');
+    assert.strictEqual(result.children[2].children.length, expected.children[2].children.length, 'No of children of div');
+    assert.strictEqual(JSON.stringify(result.children[2].attributes), JSON.stringify(expected.children[2].attributes), 'Attributes of div');
+    assert.strictEqual(result.children[2].name, expected.children[2].name, 'Name of div');
 });
-*/
+$Q.test('li^a^div - Double Ascend - Works like Double Add', function (assert) {
+
+    // Expectation
+    assert.expect(16);
+
+    // Variables and Initialization
+    var string = 'li^a^div',
+        result = $Z.dom(string);
+    init();
+    window.expected = $Z.extend(true, {}, element);
+    $Z.extend(div, {
+        parent: expected
+    });
+    $Z.extend(li, {
+        parent: expected
+    });
+    $Z.extend(a, {
+        parent: expected
+    });
+    $Z.extend(expected, {
+        children: [li, a, div]
+    });
+
+    // Assertions
+    // DOM
+    assert.strictEqual(result.parent, expected.parent, 'Parent of DOM');
+    assert.strictEqual(result.children.length, expected.children.length, 'No of children of DOM');
+    assert.strictEqual(JSON.stringify(result.attributes), JSON.stringify(expected.attributes), 'Attributes of DOM');
+    assert.strictEqual(result.name, expected.name, 'Name of DOM');
+    // LI
+    assert.deepEqual(result.children[0].parent, expected.children[0].parent, 'Parent of li');
+    assert.strictEqual(result.children[0].children.length, expected.children[0].children.length, 'No of children of li');
+    assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of li');
+    assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of li');
+    // A
+    assert.deepEqual(result.children[1].parent, expected.children[1].parent, 'Parent of a');
+    assert.strictEqual(result.children[1].children.length, expected.children[1].children.length, 'No of children of a');
+    assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of a');
+    assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of a');
+    // DIV
+    assert.deepEqual(result.children[2].parent, expected.children[2].parent, 'Parent of div');
+    assert.strictEqual(result.children[2].children.length, expected.children[2].children.length, 'No of children of div');
+    assert.strictEqual(JSON.stringify(result.children[2].attributes), JSON.stringify(expected.children[2].attributes), 'Attributes of div');
+    assert.strictEqual(result.children[2].name, expected.children[2].name, 'Name of div');
+});
+$Q.test('li^a+div - Ascend and Add - Works like Double Add', function (assert) {
+
+    // Expectation
+    assert.expect(16);
+
+    // Variables and Initialization
+    var string = 'li^a+div',
+        result = $Z.dom(string);
+    init();
+    window.expected = $Z.extend(true, {}, element);
+    $Z.extend(div, {
+        parent: expected
+    });
+    $Z.extend(li, {
+        parent: expected
+    });
+    $Z.extend(a, {
+        parent: expected
+    });
+    $Z.extend(expected, {
+        children: [li, a, div]
+    });
+
+    // Assertions
+    // DOM
+    assert.strictEqual(result.parent, expected.parent, 'Parent of DOM');
+    assert.strictEqual(result.children.length, expected.children.length, 'No of children of DOM');
+    assert.strictEqual(JSON.stringify(result.attributes), JSON.stringify(expected.attributes), 'Attributes of DOM');
+    assert.strictEqual(result.name, expected.name, 'Name of DOM');
+    // LI
+    assert.deepEqual(result.children[0].parent, expected.children[0].parent, 'Parent of li');
+    assert.strictEqual(result.children[0].children.length, expected.children[0].children.length, 'No of children of li');
+    assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of li');
+    assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of li');
+    // A
+    assert.deepEqual(result.children[1].parent, expected.children[1].parent, 'Parent of a');
+    assert.strictEqual(result.children[1].children.length, expected.children[1].children.length, 'No of children of a');
+    assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of a');
+    assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of a');
+    // DIV
+    assert.deepEqual(result.children[2].parent, expected.children[2].parent, 'Parent of div');
+    assert.strictEqual(result.children[2].children.length, expected.children[2].children.length, 'No of children of div');
+    assert.strictEqual(JSON.stringify(result.children[2].attributes), JSON.stringify(expected.children[2].attributes), 'Attributes of div');
+    assert.strictEqual(result.children[2].name, expected.children[2].name, 'Name of div');
+});
+$Q.test('li^li>div - Ascend and Descend - Works like Add and Descend', function (assert) {
+
+    // Expectation
+    assert.expect(16);
+
+    // Variables and Initialization
+    var string = 'li^li>div',
+        result = $Z.dom(string);
+    init();
+    window.expected = $Z.extend(true, {}, element);
+    $Z.extend(div, {
+        parent: li2
+    });
+    $Z.extend(li2, {
+        parent: expected,
+        children: [div]
+    });
+    $Z.extend(li, {
+        parent: expected
+    });
+    $Z.extend(expected, {
+        children: [li, li2]
+    });
+
+    // Assertions
+    // DOM
+    assert.strictEqual(result.parent, expected.parent, 'Parent of DOM');
+    assert.strictEqual(result.children.length, expected.children.length, 'No of children of DOM');
+    assert.strictEqual(JSON.stringify(result.attributes), JSON.stringify(expected.attributes), 'Attributes of DOM');
+    assert.strictEqual(result.name, expected.name, 'Name of DOM');
+    // LI
+    assert.deepEqual(result.children[0].parent, expected.children[0].parent, 'Parent of li');
+    assert.strictEqual(result.children[0].children.length, expected.children[0].children.length, 'No of children of li');
+    assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of li');
+    assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of li');
+    // LI2
+    assert.deepEqual(result.children[1].parent, expected.children[1].parent, 'Parent of li2');
+    assert.strictEqual(result.children[1].children.length, expected.children[1].children.length, 'No of children of li2');
+    assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of li2');
+    assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of li2');
+    // DIV
+    assert.deepEqual(result.children[1].children[0].parent, expected.children[1].children[0].parent, 'Parent of div');
+    assert.strictEqual(result.children[1].children[0].children.length, expected.children[1].children[0].children.length, 'No of children of div');
+    assert.strictEqual(JSON.stringify(result.children[1].children[0].attributes), JSON.stringify(expected.children[1].children[0].attributes), 'Attributes of div');
+    assert.strictEqual(result.children[1].children[0].name, expected.children[1].children[0].name, 'Name of div');
+});
