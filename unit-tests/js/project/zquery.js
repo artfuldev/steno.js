@@ -136,10 +136,17 @@
     };
 
     // Returns a custom dom object from a zen coding string of a html dom
-    function zenDom(string) {
+    function zenDom(string, restructure) {
+
+        // If final, use restructure
+        if (!is('boolean', restructure)) {
+            restructure = true;
+            arguments[1] = restructure;
+            arguments.length++;
+        }
 
         //Validate Arguments
-        validateArgs(arguments, ['string']);
+        validateArgs(arguments, ['string','boolean']);
 
         // Initialize
         var i,
@@ -148,7 +155,8 @@
             element,
             regEx = new RegExp(config.matches.element.complete),
             matches = [],
-
+            nextString,
+            matchStrings = [],
             invalid = false,
             lastIndex;
 
@@ -172,6 +180,14 @@
             lastIndex = match.index;
         }
 
+        // Add matching strings
+        for (i in matches) {
+            matchStrings.push(matches[i][0]);
+        }
+
+        // Add nextString
+        nextString = matchStrings.splice(2, matchStrings.length).join('');
+
         // If even number of matches is found, the dom is invalid
         // Because, dom can only be of the form [element][operator][element]...[operator][element]
         // If the dom starts with or ends with an operator
@@ -192,76 +208,77 @@
 
         // If you came this far, create first element and add to dom
         dom = extend(true, {}, config.element);
-        element = zenAdd(dom);
+        element = zenAdd(dom).children[0];
         element = extend(true, element, zenElement(matches[0][1], true));
 
-        // Loop through to create dom
-        // Don't use for...in loop
-        // We need to manipulate the i iterator
-        for (i = 1; i < matches.length - 1; i++) {
-            switch (matches[i][0]) {
+        // Just check next element/operator
+        // Loop is created recursively
+        if (matches.length > 1) {
+            switch (matches[1][0]) {
 
                 // Child
-                case ' ':
-                case '>':
-                    element = zenAdd(element, zenDom(matches[++i][1]));
-                    break;
+            case ' ':
+            case '>':
+                element = zenAdd(element, zenDom(nextString, false));;
+                break;
 
-                    // Sibling
-                case '+':
-                    if (is('null|undefined', element.parent))
-                        element.parent = extend(true, {}, config.element);
-                    element = zenAdd(element.parent, zenDom(matches[++i][1]));
-                    element = element.parent;
-                    break;
+            // Sibling
+            case '+':
+                if (is('null|undefined', element.parent))
+                    element.parent = extend(true, {}, config.element);
+                element = zenAdd(element.parent, zenDom(nextString, false)).children[element.children.length - 1];
+                break;
 
-                    // Up One level
-                case '^':
-                    var parent = element.parent || element;
-                    element = zenAdd(parent.parent || parent, zenDom(matches[++i][1]));
-                    break;
+            // Up One level
+            case '^':
+                var parent = element.parent || element;
+                element = zenAdd(parent.parent || parent, zenDom(nextString, false)).children[element.children.length - 1];
+                break;
 
-                    // This should never happen since we already did checks
-                default:
-                    throw 'Something wrong happened';
+            // This should never happen since we already did a lot of checks
+            default:
+                throw 'Something wrong happened';
             }
         }
 
         // Return element if dom is just an empty holder,
-        // otherwise return dom
-        return ((dom.name === '') && (dom.children.length === 1)) ? extend(true, element, { parent: null }) : dom;
+        // otherwise return dom's children
+        dom = (dom.name === '' && dom.children.length === 1) ? element : dom.children;
+        return restructure ? zenRedo(dom) : dom;
     };
 
-    // Cleans Up a $Z dom object
-    function cleanUp(dom) {
-        validateArgs(arguments, ['plain object']);
+    // Restructure a $Z dom
+    // To convert array of children to dom
+    // And to set null parent reference
+    function zenRedo(dom) {
+        validateArgs(arguments, ['array|$Z.dom']);
+        if (is('array', dom))
+            dom = extend(true, {}, config.element, { children: dom });
+        dom.parent = null;
+        return dom;
+    }
 
-        var parent = dom.parent;
-        if (parent != null)
-            if (parent.children.length === 1 && parent.name === '')
-                parent = dom;
-
-        return parent;
-
-    };
-
-    // Adds a child to an element
-    function zenAdd(element, child) {
-        if (is('undefined|null', child)) {
-            child = extend(true, {}, config.element);
-            arguments[1] = child;
+    // Adds a child to a $Z.dom element
+    function zenAdd(element, children) {
+        if (is('undefined|null', children)) {
+            children = extend(true, {}, config.element);
+            arguments[1] = children;
             arguments.length++;
         }
-        validateArgs(arguments, ['object', 'object']);
-        child.parent = element;
-        element.children.push(child);
-        return child;
+        if (!is('array', children)) {
+            arguments[1] = children = [children];
+        }
+        validateArgs(arguments, ['$Z.dom', 'array']);
+        for (var i in children) {
+            var child = children[i];
+            child.parent = element;
+            element.children.push(child);
+        }
+        return element;
     };
 
     // Check if Object Has Key
     function has(key, obj) {
-        if (!validateArgs(arguments, ['string|number', 'object|array'], false))
-            return false;
         return hasOwn.call(obj, key);
     };
 
@@ -272,23 +289,34 @@
         for (var i in types) {
             if (types[i] === 'plain object') {
 
-                // Not plain objects:
-                // From jQuery
+                // Not plain objects
                 // - Any object or value whose internal [[Class]] property is not "[object Object]"
                 // - DOM nodes
                 // - window
-                if (!is('object', obj) || obj.nodeType || obj === obj.window) {
-                    return false;
+                if (objectType(obj)!=='object' || obj.nodeType || obj===obj.window) {
+                    continue;
                 }
-
                 if (obj.constructor &&
-                    !hasOwn.call(obj.constructor.prototype, "isPrototypeOf")) {
-                    return false;
+                        !has('isPrototypeOf',obj.constructor.prototype)) {
+                    continue;
                 }
 
                 // If the function hasn't returned already, we're confident that
                 // |obj| is a plain object, created by {} or constructed with new Object
-                return true;
+                match = true;
+                break;
+            } else if (types[i] === '$Z.dom') {
+
+                // $Z dom object
+                if (is('plain object', obj)
+                        && has('children', obj) && is('array', obj.children)
+                        && has('parent', obj) && is('null|object', obj.parent)
+                        && has('name', obj) && is('string', obj.name)
+                        && has('attributes', obj) && is('object', obj.attributes)) {
+                    match = true;
+                    break;
+                }
+                    
             } else if (objectType(obj) === types[i]) {
                 match = true;
                 break;
@@ -501,6 +529,7 @@
         attributes: zenAttributes,
         element: zenElement,
         dom: zenDom,
+        redo: zenRedo,
         add: zenAdd,
 
         // Config
