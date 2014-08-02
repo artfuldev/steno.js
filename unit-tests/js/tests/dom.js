@@ -171,7 +171,7 @@ $Q.test('>+ - Descend and Add', function (assert) {
 $Q.test('>^ - Descend and Ascend', function (assert) {
     
     // Expectation
-    assert.expect(12);
+    assert.expect(16);
 
     // Variables and Initialization
     var string = 'ul li^div',
@@ -188,7 +188,9 @@ $Q.test('>^ - Descend and Ascend', function (assert) {
         parent: expected,
         children: [li]
     });
-    $Z.extend(expected, ul);
+    $Z.extend(expected, {
+         children: [ul, div]
+    });
 
     // Assertions
     assert.strictEqual(result.parent, expected.parent, 'Parent of DOM');
