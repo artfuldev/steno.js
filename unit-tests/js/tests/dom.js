@@ -1,5 +1,4 @@
-﻿/// <reference path="../lib/jquery-2.1.1.min.js" />
-/// <reference path="../lib/qunit-git.js" />
+﻿/// <reference path="../lib/qunit-git.js" />
 /// <reference path="../project/zquery.js" />
 /// <reference path="../tests/tests.js" />
 
@@ -15,9 +14,6 @@ $Q.module('DOM', {
             window.div = $Z.extend(true, {}, element, { name: 'div' });
         };
 
-    },
-    teardown: function() {
-        delete window.init;
     }
 });
 
@@ -108,7 +104,7 @@ $Q.test('+ - Add', function(assert) {
         parent: expected
     });
     $Z.extend(ul, {
-        parent: expected,
+        parent: expected
     });
     $Z.extend(expected, {
         children: [ul, div]
@@ -142,7 +138,7 @@ $Q.test('^ - Ascend - Works like Add', function (assert) {
         parent: expected
     });
     $Z.extend(ul, {
-        parent: expected,
+        parent: expected
     });
     $Z.extend(expected, {
         children: [ul, div]

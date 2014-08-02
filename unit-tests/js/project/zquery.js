@@ -1,6 +1,4 @@
-﻿/// <reference path="../lib/jquery-2.1.1.min.js" />
-/// <reference path="../lib/qunit-git.js" />
-/*
+﻿/*
     * This file is part of "zQuery", (c) Kenshin The Battōsai (Sudarsan Balaji), 2014.
     * 
     * "zQuery" is free software: you can redistribute it and/or modify
@@ -157,18 +155,13 @@
             // Convert all non matches to empty strings
             invalidToValue(match, '');
 
-            // Check for last index to break infinite loop
-            // Also delete the last empty match element
-            if (match.index === lastIndex) {
-                matches.splice(matches.length - 1, 1);
+            // If match cycle has ended, break the loop
+            // Have to do it this way for IE 8
+            if (match[0] === '')
                 break;
-            }
 
             // Retreive matches
             matches.push(match);
-
-            // Store lastIndex
-            lastIndex = match.index;
         }
 
         // If even number of matches is found, the dom is invalid
@@ -518,7 +511,7 @@
 
         // Array Helpers
         random: random,
-        nullify: invalidToValue,
+        nullify: invalidToValue
     });
 
     // For browser, export only select globals
