@@ -2,8 +2,8 @@
 
 * Author: Kenshin The Battōsai *(Sudarsan Balaji)*
 * License: *GNU GPL v3* (see COPYING.txt)
-* Library Version: 0.1.0
-* Last Updated: 02/08/2014
+* Library Version: v0.1.1
+* Last Updated: 2014-08-03
 * ReadMe Version: 0.5
 
 ##Description
