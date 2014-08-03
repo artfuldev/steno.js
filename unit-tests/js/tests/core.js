@@ -4,7 +4,7 @@
 
 $Q.module('Core', {
     setup: function () {
-        window.element = $Z.config.element;
+        window.element = $Z.el;
         window.expected = $Z.extend(true, {}, element);
         window.ul = $Z.extend(true, {}, element, { name: 'ul' });
         window.li = $Z.extend(true, {}, element, { name: 'li' });
@@ -116,13 +116,13 @@ $Q.test('$Z.element', function (assert) {
         }
     },
         elements = {
-        'work': $Z.extend(true, {}, $Z.config.element, { name: 'work', attributes: {} }),
-        '#menu': $Z.extend(true, {}, $Z.config.element, { name: 'div', attributes: { id: 'menu' } }),
-        'div.class-name': $Z.extend(true, {}, $Z.config.element, { name: 'div', attributes: { 'class': 'class-name' } }),
-        'p.go-to-hell[class="help-me"]': $Z.extend(true, {}, $Z.config.element, { name: 'p', attributes: { 'class': 'go-to-hell help-me' } }),
-        'p#id.class': $Z.extend(true, {}, $Z.config.element, { name: 'p', attributes: { id: 'id', 'class': 'class' } }),
-        'p[hi="how" are="\\"you\\""]': $Z.extend(true, {}, $Z.config.element, { name: 'p', attributes: { hi: 'how', are: '\\"you\\"' } }),
-        'p#id.class[data-attr da="gpo" hi="\\"help\\""]': $Z.extend(true, {}, $Z.config.element, {
+        'work': $Z.extend(true, {}, $Z.el, { name: 'work', attributes: {} }),
+        '#menu': $Z.extend(true, {}, $Z.el, { name: 'div', attributes: { id: 'menu' } }),
+        'div.class-name': $Z.extend(true, {}, $Z.el, { name: 'div', attributes: { 'class': 'class-name' } }),
+        'p.go-to-hell[class="help-me"]': $Z.extend(true, {}, $Z.el, { name: 'p', attributes: { 'class': 'go-to-hell help-me' } }),
+        'p#id.class': $Z.extend(true, {}, $Z.el, { name: 'p', attributes: { id: 'id', 'class': 'class' } }),
+        'p[hi="how" are="\\"you\\""]': $Z.extend(true, {}, $Z.el, { name: 'p', attributes: { hi: 'how', are: '\\"you\\"' } }),
+        'p#id.class[data-attr da="gpo" hi="\\"help\\""]': $Z.extend(true, {}, $Z.el, {
             name: 'p',
             attributes: {
                 id: 'id',

@@ -23,7 +23,6 @@
 
     // Required variables
     var zQuery = {},
-        config,
 
         // Short for prototypes
         objProto = Object.prototype,
@@ -32,8 +31,31 @@
         hasOwn = objProto.hasOwnProperty,
 
         // For IE, to prevent Invalid Calling Object error on toString.call(obj)
-        toString = objProto.toString;
+        toString = objProto.toString,
 
+    // Regexes
+    // RegEx-es thanks to http://regexpal.com/
+    // And RegEx Magic http://www.regexmagic.com/
+
+                    // Capture Groups:
+                    // Operator
+                    // Element, Name, Id, Classes with dots, Attributes
+        rxElement = /( |\+|\^|>|([a-z]+)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*))/g,
+
+                    // Capture Group: ClassName
+        rxClasses = /\.([a-z-]+)/g,
+
+                    // Capture Groups: Name, Value
+        rxAttributes = /([a-z-]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
+        rxTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
+
+    // Empty Zen Element
+        emptyZenElement = {
+        parent: null,
+        name: '',
+        attributes: {},
+        children: []
+    };
 
     // Core functions start with zen
 
@@ -45,7 +67,7 @@
         validateArgs(arguments, ['string']);
 
         // Return Matches
-        var regEx = new RegExp(config.matches.element.classes),
+        var regEx = new RegExp(rxClasses),
             matches = [],
             match;
         while (match = regEx.exec(string)) {
@@ -61,7 +83,7 @@
         validateArgs(arguments, ['string']);
 
         // Return Matches
-        var regEx = new RegExp(config.matches.element.attributes),
+        var regEx = new RegExp(rxAttributes),
             matches = {},
             match;
         while (match = regEx.exec(string)) {
@@ -89,7 +111,7 @@
         validateArgs(arguments, ['string', 'boolean']);
 
         // Match RegEx to retrieve element
-        var regEx = new RegExp(config.matches.element.complete),
+        var regEx = new RegExp(rxElement),
             // Find only first match - FOR NOW
             match = regEx.exec(string),
             zClasses,
@@ -123,7 +145,7 @@
 
         // Build and return the element, now that the name and attributes are done
         if (!pure)
-            return extend(true, {}, config.element, {
+            return extend(true, {}, emptyZenElement, {
                 name: match[2],
                 attributes: zAttributes
             });
@@ -144,9 +166,8 @@
             dom,
             match,
             element,
-            regEx = new RegExp(config.matches.element.complete),
-            matches = [],
-            invalid = false;
+            regEx = new RegExp(rxElement),
+            matches = [];
 
         // Retreive Elements and Operators
         while (match = regEx.exec(string)) {
@@ -164,7 +185,7 @@
         }
 
         // If you came this far, create first element and add to dom
-        dom = extend(true, {}, config.element);
+        dom = extend(true, {}, emptyZenElement);
         element = zenAdd(dom);
 
         // Loop through matches
@@ -183,7 +204,7 @@
                 // Add
             case '+':
                 if (is('null|undefined', element.parent))
-                    element.parent = extend(true, {}, config.element);
+                    element.parent = extend(true, {}, emptyZenElement);
                 element = zenAdd(element.parent);
                 break;
 
@@ -228,7 +249,7 @@
 
         // Add empty child if not provided
         if (is('undefined|null', child)) {
-            child = extend(true, {}, config.element);
+            child = extend(true, {}, emptyZenElement);
             arguments[1] = child;
             arguments.length++;
         }
@@ -393,7 +414,7 @@
         if (validateArgs(arguments, ['null|undefined'], false))
             return '';
         validateArgs(arguments, ['string|boolean|number']);
-        return text.toString().replace(config.matches.trim, "");
+        return text.toString().replace(rxTrim, "");
     };
 
     // Invlaid to Value (Nullify to Value)
@@ -486,31 +507,6 @@
         return target;
     };
 
-    // Config
-    config = {
-        // RegEx-es thanks to http://regexpal.com/
-        // And RegEx Magic http://www.regexmagic.com/
-        matches: {
-            element: {
-                // Capture Groups:
-                // Operator
-                // Element, Name, Id, Classes with dots, Attributes
-                complete: /( |\+|\^|>|([a-z]+)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*))/g,
-                // Capture Group: ClassName
-                classes: /\.([a-z-]+)/g,
-                // Capture Groups: Name, Value
-                attributes: /([a-z-]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g
-            },
-            trim: /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g
-        },
-        element: {
-            parent: null,
-            name: '',
-            attributes: {},
-            children: []
-        }
-    };
-
     // Add stuff to zQuery
     extend(zQuery, {
 
@@ -523,8 +519,8 @@
         redo: zenRedo,
         add: zenAdd,
 
-        // Config
-        config: config,
+        // Element
+        el: emptyZenElement,
 
         // Utilities
         extend: extend,
