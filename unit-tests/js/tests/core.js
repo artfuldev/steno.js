@@ -4,7 +4,7 @@
 
 $Q.module('Core', {
     setup: function () {
-        window.element = $Z.el;
+        window.element = $Z.extend(true, {}, $Z.el);
         window.expected = $Z.extend(true, {}, element);
         window.ul = $Z.extend(true, {}, element, { name: 'ul' });
         window.li = $Z.extend(true, {}, element, { name: 'li' });
@@ -93,45 +93,49 @@ $Q.test('$Z.attributes', function (assert) {
 $Q.test('$Z.element', function (assert) {
 
     // Expectations
-    assert.expect(14);
+    assert.expect(16);
 
     // Variables
     var i,
         pureElements = {
-        'work': { name: 'work', attributes: {} },
-        '#menu': { name: 'div', attributes: { id: 'menu' } },
-        'div.class-name': { name: 'div', attributes: { 'class': 'class-name' } },
-        'p.go-to-hell[class="help-me"]': { name: 'p', attributes: { 'class': 'go-to-hell help-me' } },
-        'p#id.class': { name: 'p', attributes: { id: 'id', 'class': 'class' } },
-        'p[hi="how" are="\\"you\\""]': { name: 'p', attributes: { hi: 'how', are: '\\"you\\"' } },
-        'p#id.class[data-attr da="gpo" hi="\\"help\\""]': {
-            name: 'p',
-            attributes: {
-                id: 'id',
-                'class': 'class',
-                'data-attr': '',
-                da: 'gpo',
-                hi: '\\"help\\"'
+            'work': { name: 'work', attributes: {}, text: '' },
+            '#menu': { name: 'div', attributes: { id: 'menu' }, text: '' },
+            'div.class-name': { name: 'div', attributes: { 'class': 'class-name' }, text: '' },
+            'p.go-to-hell[class="help-me"]': { name: 'p', attributes: { 'class': 'go-to-hell help-me' }, text: '' },
+            'p#id.class': { name: 'p', attributes: { id: 'id', 'class': 'class' }, text: '' },
+            'p[hi="how" are="\\"you\\""]': { name: 'p', attributes: { hi: 'how', are: '\\"you\\"' }, text: '' },
+            'p#id.class[data-attr da="gpo" hi="\\"help\\""]': {
+                name: 'p',
+                attributes: {
+                    id: 'id',
+                    'class': 'class',
+                    'data-attr': '',
+                    da: 'gpo',
+                    hi: '\\"help\\"'
+                },
+                text: ''
+            },
+            'p#id.class[data-attr da="gpo" hi="\\"help\\""]{Hi, \\} How\'re you?}': {
+                name: 'p',
+                attributes: {
+                    id: 'id',
+                    'class': 'class',
+                    'data-attr': '',
+                    da: 'gpo',
+                    hi: '\\"help\\"'
+                },
+                text: 'Hi, \\} How\'re you?'
             }
-        }
-    },
+        },
         elements = {
-        'work': $Z.extend(true, {}, $Z.el, { name: 'work', attributes: {} }),
-        '#menu': $Z.extend(true, {}, $Z.el, { name: 'div', attributes: { id: 'menu' } }),
-        'div.class-name': $Z.extend(true, {}, $Z.el, { name: 'div', attributes: { 'class': 'class-name' } }),
-        'p.go-to-hell[class="help-me"]': $Z.extend(true, {}, $Z.el, { name: 'p', attributes: { 'class': 'go-to-hell help-me' } }),
-        'p#id.class': $Z.extend(true, {}, $Z.el, { name: 'p', attributes: { id: 'id', 'class': 'class' } }),
-        'p[hi="how" are="\\"you\\""]': $Z.extend(true, {}, $Z.el, { name: 'p', attributes: { hi: 'how', are: '\\"you\\"' } }),
-        'p#id.class[data-attr da="gpo" hi="\\"help\\""]': $Z.extend(true, {}, $Z.el, {
-            name: 'p',
-            attributes: {
-                id: 'id',
-                'class': 'class',
-                'data-attr': '',
-                da: 'gpo',
-                hi: '\\"help\\"'
-            }
-        })
+            'work': $Z.extend(true, {}, element, pureElements['work']),
+            '#menu': $Z.extend(true, {}, element, pureElements['#menu']),
+            'div.class-name': $Z.extend(true, {}, element, pureElements['div.class-name']),
+            'p.go-to-hell[class="help-me"]': $Z.extend(true, {}, element, pureElements['p.go-to-hell[class="help-me"]']),
+            'p#id.class': $Z.extend(true, {}, element, pureElements['p#id.class']),
+            'p[hi="how" are="\\"you\\""]': $Z.extend(true, {}, element, pureElements['p[hi="how" are="\\"you\\""]']),
+            'p#id.class[data-attr da="gpo" hi="\\"help\\""]': $Z.extend(true, {}, element, pureElements['p#id.class[data-attr da="gpo" hi="\\"help\\""]']),
+            'p#id.class[data-attr da="gpo" hi="\\"help\\""]{Hi, \\} How\'re you?}': $Z.extend(true, element, pureElements['p#id.class[data-attr da="gpo" hi="\\"help\\""]{Hi, \\} How\'re you?}'])
         };
 
     // Assertions
@@ -668,7 +672,7 @@ $Q.test('$Z.dom - li^li>div - Ascend and Descend - Works like Add and Descend', 
 });
 $Q.test('$Z.html', function(assert) {
     // Expectations
-    assert.expect(4);
+    assert.expect(6);
 
     // Variables
     var string, input, result, expected;
@@ -687,6 +691,12 @@ $Q.test('$Z.html', function(assert) {
     expected = '<ul><li></li><li></li><li><a></a></li></ul>';
     assert.strictEqual(result, expected, 'dom ' + string);
 
+    string = 'ul>li{one}+li{two}+li>a{three}';
+    input = $Z.dom(string);
+    result = $Z.html(input);
+    expected = '<ul><li>one</li><li>two</li><li><a>three</a></li></ul>';
+    assert.strictEqual(result, expected, 'dom ' + string);
+
     string = 'ul#id.class[title="Something Here"]';
     result = $Z.html(string);
     expected = '<ul title="Something Here" id="id" class="class"></ul>';
@@ -695,5 +705,10 @@ $Q.test('$Z.html', function(assert) {
     string = 'ul>li+li+li>a';
     result = $Z.html(string);
     expected = '<ul><li></li><li></li><li><a></a></li></ul>';
+    assert.strictEqual(result, expected, 'string ' + string);
+
+    string = 'ul>li{one}+li{two}+li>a{three}';
+    result = $Z.html(string);
+    expected = '<ul><li>one</li><li>two</li><li><a>three</a></li></ul>';
     assert.strictEqual(result, expected, 'string ' + string);
 });
