@@ -155,7 +155,7 @@
             invalidToValue(match, '');
 
             // If match cycle has ended, break the loop
-            // Have to do it this way for IE 8
+            // Have to do it this way for IE
             if (match[0] === '')
                 break;
 
@@ -163,57 +163,40 @@
             matches.push(match);
         }
 
-        // If even number of matches is found, the dom is invalid
-        // Because, dom can only be of the form [element][operator][element]...[operator][element]
-        // If the dom starts with or ends with an operator
-        // then the dom is again invalid
-        if (matches.length % 2 === 0) {
-            invalid = true;
-        }
-        if (!invalid) {
-            for (i = 0; i < matches.length; i += 2) {
-                if ((matches[i][0].length === 1) && (' +>^'.indexOf(matches[i][0]) > -1)) {
-                    invalid = true;
-                    break;
-                }
-            }
-        }
-        if (invalid)
-            throw 'Invalid Zen String';
-
         // If you came this far, create first element and add to dom
         dom = extend(true, {}, config.element);
         element = zenAdd(dom);
-        element = extend(true, element, zenElement(matches[0][1], true));
 
         // Loop through matches
         // Don't use for..in loop
         // because we need to be able to manipulate the i
-        for(i=1;i<=matches.length-1;i++) {
-            switch (matches[i][0]) {
+        for (i = 0; i < matches.length; i++) {
+            var current = matches[i][0];
+            switch (current) {
 
-                // Child
+                // Descend
             case ' ':
             case '>':
-                element = zenAdd(element, zenElement(matches[++i][0]));
+                element = zenAdd(element);
                 break;
 
-            // Sibling
+                // Add
             case '+':
                 if (is('null|undefined', element.parent))
                     element.parent = extend(true, {}, config.element);
-                element = zenAdd(element.parent, zenElement(matches[++i][0]));
+                element = zenAdd(element.parent);
                 break;
 
-            // Up One level
+                // Ascend
             case '^':
                 var parent = element.parent || element;
-                element = zenAdd(parent.parent || parent, zenElement(matches[++i][0]));
+                element = zenAdd(parent.parent || parent);
                 break;
 
-            // This should never happen since we already did a lot of checks
+                // The element should be extended
+                // This allows for chaining ascends, etc
             default:
-                throw 'Something wrong happened';
+                extend(element, zenElement(current, true));
             }
         }
 

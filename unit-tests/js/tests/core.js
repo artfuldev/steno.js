@@ -338,7 +338,7 @@ $Q.test('$Z.dom - ul>li+li - Descend and Add', function (assert) {
         parent: ul
     });
     $Z.extend(li2, {
-        parent: ul,
+        parent: ul
     });
     $Z.extend(ul, {
         children: [li, li2]
