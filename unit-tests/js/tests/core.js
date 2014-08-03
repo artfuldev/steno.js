@@ -672,12 +672,24 @@ $Q.test('$Z.dom - li^li>div - Ascend and Descend - Works like Add and Descend', 
 });
 $Q.test('$Z.html', function(assert) {
     // Expectations
-    assert.expect(6);
+    assert.expect(8);
 
     // Variables
     var string, input, result, expected;
 
     // Assertions
+
+    //#23
+    string = 'h1+h2';
+    input = $Z.dom(string);
+    result = $Z.html(input);
+    expected = '<h1></h1><h2></h2>';
+    assert.strictEqual(result, expected, 'dom ' + string);
+    //#23
+    string = 'h1+h2';
+    result = $Z.html(string);
+    expected = '<h1></h1><h2></h2>';
+    assert.strictEqual(result, expected, 'dom ' + string);
 
     string = 'ul#id.class[title="Something Here"]';
     input = $Z.dom(string);
