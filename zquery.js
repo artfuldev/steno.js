@@ -23,7 +23,6 @@
 
     // Required variables
     var zQuery = {},
-        config,
 
         // Short for prototypes
         objProto = Object.prototype,
@@ -32,8 +31,31 @@
         hasOwn = objProto.hasOwnProperty,
 
         // For IE, to prevent Invalid Calling Object error on toString.call(obj)
-        toString = objProto.toString;
+        toString = objProto.toString,
 
+    // Regexes
+    // RegEx-es thanks to http://regexpal.com/
+    // And RegEx Magic http://www.regexmagic.com/
+
+                    // Capture Groups:
+                    // Operator
+                    // Element, Name, Id, Classes with dots, Attributes
+        rxElement = /( |\+|\^|>|([a-z]+)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*))/g,
+
+                    // Capture Group: ClassName
+        rxClasses = /\.([a-z-]+)/g,
+
+                    // Capture Groups: Name, Value
+        rxAttributes = /([a-z-]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
+        rxTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
+
+    // Empty Zen Element
+        emptyZenElement = {
+        parent: null,
+        name: '',
+        attributes: {},
+        children: []
+    };
 
     // Core functions start with zen
 
@@ -45,7 +67,7 @@
         validateArgs(arguments, ['string']);
 
         // Return Matches
-        var regEx = new RegExp(config.matches.element.classes),
+        var regEx = new RegExp(rxClasses),
             matches = [],
             match;
         while (match = regEx.exec(string)) {
@@ -61,7 +83,7 @@
         validateArgs(arguments, ['string']);
 
         // Return Matches
-        var regEx = new RegExp(config.matches.element.attributes),
+        var regEx = new RegExp(rxAttributes),
             matches = {},
             match;
         while (match = regEx.exec(string)) {
@@ -89,7 +111,7 @@
         validateArgs(arguments, ['string', 'boolean']);
 
         // Match RegEx to retrieve element
-        var regEx = new RegExp(config.matches.element.complete),
+        var regEx = new RegExp(rxElement),
             // Find only first match - FOR NOW
             match = regEx.exec(string),
             zClasses,
@@ -123,7 +145,7 @@
 
         // Build and return the element, now that the name and attributes are done
         if (!pure)
-            return extend(true, {}, config.element, {
+            return extend(true, {}, emptyZenElement, {
                 name: match[2],
                 attributes: zAttributes
             });
@@ -144,9 +166,8 @@
             dom,
             match,
             element,
-            regEx = new RegExp(config.matches.element.complete),
-            matches = [],
-            invalid = false;
+            regEx = new RegExp(rxElement),
+            matches = [];
 
         // Retreive Elements and Operators
         while (match = regEx.exec(string)) {
@@ -155,7 +176,7 @@
             invalidToValue(match, '');
 
             // If match cycle has ended, break the loop
-            // Have to do it this way for IE 8
+            // Have to do it this way for IE
             if (match[0] === '')
                 break;
 
@@ -163,57 +184,40 @@
             matches.push(match);
         }
 
-        // If even number of matches is found, the dom is invalid
-        // Because, dom can only be of the form [element][operator][element]...[operator][element]
-        // If the dom starts with or ends with an operator
-        // then the dom is again invalid
-        if (matches.length % 2 === 0) {
-            invalid = true;
-        }
-        if (!invalid) {
-            for (i = 0; i < matches.length; i += 2) {
-                if ((matches[i][0].length === 1) && (' +>^'.indexOf(matches[i][0]) > -1)) {
-                    invalid = true;
-                    break;
-                }
-            }
-        }
-        if (invalid)
-            throw 'Invalid Zen String';
-
         // If you came this far, create first element and add to dom
-        dom = extend(true, {}, config.element);
+        dom = extend(true, {}, emptyZenElement);
         element = zenAdd(dom);
-        element = extend(true, element, zenElement(matches[0][1], true));
 
         // Loop through matches
         // Don't use for..in loop
         // because we need to be able to manipulate the i
-        for(i=1;i<=matches.length-1;i++) {
-            switch (matches[i][0]) {
+        for (i = 0; i < matches.length; i++) {
+            var current = matches[i][0];
+            switch (current) {
 
-                // Child
+                // Descend
             case ' ':
             case '>':
-                element = zenAdd(element, zenElement(matches[++i][0]));
+                element = zenAdd(element);
                 break;
 
-            // Sibling
+                // Add
             case '+':
                 if (is('null|undefined', element.parent))
-                    element.parent = extend(true, {}, config.element);
-                element = zenAdd(element.parent, zenElement(matches[++i][0]));
+                    element.parent = extend(true, {}, emptyZenElement);
+                element = zenAdd(element.parent);
                 break;
 
-            // Up One level
+                // Ascend
             case '^':
                 var parent = element.parent || element;
-                element = zenAdd(parent.parent || parent, zenElement(matches[++i][0]));
+                element = zenAdd(parent.parent || parent);
                 break;
 
-            // This should never happen since we already did a lot of checks
+                // The element should be extended
+                // This allows for chaining ascends, etc
             default:
-                throw 'Something wrong happened';
+                extend(element, zenElement(current, true));
             }
         }
 
@@ -245,7 +249,7 @@
 
         // Add empty child if not provided
         if (is('undefined|null', child)) {
-            child = extend(true, {}, config.element);
+            child = extend(true, {}, emptyZenElement);
             arguments[1] = child;
             arguments.length++;
         }
@@ -410,7 +414,7 @@
         if (validateArgs(arguments, ['null|undefined'], false))
             return '';
         validateArgs(arguments, ['string|boolean|number']);
-        return text.toString().replace(config.matches.trim, "");
+        return text.toString().replace(rxTrim, "");
     };
 
     // Invlaid to Value (Nullify to Value)
@@ -503,41 +507,26 @@
         return target;
     };
 
-    // Config
-    config = {
-        // RegEx-es thanks to http://regexpal.com/
-        // And RegEx Magic http://www.regexmagic.com/
-        matches: {
-            element: {
-                // Capture Groups:
-                // Operator
-                // Element, Name, Id, Classes with dots, Attributes
-                complete: /( |\+|\^|>|([a-z]+)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*))/g,
-                // Capture Group: ClassName
-                classes: /\.([a-z-]+)/g,
-                // Capture Groups: Name, Value
-                attributes: /([a-z-]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g
-            },
-            trim: /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g
-        },
-        element: {
-            parent: null,
-            name: '',
-            attributes: {},
-            children: []
-        }
-    };
-
     // Add stuff to zQuery
     extend(zQuery, {
 
         // Core
+        classes: zenClasses,
+        attributes: zenAttributes,
+        element: zenElement,
+        dom: zenDom,
         html: zenHtml,
+        redo: zenRedo,
+        add: zenAdd,
+
+        // Element
+        el: emptyZenElement,
 
         // Utilities
         extend: extend,
         has: has,
         is: is,
+        objectType: objectType,
         trim: trim,
         validate: validateArgs,
 
