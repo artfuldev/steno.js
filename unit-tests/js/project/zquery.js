@@ -33,29 +33,30 @@
         // For IE, to prevent Invalid Calling Object error on toString.call(obj)
         toString = objProto.toString,
 
-    // Regexes
-    // RegEx-es thanks to http://regexpal.com/
-    // And RegEx Magic http://www.regexmagic.com/
+        // Regexes
+        // RegEx-es thanks to http://regexpal.com/
+        // And RegEx Magic http://www.regexmagic.com/
 
-                    // Capture Groups:
-                    // Operator
-                    // Element, Name, Id, Classes with dots, Attributes
-        rxElement = /( |\+|\^|>|([a-z]+)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*))/g,
+        // Capture Groups:
+        // 1        2           3       4                   5       6   7       8           9       10
+        // Match    Operator    Closing ClosingMuliplier    Name    Id  Classes Attributes  Content Multiplier
+        rxElement = /(( |\+|\^|>|\()|(\))(?:\*(\d+))?|([a-z]+[0-9]?)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*)(?:\{((?:\\.|[^\n\r\\}])*)\})?(?:\*(\d+))?)/g,
 
-                    // Capture Group: ClassName
+        // Capture Group: ClassName
         rxClasses = /\.([a-z-]+)/g,
 
-                    // Capture Groups: Name, Value
+        // Capture Groups: Name, Value
         rxAttributes = /([a-z-]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
         rxTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
 
-    // Empty Zen Element
+        // Empty Zen Element
         emptyZenElement = {
-        parent: null,
-        name: '',
-        attributes: {},
-        children: []
-    };
+            parent: null,
+            name: '',
+            attributes: {},
+            children: [],
+            text: ''
+        };
 
     // Core functions start with zen
 
@@ -121,18 +122,18 @@
         invalidToValue(match, '');
 
         // If no element name is found, it should be div
-        if (match[2] == '')
-            match[2] = 'div';
+        if (match[5] == '')
+            match[5] = 'div';
 
         // Get Classes
-        zClasses = zenClasses(match[4]);
+        zClasses = zenClasses(match[7]);
 
         // Get Attributes
-        zAttributes = zenAttributes(match[5]);
+        zAttributes = zenAttributes(match[8]);
 
         // Make id as an attribute, id specified takes precedence over that in attributes tag
-        if (match[3])
-            zAttributes.id = match[3];
+        if (match[6])
+            zAttributes.id = match[6];
 
         // If zClasses is non-empty, make class as an attribute and add classes. Duplicates not removed.
         if (zClasses) {
@@ -146,12 +147,14 @@
         // Build and return the element, now that the name and attributes are done
         if (!pure)
             return extend(true, {}, emptyZenElement, {
-                name: match[2],
-                attributes: zAttributes
+                name: match[5],
+                attributes: zAttributes,
+                text: match[9]
             });
         return {
-            name: match[2],
-            attributes: zAttributes
+            name: match[5],
+            attributes: zAttributes,
+            text: match[9]
         };
     };
 
@@ -289,7 +292,8 @@
             prefix += '>';
             suffix = '</' + dom.name + '>' + suffix;
         }
-        // Add contents
+        // Add contents if children are not present, else add children
+        inner += dom.text;
         for (i in dom.children) {
             inner += zenHtml(dom.children[i]);
         }
