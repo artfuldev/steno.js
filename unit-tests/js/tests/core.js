@@ -674,7 +674,7 @@ $Q.test('$Z.dom - li^li>div - Ascend and Descend - Works like Add and Descend', 
 });
 $Q.test('$Z.html', function(assert) {
     // Expectations
-    assert.expect(10);
+    assert.expect(12);
 
     // Variables
     var string, input, result, expected;
@@ -691,7 +691,7 @@ $Q.test('$Z.html', function(assert) {
     string = 'h1+h2';
     result = $Z.html(string);
     expected = '<h1></h1><h2></h2>';
-    assert.strictEqual(result, expected, 'dom ' + string);
+    assert.strictEqual(result, expected, 'string ' + string);
 
     //#21
     string = 'ul>li*4';
@@ -703,7 +703,20 @@ $Q.test('$Z.html', function(assert) {
     string = 'ul>li*4';
     result = $Z.html(string);
     expected = '<ul><li></li><li></li><li></li><li></li></ul>';
+    assert.strictEqual(result, expected, 'string ' + string);
+
+    //#22
+    string = 'ul>(li>a)*2';
+    input = $Z.dom(string);
+    result = $Z.html(input);
+    expected = '<ul><li><a></a></li><li><a></a></li></ul>';
     assert.strictEqual(result, expected, 'dom ' + string);
+    //#22
+    string = 'ul>(li.option>a.has-link)*2+li.selected.option>a.has-link';
+    result = $Z.html(string);
+    expected = '<ul><li class="option"><a class="has-link"></a></li><li class="option"><a class="has-link"></a></li>' +
+        '<li class="selected option"><a class="has-link"></a></li></ul>';
+    assert.strictEqual(result, expected, 'string ' + string);
 
     string = 'ul#id.class[title="Something Here"]';
     input = $Z.dom(string);

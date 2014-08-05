@@ -183,6 +183,9 @@
             dom,
             match,
             element,
+            parent,
+            multiplier,
+            temp,
             regEx = new RegExp(rxElement),
             matches = [];
 
@@ -210,11 +213,12 @@
         // because we need to be able to manipulate the i
         for (i = 0; i < matches.length; i++) {
             var current = matches[i][1];
-            switch (current) {
+            switch (current[0]) {
 
-                // Descend
+                // Descend, Group
             case ' ':
             case '>':
+            case '(':
                 element = zenAdd(element);
                 break;
 
@@ -227,8 +231,33 @@
 
                 // Ascend
             case '^':
-                var parent = element.parent || element;
+                parent = element.parent || element;
                 element = zenAdd(parent.parent || parent);
+                break;
+
+                // Close Group
+            case ')':
+                if (element == null)
+                    throw 'Invalid zen string';
+
+                // Climb up till the element's parent has no name
+                parent = element.parent;
+                while (parent.name !== '') {
+                    temp = element.parent;
+                    parent = temp.parent;
+                }
+
+                // Set multiplier
+                multiplier = matches[i][4];
+                if (!multiplier) {
+                    multiplier = 1;
+                } else {
+                    multiplier = parseInt(multiplier);
+                    if (isNaN(multiplier))
+                        multiplier = 1;
+                }
+                parent.multiplier = multiplier;
+                element = parent || temp || element;
                 break;
 
                 // The element should be extended
