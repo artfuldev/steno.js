@@ -55,7 +55,8 @@
             name: '',
             attributes: {},
             children: [],
-            text: ''
+            text: '',
+            multiplier: 1
         };
 
     // Core functions start with zen
@@ -116,13 +117,14 @@
             // Find only first match - FOR NOW
             match = regEx.exec(string),
             zClasses,
-            zAttributes;
+            zAttributes,
+            multiplier;
 
         // Convert all non matches to empty strings
         invalidToValue(match, '');
 
         // If no element name is found, it should be div
-        if (match[5] == '')
+        if (match[5] === '')
             match[5] = 'div';
 
         // Get Classes
@@ -143,18 +145,30 @@
                 zAttributes['class'] = zClasses + ' ' + zAttributes['class'];
             }
         }
+        
+        // Multiplier
+        multiplier = match[10];
+        if (!multiplier) {
+            multiplier = 1;
+        } else {
+            multiplier = parseInt(multiplier);
+            if (isNaN(multiplier))
+                multiplier = 1;
+        }
 
         // Build and return the element, now that the name and attributes are done
         if (!pure)
             return extend(true, {}, emptyZenElement, {
                 name: match[5],
                 attributes: zAttributes,
-                text: match[9]
+                text: match[9],
+                multiplier: multiplier
             });
         return {
             name: match[5],
             attributes: zAttributes,
-            text: match[9]
+            text: match[9],
+            multiplier: multiplier
         };
     };
 
@@ -195,7 +209,7 @@
         // Don't use for..in loop
         // because we need to be able to manipulate the i
         for (i = 0; i < matches.length; i++) {
-            var current = matches[i][0];
+            var current = matches[i][1];
             switch (current) {
 
                 // Descend
@@ -280,26 +294,37 @@
         var i,
             prefix = '',
             inner = '',
-            suffix = '';
+            suffix = '',
+            name = dom.name,
+            attributes = dom.attributes,
+            multiplier = dom.multiplier,
+            text = dom.text,
+            children = dom.children,
+            html = '';
 
         // Form html
         // If name is available, add dom html
-        if (dom.name) {
-            prefix += '<' + dom.name;
-            for (i in dom.attributes) {
-                prefix += ' ' + i + '="' + dom.attributes[i] + '"';
+        if (name) {
+            prefix += '<' + name;
+            for (i in attributes) {
+                prefix += ' ' + i + '="' + attributes[i] + '"';
             }
             prefix += '>';
-            suffix = '</' + dom.name + '>' + suffix;
+            suffix = '</' + name + '>' + suffix;
         }
         // Add contents if children are not present, else add children
-        inner += dom.text;
-        for (i in dom.children) {
-            inner += zenHtml(dom.children[i]);
+        inner += text;
+        for (i in children) {
+            inner += zenHtml(children[i]);
+        }
+
+        // Multiplier
+        for (i = 0; i < multiplier; i++) {
+            html += prefix + inner + suffix;
         }
 
         // Return string
-        return prefix + inner + suffix;
+        return html;
     };
 
     // Check if Object Has Key

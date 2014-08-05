@@ -98,12 +98,12 @@ $Q.test('$Z.element', function (assert) {
     // Variables
     var i,
         pureElements = {
-            'work': { name: 'work', attributes: {}, text: '' },
-            '#menu': { name: 'div', attributes: { id: 'menu' }, text: '' },
-            'div.class-name': { name: 'div', attributes: { 'class': 'class-name' }, text: '' },
-            'p.go-to-hell[class="help-me"]': { name: 'p', attributes: { 'class': 'go-to-hell help-me' }, text: '' },
-            'p#id.class': { name: 'p', attributes: { id: 'id', 'class': 'class' }, text: '' },
-            'p[hi="how" are="\\"you\\""]': { name: 'p', attributes: { hi: 'how', are: '\\"you\\"' }, text: '' },
+            'work': { name: 'work', attributes: {}, text: '', multiplier: 1 },
+            '#menu': { name: 'div', attributes: { id: 'menu' }, text: '', multiplier: 1 },
+            'div.class-name': { name: 'div', attributes: { 'class': 'class-name' }, text: '', multiplier: 1 },
+            'p.go-to-hell[class="help-me"]': { name: 'p', attributes: { 'class': 'go-to-hell help-me' }, text: '', multiplier: 1 },
+            'p#id.class': { name: 'p', attributes: { id: 'id', 'class': 'class' }, text: '', multiplier: 1 },
+            'p[hi="how" are="\\"you\\""]': { name: 'p', attributes: { hi: 'how', are: '\\"you\\"' }, text: '', multiplier: 1 },
             'p#id.class[data-attr da="gpo" hi="\\"help\\""]': {
                 name: 'p',
                 attributes: {
@@ -113,7 +113,8 @@ $Q.test('$Z.element', function (assert) {
                     da: 'gpo',
                     hi: '\\"help\\"'
                 },
-                text: ''
+                text: '',
+                multiplier: 1
             },
             'p#id.class[data-attr da="gpo" hi="\\"help\\""]{Hi, \\} How\'re you?}': {
                 name: 'p',
@@ -124,7 +125,8 @@ $Q.test('$Z.element', function (assert) {
                     da: 'gpo',
                     hi: '\\"help\\"'
                 },
-                text: 'Hi, \\} How\'re you?'
+                text: 'Hi, \\} How\'re you?',
+                multiplier: 1
             }
         },
         elements = {
@@ -672,7 +674,7 @@ $Q.test('$Z.dom - li^li>div - Ascend and Descend - Works like Add and Descend', 
 });
 $Q.test('$Z.html', function(assert) {
     // Expectations
-    assert.expect(8);
+    assert.expect(10);
 
     // Variables
     var string, input, result, expected;
@@ -689,6 +691,18 @@ $Q.test('$Z.html', function(assert) {
     string = 'h1+h2';
     result = $Z.html(string);
     expected = '<h1></h1><h2></h2>';
+    assert.strictEqual(result, expected, 'dom ' + string);
+
+    //#21
+    string = 'ul>li*4';
+    input = $Z.dom(string);
+    result = $Z.html(input);
+    expected = '<ul><li></li><li></li><li></li><li></li></ul>';
+    assert.strictEqual(result, expected, 'dom ' + string);
+    //#21
+    string = 'ul>li*4';
+    result = $Z.html(string);
+    expected = '<ul><li></li><li></li><li></li><li></li></ul>';
     assert.strictEqual(result, expected, 'dom ' + string);
 
     string = 'ul#id.class[title="Something Here"]';
