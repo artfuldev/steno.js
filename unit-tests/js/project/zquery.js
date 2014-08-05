@@ -213,7 +213,7 @@
         // because we need to be able to manipulate the i
         for (i = 0; i < matches.length; i++) {
             var current = matches[i][1];
-            switch (current[0]) {
+            switch (current.charAt(0)) {
 
                 // Descend, Group
             case ' ':
@@ -222,23 +222,21 @@
                 element = zenAdd(element);
                 break;
 
-                // Add
+            // Add
             case '+':
                 if (is('null|undefined', element.parent))
                     element.parent = extend(true, {}, emptyZenElement);
                 element = zenAdd(element.parent);
                 break;
 
-                // Ascend
+            // Ascend
             case '^':
                 parent = element.parent || element;
                 element = zenAdd(parent.parent || parent);
                 break;
 
-                // Close Group
+            // Close Group
             case ')':
-                if (element == null)
-                    throw 'Invalid zen string';
 
                 // Climb up till the element's parent has no name
                 parent = element.parent;
@@ -260,8 +258,8 @@
                 element = parent || temp || element;
                 break;
 
-                // The element should be extended
-                // This allows for chaining ascends, etc
+            // The element should be extended
+            // This allows for chaining ascends, etc
             default:
                 extend(element, zenElement(current, true));
             }
