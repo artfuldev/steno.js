@@ -1,19 +1,20 @@
 ﻿/*
-    * This file is part of "zQuery", (c) Kenshin The Battōsai (Sudarsan Balaji), 2014.
-    * 
-    * "zQuery" is free software: you can redistribute it and/or modify
-    * it under the terms of the GNU General Public License as published by
-    * the Free Software Foundation, either version 3 of the License, or
-    * (at your option) any later version.
-    * 
-    * "zQuery" is distributed in the hope that it will be useful,
-    * but WITHOUT ANY WARRANTY; without even the implied warranty of
-    * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    * GNU General Public License for more details.
-    * 
-    * You should have received a copy of the GNU General Public License
-    * along with "zQuery".  If not, see <http://www.gnu.org/licenses/>.
-    * 
+    zQuery - A javascript library to create create HTML strings using CSS selectors
+    Copyright (C) 2014  Kenshin The Battōsai (Sudarsan Balaji)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/agpl-3.0.html>.
+
     */
 
 
@@ -55,7 +56,8 @@
             name: '',
             attributes: {},
             children: [],
-            text: ''
+            text: '',
+            multiplier: 1
         };
 
     // Core functions start with zen
@@ -116,13 +118,14 @@
             // Find only first match - FOR NOW
             match = regEx.exec(string),
             zClasses,
-            zAttributes;
+            zAttributes,
+            multiplier;
 
         // Convert all non matches to empty strings
         invalidToValue(match, '');
 
         // If no element name is found, it should be div
-        if (match[5] == '')
+        if (match[5] === '')
             match[5] = 'div';
 
         // Get Classes
@@ -143,18 +146,30 @@
                 zAttributes['class'] = zClasses + ' ' + zAttributes['class'];
             }
         }
+        
+        // Multiplier
+        multiplier = match[10];
+        if (!multiplier) {
+            multiplier = 1;
+        } else {
+            multiplier = parseInt(multiplier);
+            if (isNaN(multiplier))
+                multiplier = 1;
+        }
 
         // Build and return the element, now that the name and attributes are done
         if (!pure)
             return extend(true, {}, emptyZenElement, {
                 name: match[5],
                 attributes: zAttributes,
-                text: match[9]
+                text: match[9],
+                multiplier: multiplier
             });
         return {
             name: match[5],
             attributes: zAttributes,
-            text: match[9]
+            text: match[9],
+            multiplier: multiplier
         };
     };
 
@@ -169,6 +184,9 @@
             dom,
             match,
             element,
+            parent,
+            multiplier,
+            temp,
             regEx = new RegExp(rxElement),
             matches = [];
 
@@ -195,30 +213,54 @@
         // Don't use for..in loop
         // because we need to be able to manipulate the i
         for (i = 0; i < matches.length; i++) {
-            var current = matches[i][0];
-            switch (current) {
+            var current = matches[i][1];
+            switch (current.charAt(0)) {
 
-                // Descend
+                // Descend, Group
             case ' ':
             case '>':
+            case '(':
                 element = zenAdd(element);
                 break;
 
-                // Add
+            // Add
             case '+':
                 if (is('null|undefined', element.parent))
                     element.parent = extend(true, {}, emptyZenElement);
                 element = zenAdd(element.parent);
                 break;
 
-                // Ascend
+            // Ascend
             case '^':
-                var parent = element.parent || element;
+                parent = element.parent || element;
                 element = zenAdd(parent.parent || parent);
                 break;
 
-                // The element should be extended
-                // This allows for chaining ascends, etc
+            // Close Group
+            case ')':
+
+                // Climb up till the element's parent has no name
+                parent = element.parent;
+                while (parent.name !== '') {
+                    temp = element.parent;
+                    parent = temp.parent;
+                }
+
+                // Set multiplier
+                multiplier = matches[i][4];
+                if (!multiplier) {
+                    multiplier = 1;
+                } else {
+                    multiplier = parseInt(multiplier);
+                    if (isNaN(multiplier))
+                        multiplier = 1;
+                }
+                parent.multiplier = multiplier;
+                element = parent || temp || element;
+                break;
+
+            // The element should be extended
+            // This allows for chaining ascends, etc
             default:
                 extend(element, zenElement(current, true));
             }
@@ -280,26 +322,37 @@
         var i,
             prefix = '',
             inner = '',
-            suffix = '';
+            suffix = '',
+            name = dom.name,
+            attributes = dom.attributes,
+            multiplier = dom.multiplier,
+            text = dom.text,
+            children = dom.children,
+            html = '';
 
         // Form html
         // If name is available, add dom html
-        if (dom.name) {
-            prefix += '<' + dom.name;
-            for (i in dom.attributes) {
-                prefix += ' ' + i + '="' + dom.attributes[i] + '"';
+        if (name) {
+            prefix += '<' + name;
+            for (i in attributes) {
+                prefix += ' ' + i + '="' + attributes[i] + '"';
             }
             prefix += '>';
-            suffix = '</' + dom.name + '>' + suffix;
+            suffix = '</' + name + '>' + suffix;
         }
         // Add contents if children are not present, else add children
-        inner += dom.text;
-        for (i in dom.children) {
-            inner += zenHtml(dom.children[i]);
+        inner += text;
+        for (i in children) {
+            inner += zenHtml(children[i]);
+        }
+
+        // Multiplier
+        for (i = 0; i < multiplier; i++) {
+            html += prefix + inner + suffix;
         }
 
         // Return string
-        return prefix + inner + suffix;
+        return html;
     };
 
     // Check if Object Has Key
@@ -517,15 +570,10 @@
         // Core
         html: zenHtml,
 
-        // Element
-        el: emptyZenElement,
-
         // Utilities
         extend: extend,
         has: has,
         is: is,
-        objectType: objectType,
-        trim: trim,
         validate: validateArgs,
 
         // Array Helpers

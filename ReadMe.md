@@ -1,17 +1,18 @@
 ﻿#zQuery
 
 * Author: Kenshin The Battōsai *(Sudarsan Balaji)*
-* License: *GNU GPL v3* (see COPYING.txt)
-* Library Version: v0.1.1
-* Last Updated: 2014-08-03
-* ReadMe Version: 0.5
+* License: [GNU Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
+* Library Version: v1.0.0
+* Last Updated: 2014-08-06
+* ReadMe Version: 1.0
 
 ##Description
 
-A work-in-progress javascript library to use zen coding (now Emmet) to quickly create HTML.
+A javascript library to use CSS selectors and more (similar to [Emmet](http://emmet.io)) to quickly create HTML.
+
 The main idea is that you should be able to do something like this:
 
-`$Z.render('#main-menu.main[role="menu"]>((a>span{Selected})+(ul.dropdown>li*4))')`
+`$Z.html('#main-menu.main[role="menu"]>((a>span{Selected})+(ul.dropdown>li*4))')`
 
 should output
 
@@ -31,23 +32,28 @@ should output
 
 so that you can then do:
 
-`jQuery('.insert-here').append($Z.render(zenCodingString));`
+`jQuery('.insert-here').append(zQuery.html('ul>(li>a{Click Here})*4'));`
 
-or, like how I'd like it to be done:
+or, like this:
 
 ```
-$Z = zQuery.html;
-$('#insert-here').append($Z(zenCodingString));
+window.zen = zQuery.html;
+$('#insert-here').append(zen('ul>(li>a{Click Here})*4'));
 ```
+
+or any other way you'd like to use the zQuery.html function.
+`zQuery` and `$Z` can be used interchangeably.
 
 ##Features
 
 * Can use Zen Coding and Sizzle selectors interchangeably
 eg: `[title="" href=""]` and `[title=""][href=""]`
+* Quickly add dom elements or innerHTML to a document.
+* No dependencies, use with or without jQuery.
+* Comes with utilities, like `extend, is, has, validate, random and nullify`. 
 
 Should be able to:
 
-* Quickly add dom elements or innerHTML to a document.
 * Create quick clientside templates when done.
 * Extend to other engines like Handlebars.js.
 
@@ -60,9 +66,8 @@ Should be able to:
 ###Short Term
 
 * To add whatever possible for now.
-* Add grouping selectors
-* Add multipliers
 * Add templating options
+* Add a jQuery plugin version with much lesser file size (if possible)
 
 ##Thanks
 
