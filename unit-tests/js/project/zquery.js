@@ -34,6 +34,31 @@
         // For IE, to prevent Invalid Calling Object error on toString.call(obj)
         toString = objProto.toString,
 
+        // String Literals
+        strString = 'string',
+        strBoolean = 'boolean',
+        strNull = 'null',
+        strOr = '|',
+        strUndefined = 'undefined',
+        strNullOrUndefined = strNull+strOr+strUndefined,
+        strEmpty = '',
+        strDiv = 'div',
+        strClass = 'class',
+        strZenDom = 'zen dom',
+        strObject = 'object',
+        strArray = 'array',
+        strPlainObject = 'plain object',
+        strNumber = 'number',
+        strSpace = ' ',
+        strGt = '>',
+        strNullOrObject = strNull + strOr + strObject,
+        strInvalidCall = 'Invalid Function Call',
+        strFunction = 'function',
+
+
+
+
+
         // Regexes
         // RegEx-es thanks to http://regexpal.com/
         // And RegEx Magic http://www.regexmagic.com/
@@ -53,10 +78,10 @@
         // Empty Zen Element
         emptyZenElement = {
             parent: null,
-            name: '',
+            name: strEmpty,
             attributes: {},
             children: [],
-            text: '',
+            text: strEmpty,
             multiplier: 1
         };
 
@@ -67,7 +92,7 @@
     function zenClasses(string) {
 
         // Validate Arguments
-        validateArgs(arguments, ['string']);
+        validateArgs(arguments, [strString]);
 
         // Return Matches
         var regEx = new RegExp(rxClasses),
@@ -76,14 +101,14 @@
         while (match = regEx.exec(string)) {
             matches.push(match[1]);
         }
-        return matches.join(' ');
+        return matches.join(strSpace);
     };
 
     // Returns attributes found in an attributes zencoding string partial as an object with key value pairs
     function zenAttributes(string) {
 
         // Validate Arguments
-        validateArgs(arguments, ['string']);
+        validateArgs(arguments, [strString]);
 
         // Return Matches
         var regEx = new RegExp(rxAttributes),
@@ -94,7 +119,7 @@
         }
 
         // Convert all non matches to empty strings
-        invalidToValue(matches, '');
+        invalidToValue(matches, strEmpty);
 
         return matches;
     };
@@ -104,14 +129,14 @@
 
         // Returns pure {name:'', attributes{}} object if true
         // Otherwise returns an extended one
-        if (is('undefined|null', pure)) {
+        if (is(strNullOrUndefined, pure)) {
             arguments[1] = false;
             arguments.length++;
             pure = false;
         }
 
         //Validate Arguments
-        validateArgs(arguments, ['string', 'boolean']);
+        validateArgs(arguments, [strString, strBoolean]);
 
         // Match RegEx to retrieve element
         var regEx = new RegExp(rxElement),
@@ -122,11 +147,11 @@
             multiplier;
 
         // Convert all non matches to empty strings
-        invalidToValue(match, '');
+        invalidToValue(match, strEmpty);
 
         // If no element name is found, it should be div
-        if (match[5] === '')
-            match[5] = 'div';
+        if (match[5] === strEmpty)
+            match[5] = strDiv;
 
         // Get Classes
         zClasses = zenClasses(match[7]);
@@ -140,10 +165,10 @@
 
         // If zClasses is non-empty, make class as an attribute and add classes. Duplicates not removed.
         if (zClasses) {
-            if (!zAttributes['class']) {
-                zAttributes['class'] = zClasses;
+            if (!zAttributes[strClass]) {
+                zAttributes[strClass] = zClasses;
             } else {
-                zAttributes['class'] = zClasses + ' ' + zAttributes['class'];
+                zAttributes[strClass] = zClasses + strSpace + zAttributes[strClass];
             }
         }
         
@@ -177,7 +202,7 @@
     function zenDom(string) {
 
         //Validate Arguments
-        validateArgs(arguments, ['string']);
+        validateArgs(arguments, [strString]);
 
         // Initialize
         var i,
@@ -194,11 +219,11 @@
         while (match = regEx.exec(string)) {
 
             // Convert all non matches to empty strings
-            invalidToValue(match, '');
+            invalidToValue(match, strEmpty);
 
             // If match cycle has ended, break the loop
             // Have to do it this way for IE
-            if (match[0] === '')
+            if (match[0] === strEmpty)
                 break;
 
             // Retreive matches
@@ -217,15 +242,15 @@
             switch (current.charAt(0)) {
 
                 // Descend, Group
-            case ' ':
-            case '>':
+            case strSpace:
+            case strGt:
             case '(':
                 element = zenAdd(element);
                 break;
 
             // Add
             case '+':
-                if (is('null|undefined', element.parent))
+                if (is(strNullOrUndefined, element.parent))
                     element.parent = extend(true, {}, emptyZenElement);
                 element = zenAdd(element.parent);
                 break;
@@ -241,7 +266,7 @@
 
                 // Climb up till the element's parent has no name
                 parent = element.parent;
-                while (parent.name !== '') {
+                while (parent.name !== strEmpty) {
                     temp = element.parent;
                     parent = temp.parent;
                 }
@@ -268,7 +293,7 @@
 
         // Return element if dom is just an empty holder,
         // otherwise return dom
-        if (dom.name === '' && dom.children.length === 1) {
+        if (dom.name === strEmpty && dom.children.length === 1) {
             dom = dom.children[0];
             dom.parent = null;
         }
@@ -278,7 +303,7 @@
 
     // Restructures a dom so that the parent is returned
     function zenRedo(dom) {
-        validateArgs(arguments, ['zen dom']);
+        validateArgs(arguments, [strZenDom]);
 
         var temp = dom,
             parent = temp.parent;
@@ -293,14 +318,14 @@
     function zenAdd(element, child) {
 
         // Add empty child if not provided
-        if (is('undefined|null', child)) {
+        if (is(strNullOrUndefined, child)) {
             child = extend(true, {}, emptyZenElement);
             arguments[1] = child;
             arguments.length++;
         }
 
         // Validate
-        validateArgs(arguments, ['zen dom', 'zen dom']);
+        validateArgs(arguments, [strZenDom, strZenDom]);
 
         // Add child-parent links
         child.parent = element;
@@ -313,32 +338,32 @@
     function zenHtml(dom) {
 
         // Validate
-        validateArgs(arguments, ['string|zen dom']);
+        validateArgs(arguments, [strString + strOr + strZenDom]);
 
-        if (is('string', dom))
+        if (is(strString, dom))
             return zenHtml(zenDom(dom));
 
         // Variables
         var i,
-            prefix = '',
-            inner = '',
-            suffix = '',
+            prefix = strEmpty,
+            inner = strEmpty,
+            suffix = strEmpty,
             name = dom.name,
             attributes = dom.attributes,
             multiplier = dom.multiplier,
             text = dom.text,
             children = dom.children,
-            html = '';
+            html = strEmpty;
 
         // Form html
         // If name is available, add dom html
         if (name) {
             prefix += '<' + name;
             for (i in attributes) {
-                prefix += ' ' + i + '="' + attributes[i] + '"';
+                prefix += strSpace + i + '="' + attributes[i] + '"';
             }
-            prefix += '>';
-            suffix = '</' + name + '>' + suffix;
+            prefix += strGt;
+            suffix = '</' + name + strGt + suffix;
         }
         // Add contents if children are not present, else add children
         inner += text;
@@ -362,16 +387,16 @@
 
     // Safe object type checking
     function is(type, obj) {
-        var types = type.toString().split('|'),
+        var types = type.toString().split(strOr),
             match = false;
         for (var i in types) {
-            if (types[i] === 'plain object') {
+            if (types[i] === strPlainObject) {
 
                 // Not plain objects
                 // - Any object or value whose internal [[Class]] property is not "[object Object]"
                 // - DOM nodes
                 // - window
-                if (objectType(obj)!=='object' || obj.nodeType || obj===obj.window) {
+                if (objectType(obj)!==strObject || obj.nodeType || obj===obj.window) {
                     continue;
                 }
                 if (obj.constructor &&
@@ -383,14 +408,14 @@
                 // |obj| is a plain object, created by {} or constructed with new Object
                 match = true;
                 break;
-            } else if (types[i] === 'zen dom') {
+            } else if (types[i] === strZenDom) {
 
                 // $Z dom object
-                if (is('plain object', obj)
-                        && has('children', obj) && is('array', obj.children)
-                        && has('parent', obj) && is('null|object', obj.parent)
-                        && has('name', obj) && is('string', obj.name)
-                        && has('attributes', obj) && is('object', obj.attributes)) {
+                if (is(strPlainObject, obj)
+                        && has('children', obj) && is(strArray, obj.children)
+                        && has('parent', obj) && is(strNullOrObject, obj.parent)
+                        && has('name', obj) && is(strString, obj.name)
+                        && has('attributes', obj) && is(strObject, obj.attributes)) {
                     match = true;
                     break;
                 }
@@ -405,24 +430,24 @@
 
     // Object Type
     function objectType(obj) {
-        if (typeof obj === "undefined") {
-            return "undefined";
+        if (typeof obj === strUndefined) {
+            return strUndefined;
         }
 
         // Consider: typeof null === object
         if (obj === null) {
-            return "null";
+            return strNull;
         }
 
         var match = toString.call(obj).match(/^\[object\s(.*)\]$/),
-            type = match && match[1] || "";
+            type = match && match[1] || strEmpty;
 
         switch (type) {
             case "Number":
                 if (isNaN(obj)) {
                     return "nan";
                 }
-                return "number";
+                return strNumber;
             case "String":
             case "Boolean":
             case "Array":
@@ -431,8 +456,8 @@
             case "Function":
                 return type.toLowerCase();
         }
-        if (typeof obj === "object") {
-            return "object";
+        if (typeof obj === strObject) {
+            return strObject;
         }
         return undefined;
     };
@@ -440,16 +465,16 @@
     // Validate Arguments
     function validateArgs(args, types, doesThrow) {
 
-        if (doesThrow === undefined || doesThrow === null || !is('boolean', doesThrow))
+        if (doesThrow === undefined || doesThrow === null || !is(strBoolean, doesThrow))
             doesThrow = true;
 
         // Handle special case when arguments is undefined and type contains undefined
-        if (is('object', args) && args.length == 0 && is('array', types) && types[0].toString().indexOf('undefined') > -1)
+        if (is(strObject, args) && args.length == 0 && is(strArray, types) && types[0].toString().indexOf(strUndefined) > -1)
             return true;
 
-        if (!is('object', args) || !is('array', types) || types.length != args.length) {
+        if (!is(strObject, args) || !is(strArray, types) || types.length != args.length) {
             if (doesThrow) {
-                throw 'Invalid Function Call';
+                throw strInvalidCall;
             } else {
                 return false;
             }
@@ -457,7 +482,7 @@
         for (var i in args) {
             if (!is(types[i], args[i])) {
                 if (doesThrow) {
-                    throw 'Invalid Function Call';
+                    throw strInvalidCall;
                 } else {
                     return false;
                 }
@@ -468,25 +493,25 @@
 
     // Trim
     function trim(text) {
-        if (validateArgs(arguments, ['null|undefined'], false))
-            return '';
-        validateArgs(arguments, ['string|boolean|number']);
-        return text.toString().replace(rxTrim, "");
+        if (validateArgs(arguments, [strNullOrUndefined], false))
+            return strEmpty;
+        validateArgs(arguments, [strString+strOr+strBoolean+strOr+strNumber]);
+        return text.toString().replace(rxTrim, strEmpty);
     };
 
     // Invlaid to Value (Nullify to Value)
     function invalidToValue(obj, value) {
-        if (!is('object|array', obj))
+        if (!is(strObject+strOr+strArray, obj))
             return obj;
         for (var i in obj)
-            if (is('undefined|null', obj[i]))
+            if (is(strNullOrUndefined, obj[i]))
                 obj[i] = value;
         return obj;
     };
 
     // Random
     function random(array) {
-        validateArgs(arguments, ['array']);
+        validateArgs(arguments, [strArray]);
         return array[Math.floor(Math.random() * array.length)];
     };
 
@@ -503,7 +528,7 @@
             deep = false;
 
         // Handle deep copy
-        if (is('boolean', target)) {
+        if (is(strBoolean, target)) {
             deep = target;
 
             // Move on to next argument
@@ -511,7 +536,7 @@
         }
 
         // If target is not a primitive, create empty object
-        if (typeof target !== 'object' && !is('function', target)) {
+        if (typeof target !== strObject && !is(strFunction, target)) {
             target = {};
         }
 
@@ -540,13 +565,13 @@
                     }
 
                     // Recurse for objects and arrays
-                    if (deep && copy && (is('plain object', copy) || is('array', copy))) {
+                    if (deep && copy && (is(strPlainObject+strOr+strArray, copy))) {
 
                         // If array, create array, else create empty object
-                        if (is('array', copy))
-                            clone = src && is('array', src) ? src : [];
+                        if (is(strArray, copy))
+                            clone = src && is(strArray, src) ? src : [];
                         else
-                            clone = src && (is('plain object', src)) ? src : {};
+                            clone = src && (is(strPlainObject, src)) ? src : {};
 
                         // Clone objects
                         target[key] = extend(deep, clone, copy);
@@ -593,7 +618,7 @@
     });
 
     // For browser, export only select globals
-    if (typeof window !== "undefined" && window != null) {
+    if (typeof window !== strUndefined && window != null) {
         (function () {
             var
                 // Map over zQuery in case of overwrite
