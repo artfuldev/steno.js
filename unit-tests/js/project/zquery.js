@@ -34,6 +34,14 @@
         // For IE, to prevent Invalid Calling Object error on toString.call(obj)
         toString = objProto.toString,
 
+        // String Literals
+        strString = 'string',
+        strBoolean = 'boolean',
+        strNullOrUndefined = 'null|undefined',
+        strEmpty = '',
+        strDiv = 'div',
+
+
         // Regexes
         // RegEx-es thanks to http://regexpal.com/
         // And RegEx Magic http://www.regexmagic.com/
@@ -53,10 +61,10 @@
         // Empty Zen Element
         emptyZenElement = {
             parent: null,
-            name: '',
+            name: strEmpty,
             attributes: {},
             children: [],
-            text: '',
+            text: strEmpty,
             multiplier: 1
         };
 
@@ -67,7 +75,7 @@
     function zenClasses(string) {
 
         // Validate Arguments
-        validateArgs(arguments, ['string']);
+        validateArgs(arguments, [strString]);
 
         // Return Matches
         var regEx = new RegExp(rxClasses),
@@ -83,7 +91,7 @@
     function zenAttributes(string) {
 
         // Validate Arguments
-        validateArgs(arguments, ['string']);
+        validateArgs(arguments, [strString]);
 
         // Return Matches
         var regEx = new RegExp(rxAttributes),
@@ -94,7 +102,7 @@
         }
 
         // Convert all non matches to empty strings
-        invalidToValue(matches, '');
+        invalidToValue(matches, strEmpty);
 
         return matches;
     };
@@ -104,14 +112,14 @@
 
         // Returns pure {name:'', attributes{}} object if true
         // Otherwise returns an extended one
-        if (is('undefined|null', pure)) {
+        if (is(strNullOrUndefined, pure)) {
             arguments[1] = false;
             arguments.length++;
             pure = false;
         }
 
         //Validate Arguments
-        validateArgs(arguments, ['string', 'boolean']);
+        validateArgs(arguments, [strString, strBoolean]);
 
         // Match RegEx to retrieve element
         var regEx = new RegExp(rxElement),
@@ -122,11 +130,11 @@
             multiplier;
 
         // Convert all non matches to empty strings
-        invalidToValue(match, '');
+        invalidToValue(match, strEmpty);
 
         // If no element name is found, it should be div
-        if (match[5] === '')
-            match[5] = 'div';
+        if (match[5] === strEmpty)
+            match[5] = strDiv;
 
         // Get Classes
         zClasses = zenClasses(match[7]);
@@ -177,7 +185,7 @@
     function zenDom(string) {
 
         //Validate Arguments
-        validateArgs(arguments, ['string']);
+        validateArgs(arguments, [strString]);
 
         // Initialize
         var i,
@@ -194,11 +202,11 @@
         while (match = regEx.exec(string)) {
 
             // Convert all non matches to empty strings
-            invalidToValue(match, '');
+            invalidToValue(match, strEmpty);
 
             // If match cycle has ended, break the loop
             // Have to do it this way for IE
-            if (match[0] === '')
+            if (match[0] === strEmpty)
                 break;
 
             // Retreive matches
@@ -225,7 +233,7 @@
 
             // Add
             case '+':
-                if (is('null|undefined', element.parent))
+                if (is(strNullOrUndefined, element.parent))
                     element.parent = extend(true, {}, emptyZenElement);
                 element = zenAdd(element.parent);
                 break;
@@ -241,7 +249,7 @@
 
                 // Climb up till the element's parent has no name
                 parent = element.parent;
-                while (parent.name !== '') {
+                while (parent.name !== strEmpty) {
                     temp = element.parent;
                     parent = temp.parent;
                 }
@@ -268,7 +276,7 @@
 
         // Return element if dom is just an empty holder,
         // otherwise return dom
-        if (dom.name === '' && dom.children.length === 1) {
+        if (dom.name === strEmpty && dom.children.length === 1) {
             dom = dom.children[0];
             dom.parent = null;
         }
@@ -315,20 +323,20 @@
         // Validate
         validateArgs(arguments, ['string|zen dom']);
 
-        if (is('string', dom))
+        if (is(strString, dom))
             return zenHtml(zenDom(dom));
 
         // Variables
         var i,
-            prefix = '',
-            inner = '',
-            suffix = '',
+            prefix = strEmpty,
+            inner = strEmpty,
+            suffix = strEmpty,
             name = dom.name,
             attributes = dom.attributes,
             multiplier = dom.multiplier,
             text = dom.text,
             children = dom.children,
-            html = '';
+            html = strEmpty;
 
         // Form html
         // If name is available, add dom html
@@ -389,7 +397,7 @@
                 if (is('plain object', obj)
                         && has('children', obj) && is('array', obj.children)
                         && has('parent', obj) && is('null|object', obj.parent)
-                        && has('name', obj) && is('string', obj.name)
+                        && has('name', obj) && is(strString, obj.name)
                         && has('attributes', obj) && is('object', obj.attributes)) {
                     match = true;
                     break;
@@ -440,7 +448,7 @@
     // Validate Arguments
     function validateArgs(args, types, doesThrow) {
 
-        if (doesThrow === undefined || doesThrow === null || !is('boolean', doesThrow))
+        if (doesThrow === undefined || doesThrow === null || !is(strBoolean, doesThrow))
             doesThrow = true;
 
         // Handle special case when arguments is undefined and type contains undefined
@@ -468,8 +476,8 @@
 
     // Trim
     function trim(text) {
-        if (validateArgs(arguments, ['null|undefined'], false))
-            return '';
+        if (validateArgs(arguments, [strNullOrUndefined], false))
+            return strEmpty;
         validateArgs(arguments, ['string|boolean|number']);
         return text.toString().replace(rxTrim, "");
     };
@@ -503,7 +511,7 @@
             deep = false;
 
         // Handle deep copy
-        if (is('boolean', target)) {
+        if (is(strBoolean, target)) {
             deep = target;
 
             // Move on to next argument
