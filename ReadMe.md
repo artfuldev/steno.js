@@ -44,7 +44,7 @@ $('#insert-here').append(zen('ul>(li>a{Click Here})*4'));
 or any other way you'd like to use the zQuery.html function.
 `zQuery` and `$Z` can be used interchangeably.
 
-For more detailed documentation, refer the [wiki](wiki)
+For more detailed documentation, refer the [wiki](https://github.com/kenshinthebattsosai/zQuery/wiki)
 
 ##Features
 
