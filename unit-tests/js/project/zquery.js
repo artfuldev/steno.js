@@ -25,14 +25,18 @@
     // Required variables
     var zQuery = {},
 
-        // Short for prototypes
+        // Shorts
         objProto = Object.prototype,
-
-        // Shortform for native methodss
         hasOwn = objProto.hasOwnProperty,
 
         // For IE, to prevent Invalid Calling Object error on toString.call(obj)
         toString = objProto.toString,
+
+        // Shorts
+        isNan = isNaN,
+        rX = RegExp,
+        math = Math,
+        getInt = parseInt,
 
         // String Literals
         strString = 'string',
@@ -54,10 +58,6 @@
         strNullOrObject = strNull + strOr + strObject,
         strInvalidCall = 'Invalid Function Call',
         strFunction = 'function',
-
-
-
-
 
         // Regexes
         // RegEx-es thanks to http://regexpal.com/
@@ -95,7 +95,7 @@
         validateArgs(arguments, [strString]);
 
         // Return Matches
-        var regEx = new RegExp(rxClasses),
+        var regEx = new rX(rxClasses),
             matches = [],
             match;
         while (match = regEx.exec(string)) {
@@ -111,7 +111,7 @@
         validateArgs(arguments, [strString]);
 
         // Return Matches
-        var regEx = new RegExp(rxAttributes),
+        var regEx = new rX(rxAttributes),
             matches = {},
             match;
         while (match = regEx.exec(string)) {
@@ -139,7 +139,7 @@
         validateArgs(arguments, [strString, strBoolean]);
 
         // Match RegEx to retrieve element
-        var regEx = new RegExp(rxElement),
+        var regEx = new rX(rxElement),
             // Find only first match - FOR NOW
             match = regEx.exec(string),
             zClasses,
@@ -177,8 +177,8 @@
         if (!multiplier) {
             multiplier = 1;
         } else {
-            multiplier = parseInt(multiplier);
-            if (isNaN(multiplier))
+            multiplier = getInt(multiplier);
+            if (isNan(multiplier))
                 multiplier = 1;
         }
 
@@ -212,7 +212,7 @@
             parent,
             multiplier,
             temp,
-            regEx = new RegExp(rxElement),
+            regEx = new rX(rxElement),
             matches = [];
 
         // Retreive Elements and Operators
@@ -276,8 +276,8 @@
                 if (!multiplier) {
                     multiplier = 1;
                 } else {
-                    multiplier = parseInt(multiplier);
-                    if (isNaN(multiplier))
+                    multiplier = getInt(multiplier);
+                    if (isNan(multiplier))
                         multiplier = 1;
                 }
                 parent.multiplier = multiplier;
@@ -444,7 +444,7 @@
 
         switch (type) {
             case "Number":
-                if (isNaN(obj)) {
+                if (isNan(obj)) {
                     return "nan";
                 }
                 return strNumber;
@@ -512,7 +512,7 @@
     // Random
     function random(array) {
         validateArgs(arguments, [strArray]);
-        return array[Math.floor(Math.random() * array.length)];
+        return array[math.floor(math.random() * array.length)];
     };
 
     // Extend
@@ -617,7 +617,7 @@
         nullify: invalidToValue
     });
 
-    // For browser, export only select globals
+    // For browser, export only $Z and zQuery as globals
     if (typeof window !== strUndefined && window != null) {
         (function () {
             var
