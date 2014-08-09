@@ -2,8 +2,8 @@
 
 * Author: Kenshin The Battōsai *(Sudarsan Balaji)*
 * License: [GNU Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
-* Library Version: v1.0.1
-* Last Updated: 2014-08-08
+* Library Version: v1.1.0
+* Last Updated: 2014-08-09
 * ReadMe Version: 1.0
 
 ##Description
@@ -43,6 +43,8 @@ $('#insert-here').append(zen('ul>(li>a{Click Here})*4'));
 
 or any other way you'd like to use the zQuery.html function.
 `zQuery` and `$Z` can be used interchangeably.
+
+For more detailed documentation, refer the [wiki](wiki)
 
 ##Features
 
