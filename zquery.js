@@ -599,6 +599,7 @@
         extend: extend,
         has: has,
         is: is,
+        trim: trim,
         validate: validateArgs,
 
         // Array Helpers
