@@ -44,7 +44,7 @@
         strNull = 'null',
         strOr = '|',
         strUndefined = 'undefined',
-        strNullOrUndefined = strNull+strOr+strUndefined,
+        strNullOrUndefined = strNull + strOr + strUndefined,
         strEmpty = '',
         strDiv = 'div',
         strClass = 'class',
@@ -66,13 +66,13 @@
         // Capture Groups:
         // 1        2           3       4                   5       6   7       8           9       10
         // Match    Operator    Closing ClosingMuliplier    Name    Id  Classes Attributes  Content Multiplier
-        rxElement = /(( |\+|\^|>|\()|(\))(?:\*(\d+))?|([a-z]+[0-9]?)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*)(?:\{((?:\\.|[^\n\r\\}])*)\})?(?:\*(\d+))?)/g,
+        rxElement = /(( |\+|\^|>|\()|(\))(?:\*(\d+))?|([a-z0-9_]+)?(?:#([a-z-_]+))?((?:\.[a-z-_]+)*)((?:\[(?:[a-z-_]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*)(?:\{((?:\\.|[^\n\r\\}])*)\})?(?:\*(\d+))?)/g,
 
         // Capture Group: ClassName
-        rxClasses = /\.([a-z-]+)/g,
+        rxClasses = /\.([a-z-_]+)/g,
 
         // Capture Groups: Name, Value
-        rxAttributes = /([a-z-]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
+        rxAttributes = /([a-z-_]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
         rxTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
 
         // Empty Zen Element
@@ -171,7 +171,7 @@
                 zAttributes[strClass] = zClasses + strSpace + zAttributes[strClass];
             }
         }
-        
+
         // Multiplier
         multiplier = match[10];
         if (!multiplier) {
@@ -242,52 +242,52 @@
             switch (current.charAt(0)) {
 
                 // Descend, Group
-            case strSpace:
-            case strGt:
-            case '(':
-                element = zenAdd(element);
-                break;
+                case strSpace:
+                case strGt:
+                case '(':
+                    element = zenAdd(element);
+                    break;
 
-            // Add
-            case '+':
-                if (is(strNullOrUndefined, element.parent))
-                    element.parent = extend(true, {}, emptyZenElement);
-                element = zenAdd(element.parent);
-                break;
+                    // Add
+                case '+':
+                    if (is(strNullOrUndefined, element.parent))
+                        element.parent = extend(true, {}, emptyZenElement);
+                    element = zenAdd(element.parent);
+                    break;
 
-            // Ascend
-            case '^':
-                parent = element.parent || element;
-                element = zenAdd(parent.parent || parent);
-                break;
+                    // Ascend
+                case '^':
+                    parent = element.parent || element;
+                    element = zenAdd(parent.parent || parent);
+                    break;
 
-            // Close Group
-            case ')':
+                    // Close Group
+                case ')':
 
-                // Climb up till the element's parent has no name
-                parent = element.parent;
-                while (parent.name !== strEmpty) {
-                    temp = element.parent;
-                    parent = temp.parent;
-                }
+                    // Climb up till the element's parent has no name
+                    parent = element.parent;
+                    while (parent.name !== strEmpty) {
+                        temp = element.parent;
+                        parent = temp.parent;
+                    }
 
-                // Set multiplier
-                multiplier = matches[i][4];
-                if (!multiplier) {
-                    multiplier = 1;
-                } else {
-                    multiplier = getInt(multiplier);
-                    if (isNan(multiplier))
+                    // Set multiplier
+                    multiplier = matches[i][4];
+                    if (!multiplier) {
                         multiplier = 1;
-                }
-                parent.multiplier = multiplier;
-                element = parent || temp || element;
-                break;
+                    } else {
+                        multiplier = getInt(multiplier);
+                        if (isNan(multiplier))
+                            multiplier = 1;
+                    }
+                    parent.multiplier = multiplier;
+                    element = parent || temp || element;
+                    break;
 
-            // The element should be extended
-            // This allows for chaining ascends, etc
-            default:
-                extend(element, zenElement(current, true));
+                    // The element should be extended
+                    // This allows for chaining ascends, etc
+                default:
+                    extend(element, zenElement(current, true));
             }
         }
 
@@ -396,11 +396,11 @@
                 // - Any object or value whose internal [[Class]] property is not "[object Object]"
                 // - DOM nodes
                 // - window
-                if (objectType(obj)!==strObject || obj.nodeType || obj===obj.window) {
+                if (objectType(obj) !== strObject || obj.nodeType || obj === obj.window) {
                     continue;
                 }
                 if (obj.constructor &&
-                        !has('isPrototypeOf',obj.constructor.prototype)) {
+                        !has('isPrototypeOf', obj.constructor.prototype)) {
                     continue;
                 }
 
@@ -419,7 +419,7 @@
                     match = true;
                     break;
                 }
-                    
+
             } else if (objectType(obj) === types[i]) {
                 match = true;
                 break;
@@ -495,13 +495,13 @@
     function trim(text) {
         if (validateArgs(arguments, [strNullOrUndefined], false))
             return strEmpty;
-        validateArgs(arguments, [strString+strOr+strBoolean+strOr+strNumber]);
+        validateArgs(arguments, [strString + strOr + strBoolean + strOr + strNumber]);
         return text.toString().replace(rxTrim, strEmpty);
     };
 
     // Invlaid to Value (Nullify to Value)
     function invalidToValue(obj, value) {
-        if (!is(strObject+strOr+strArray, obj))
+        if (!is(strObject + strOr + strArray, obj))
             return obj;
         for (var i in obj)
             if (is(strNullOrUndefined, obj[i]))
@@ -565,7 +565,7 @@
                     }
 
                     // Recurse for objects and arrays
-                    if (deep && copy && (is(strPlainObject+strOr+strArray, copy))) {
+                    if (deep && copy && (is(strPlainObject + strOr + strArray, copy))) {
 
                         // If array, create array, else create empty object
                         if (is(strArray, copy))

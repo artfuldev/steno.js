@@ -66,13 +66,13 @@
         // Capture Groups:
         // 1        2           3       4                   5       6   7       8           9       10
         // Match    Operator    Closing ClosingMuliplier    Name    Id  Classes Attributes  Content Multiplier
-        rxElement = /(( |\+|\^|>|\()|(\))(?:\*(\d+))?|([a-z]+[0-9]?)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*)(?:\{((?:\\.|[^\n\r\\}])*)\})?(?:\*(\d+))?)/g,
+        rxElement = /(( |\+|\^|>|\()|(\))(?:\*(\d+))?|([a-z0-9_]+)?(?:#([a-z-_]+))?((?:\.[a-z-_]+)*)((?:\[(?:[a-z-_]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*)(?:\{((?:\\.|[^\n\r\\}])*)\})?(?:\*(\d+))?)/g,
 
         // Capture Group: ClassName
-        rxClasses = /\.([a-z-]+)/g,
+        rxClasses = /\.([a-z-_]+)/g,
 
         // Capture Groups: Name, Value
-        rxAttributes = /([a-z-]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
+        rxAttributes = /([a-z-_]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
         rxTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
 
         // Empty Zen Element
