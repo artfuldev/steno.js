@@ -8,7 +8,7 @@
 
 ##Description
 
-A javascript library to use CSS selectors and more (similar to [Emmet](http://emmet.io)) to quickly create HTML.
+A javascript library to write shorthand HTML, using CSS selectors (and more).
 
 The main idea is that you should be able to do something like this:
 

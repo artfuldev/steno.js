@@ -1,5 +1,5 @@
 ﻿/*
-    steno.js - A javascript library to create create HTML strings using CSS selectors (and more)
+    steno.js - A javascript library to write shorthand HTML 
     Copyright (C) 2014  Kenshin The Battōsai (Sudarsan Balaji)
 
     This program is free software: you can redistribute it and/or modify
