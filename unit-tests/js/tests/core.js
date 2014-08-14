@@ -1,16 +1,16 @@
 ﻿/// <reference path="../lib/qunit-git.js" />
-/// <reference path="../project/zquery.js" />
+/// <reference path="../project/steno.js" />
 /// <reference path="../tests/tests.js" />
 
 $Q.module('Core', {
     setup: function () {
-        window.element = $Z.extend(true, {}, $Z.el);
-        window.expected = $Z.extend(true, {}, element);
-        window.ul = $Z.extend(true, {}, element, { name: 'ul' });
-        window.li = $Z.extend(true, {}, element, { name: 'li' });
-        window.a = $Z.extend(true, {}, element, { name: 'a' });
-        window.li2 = $Z.extend(true, {}, element, { name: 'li' });
-        window.div = $Z.extend(true, {}, element, { name: 'div' });
+        window.element = steno.extend(true, {}, steno.el);
+        window.expected = steno.extend(true, {}, element);
+        window.ul = steno.extend(true, {}, element, { name: 'ul' });
+        window.li = steno.extend(true, {}, element, { name: 'li' });
+        window.a = steno.extend(true, {}, element, { name: 'a' });
+        window.li2 = steno.extend(true, {}, element, { name: 'li' });
+        window.div = steno.extend(true, {}, element, { name: 'div' });
     },
     teardown: function () {
         window.element = undefined;
@@ -23,19 +23,19 @@ $Q.module('Core', {
     }
 });
 
-$Q.test('$Z.classes', function (assert) {
+$Q.test('steno.classes', function (assert) {
 
     // Expectations
     assert.expect(5);
 
     // Assertions
-    assert.equal($Z.classes(''), '', 'Empty String');
-    assert.equal($Z.classes('.menu'), 'menu', 'Single Class');
-    assert.equal($Z.classes('.menu-item'), 'menu-item', 'Single Hyphenated Class');
-    assert.equal($Z.classes('.menu.item'), 'menu item', 'Multiple Classes');
-    assert.equal($Z.classes('.menu-item.item-empty'), 'menu-item item-empty', 'Multiple Hyphenated Classes');
+    assert.equal(steno.classes(''), '', 'Empty String');
+    assert.equal(steno.classes('.menu'), 'menu', 'Single Class');
+    assert.equal(steno.classes('.menu-item'), 'menu-item', 'Single Hyphenated Class');
+    assert.equal(steno.classes('.menu.item'), 'menu item', 'Multiple Classes');
+    assert.equal(steno.classes('.menu-item.item-empty'), 'menu-item item-empty', 'Multiple Hyphenated Classes');
 });
-$Q.test('$Z.attributes', function (assert) {
+$Q.test('steno.attributes', function (assert) {
 
     // Expectations
     assert.expect(8);
@@ -47,30 +47,30 @@ $Q.test('$Z.attributes', function (assert) {
 
     string = '';
     result = {};
-    assert.deepEqual($Z.attributes(string), result, 'Empty String');
+    assert.deepEqual(steno.attributes(string), result, 'Empty String');
 
     string= '[data-attribute]';
     result = { 'data-attribute': '' };
-    assert.deepEqual($Z.attributes(string), result, 'Boolean Attribute');
+    assert.deepEqual(steno.attributes(string), result, 'Boolean Attribute');
 
     string = '[for=""]';
     result = { 'for': ''};
-    assert.deepEqual($Z.attributes(string), result, 'Empty-Valued Attribute');
+    assert.deepEqual(steno.attributes(string), result, 'Empty-Valued Attribute');
 
     string = '[title="Something about zQuery\'s Awesomeness"]';
     result={ title: 'Something about zQuery\'s Awesomeness' };
-    assert.deepEqual($Z.attributes(string), result, 'Attribute with value');
+    assert.deepEqual(steno.attributes(string), result, 'Attribute with value');
 
     string = '[href="github.com/#"]';
     result = { href: 'github.com/#' };
-    assert.deepEqual($Z.attributes(string), result, 'Attribute with value containing . and #');
+    assert.deepEqual(steno.attributes(string), result, 'Attribute with value containing . and #');
 
     string = '[filter][title="Something about zQuery\'s \\"Awesomeness>+^()\\""]';
     result = {
         filter: '',
         title: 'Something about zQuery\'s \\"Awesomeness>+^()\\"'
     };
-    assert.deepEqual($Z.attributes(string), result, 'Attribute with value containing escaped " and operators');
+    assert.deepEqual(steno.attributes(string), result, 'Attribute with value containing escaped " and operators');
 
     string = '[filter title="Something about zQuery\'s \\"Awesomeness>+^()\\"" class="haha" id="hehe"]';
     result = {
@@ -79,7 +79,7 @@ $Q.test('$Z.attributes', function (assert) {
         'class': 'haha',
         id: 'hehe'
     };
-    assert.deepEqual($Z.attributes(string), result, 'Multiple Attributes in ZenCoding Format');
+    assert.deepEqual(steno.attributes(string), result, 'Multiple Attributes in ZenCoding Format');
 
     string = '[filter][title="Something about zQuery\'s \\"Awesomeness>+^()\\""][class="haha"][id="hehe"]';
     result = {
@@ -88,9 +88,9 @@ $Q.test('$Z.attributes', function (assert) {
         'class': 'haha',
         id: 'hehe'
     };
-    assert.deepEqual($Z.attributes(string), result, 'Multiple Attributes in Sizzle Format');
+    assert.deepEqual(steno.attributes(string), result, 'Multiple Attributes in Sizzle Format');
 });
-$Q.test('$Z.element', function (assert) {
+$Q.test('steno.element', function (assert) {
 
     // Expectations
     assert.expect(16);
@@ -130,47 +130,47 @@ $Q.test('$Z.element', function (assert) {
             }
         },
         elements = {
-            'work': $Z.extend(true, {}, element, pureElements['work']),
-            '#menu': $Z.extend(true, {}, element, pureElements['#menu']),
-            'div.class-name': $Z.extend(true, {}, element, pureElements['div.class-name']),
-            'p.go-to-hell[class="help-me"]': $Z.extend(true, {}, element, pureElements['p.go-to-hell[class="help-me"]']),
-            'p#id.class': $Z.extend(true, {}, element, pureElements['p#id.class']),
-            'p[hi="how" are="\\"you\\""]': $Z.extend(true, {}, element, pureElements['p[hi="how" are="\\"you\\""]']),
-            'p#id.class[data-attr da="gpo" hi="\\"help\\""]': $Z.extend(true, {}, element, pureElements['p#id.class[data-attr da="gpo" hi="\\"help\\""]']),
-            'p#id.class[data-attr da="gpo" hi="\\"help\\""]{Hi, \\} How\'re you?}': $Z.extend(true, element, pureElements['p#id.class[data-attr da="gpo" hi="\\"help\\""]{Hi, \\} How\'re you?}'])
+            'work': steno.extend(true, {}, element, pureElements['work']),
+            '#menu': steno.extend(true, {}, element, pureElements['#menu']),
+            'div.class-name': steno.extend(true, {}, element, pureElements['div.class-name']),
+            'p.go-to-hell[class="help-me"]': steno.extend(true, {}, element, pureElements['p.go-to-hell[class="help-me"]']),
+            'p#id.class': steno.extend(true, {}, element, pureElements['p#id.class']),
+            'p[hi="how" are="\\"you\\""]': steno.extend(true, {}, element, pureElements['p[hi="how" are="\\"you\\""]']),
+            'p#id.class[data-attr da="gpo" hi="\\"help\\""]': steno.extend(true, {}, element, pureElements['p#id.class[data-attr da="gpo" hi="\\"help\\""]']),
+            'p#id.class[data-attr da="gpo" hi="\\"help\\""]{Hi, \\} How\'re you?}': steno.extend(true, element, pureElements['p#id.class[data-attr da="gpo" hi="\\"help\\""]{Hi, \\} How\'re you?}'])
         };
 
     // Assertions
     for (i in pureElements)
-        assert.deepEqual($Z.element(i, true), pureElements[i], 'Elements in \'' + i + '\' retreived successfully as ' + JSON.stringify(pureElements[i]));
+        assert.deepEqual(steno.element(i, true), pureElements[i], 'Elements in \'' + i + '\' retreived successfully as ' + JSON.stringify(pureElements[i]));
     for (i in elements)
-        assert.deepEqual($Z.element(i), elements[i], 'Elements in \'' + i + '\' retreived successfully as ' + JSON.stringify(elements[i]));
+        assert.deepEqual(steno.element(i), elements[i], 'Elements in \'' + i + '\' retreived successfully as ' + JSON.stringify(elements[i]));
 
 });
-$Q.test('$Z.redo', function(assert) {
+$Q.test('steno.redo', function(assert) {
     
     // Expecatations
     assert.expect(2);
 
     // Variables
-    $Z.extend(li, { parent: ul });
-    $Z.extend(li2, { parent: ul });
-    $Z.extend(ul, { children: [li, li2] });
-    $Z.extend(expected, ul);
+    steno.extend(li, { parent: ul });
+    steno.extend(li2, { parent: ul });
+    steno.extend(ul, { children: [li, li2] });
+    steno.extend(expected, ul);
 
     // Assertions
-    assert.deepEqual($Z.redo(li), expected, 'Climbed from li to ul');
-    assert.deepEqual($Z.redo(li2), expected, 'Climbed from li2 to ul');
+    assert.deepEqual(steno.redo(li), expected, 'Climbed from li to ul');
+    assert.deepEqual(steno.redo(li2), expected, 'Climbed from li2 to ul');
 });
-$Q.test('$Z.dom - ul#id.class - Single', function (assert) {
+$Q.test('steno.dom - ul#id.class - Single', function (assert) {
 
     // Expectations
     assert.expect(1);
 
     // Variables
     var string = 'ul#id.class',
-        result = $Z.dom(string);
-    $Z.extend(expected, ul, {
+        result = steno.dom(string);
+    steno.extend(expected, ul, {
         attributes: {
             'class': 'class',
             id: 'id'
@@ -180,21 +180,21 @@ $Q.test('$Z.dom - ul#id.class - Single', function (assert) {
     // Assertions
     assert.deepEqual(result, expected, 'dom built successfully for ' + string);
 });
-$Q.test('$Z.dom - ul div - Descend', function (assert) {
+$Q.test('steno.dom - ul div - Descend', function (assert) {
 
     // Expectations
     assert.expect(8);
 
     // Variables
     var string = 'ul div',
-        result = $Z.dom(string);
-    $Z.extend(div, {
+        result = steno.dom(string);
+    steno.extend(div, {
         parent: ul
     });
-    $Z.extend(ul, {
+    steno.extend(ul, {
         children: [div]
     });
-    $Z.extend(expected, ul);
+    steno.extend(expected, ul);
 
     // Assertions
     assert.strictEqual(result.parent, expected.parent, 'Parent of ul');
@@ -206,21 +206,21 @@ $Q.test('$Z.dom - ul div - Descend', function (assert) {
     assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of div');
     assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of div');
 });
-$Q.test('$Z.dom - ul>div - Descend', function (assert) {
+$Q.test('steno.dom - ul>div - Descend', function (assert) {
 
     // Expectations
     assert.expect(8);
 
     // Variables
     var string = 'ul>div',
-        result = $Z.dom(string);
-    $Z.extend(div, {
+        result = steno.dom(string);
+    steno.extend(div, {
         parent: ul
     });
-    $Z.extend(ul, {
+    steno.extend(ul, {
         children: [div]
     });
-    $Z.extend(expected, ul);
+    steno.extend(expected, ul);
 
     // Assertions
     assert.strictEqual(result.parent, expected.parent, 'Parent of ul');
@@ -232,21 +232,21 @@ $Q.test('$Z.dom - ul>div - Descend', function (assert) {
     assert.strictEqual(JSON.stringify(result.children[0].attributes), JSON.stringify(expected.children[0].attributes), 'Attributes of div');
     assert.strictEqual(result.children[0].name, expected.children[0].name, 'Name of div');
 });
-$Q.test('$Z.dom - ul+div - Add', function (assert) {
+$Q.test('steno.dom - ul+div - Add', function (assert) {
 
     // Expectation
     assert.expect(12);
 
     // Variables
     var string = 'ul+div',
-        result = $Z.dom(string);
-    $Z.extend(div, {
+        result = steno.dom(string);
+    steno.extend(div, {
         parent: expected
     });
-    $Z.extend(ul, {
+    steno.extend(ul, {
         parent: expected
     });
-    $Z.extend(expected, {
+    steno.extend(expected, {
         children: [ul, div]
     });
 
@@ -264,21 +264,21 @@ $Q.test('$Z.dom - ul+div - Add', function (assert) {
     assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of div');
 });
-$Q.test('$Z.dom - ul^div - Ascend', function (assert) {
+$Q.test('steno.dom - ul^div - Ascend', function (assert) {
 
     // Expectation
     assert.expect(12);
 
     // Variables
     var string = 'ul^div',
-        result = $Z.dom(string);
-    $Z.extend(div, {
+        result = steno.dom(string);
+    steno.extend(div, {
         parent: expected
     });
-    $Z.extend(ul, {
+    steno.extend(ul, {
         parent: expected
     });
-    $Z.extend(expected, {
+    steno.extend(expected, {
         children: [ul, div]
     });
 
@@ -296,25 +296,25 @@ $Q.test('$Z.dom - ul^div - Ascend', function (assert) {
     assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of div');
 });
-$Q.test('$Z.dom - ul>li>div - Double Descend', function (assert) {
+$Q.test('steno.dom - ul>li>div - Double Descend', function (assert) {
 
     // Expectation
     assert.expect(12);
 
     // Variables
     var string = 'ul>li>div',
-        result = $Z.dom(string);
-    $Z.extend(div, {
+        result = steno.dom(string);
+    steno.extend(div, {
         parent: li
     });
-    $Z.extend(li, {
+    steno.extend(li, {
         parent: ul,
         children: [div]
     });
-    $Z.extend(ul, {
+    steno.extend(ul, {
         children: [li]
     });
-    $Z.extend(expected, ul);
+    steno.extend(expected, ul);
 
     // Assertions
     // UL
@@ -333,23 +333,23 @@ $Q.test('$Z.dom - ul>li>div - Double Descend', function (assert) {
     assert.strictEqual(JSON.stringify(result.children[0].children[0].attributes), JSON.stringify(expected.children[0].children[0].attributes), 'Attributes of div');
     assert.strictEqual(result.children[0].children[0].name, expected.children[0].children[0].name, 'Name of div');
 });
-$Q.test('$Z.dom - ul>li+li - Descend and Add', function (assert) {
+$Q.test('steno.dom - ul>li+li - Descend and Add', function (assert) {
     // Expectation
     assert.expect(12);
 
     // Variables
     var string = 'ul>li+li',
-        result = $Z.dom(string);
-    $Z.extend(li, {
+        result = steno.dom(string);
+    steno.extend(li, {
         parent: ul
     });
-    $Z.extend(li2, {
+    steno.extend(li2, {
         parent: ul
     });
-    $Z.extend(ul, {
+    steno.extend(ul, {
         children: [li, li2]
     });
-    $Z.extend(expected, ul);
+    steno.extend(expected, ul);
 
     // Assertions
     // UL
@@ -368,25 +368,25 @@ $Q.test('$Z.dom - ul>li+li - Descend and Add', function (assert) {
     assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of li2');
     assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of li2');
 });
-$Q.test('$Z.dom - ul>li^div - Descend and Ascend', function (assert) {
+$Q.test('steno.dom - ul>li^div - Descend and Ascend', function (assert) {
 
     // Expectation
     assert.expect(16);
 
     // Variables
     var string = 'ul>li^div',
-        result = $Z.dom(string);
-    $Z.extend(div, {
+        result = steno.dom(string);
+    steno.extend(div, {
         parent: expected
     });
-    $Z.extend(li, {
+    steno.extend(li, {
         parent: ul
     });
-    $Z.extend(ul, {
+    steno.extend(ul, {
         parent: expected,
         children: [li]
     });
-    $Z.extend(expected, {
+    steno.extend(expected, {
         children: [ul, div]
     });
 
@@ -412,24 +412,24 @@ $Q.test('$Z.dom - ul>li^div - Descend and Ascend', function (assert) {
     assert.strictEqual(JSON.stringify(result.children[1].attributes), JSON.stringify(expected.children[1].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].name, expected.children[1].name, 'Name of div');
 });
-$Q.test('$Z.dom - li+a+div - Double Add', function (assert) {
+$Q.test('steno.dom - li+a+div - Double Add', function (assert) {
 
     // Expectation
     assert.expect(16);
 
     // Variables
     var string = 'li+a+div',
-        result = $Z.dom(string);
-    $Z.extend(div, {
+        result = steno.dom(string);
+    steno.extend(div, {
         parent: expected
     });
-    $Z.extend(li, {
+    steno.extend(li, {
         parent: expected
     });
-    $Z.extend(a, {
+    steno.extend(a, {
         parent: expected
     });
-    $Z.extend(expected, {
+    steno.extend(expected, {
         children: [li, a, div]
     });
 
@@ -455,25 +455,25 @@ $Q.test('$Z.dom - li+a+div - Double Add', function (assert) {
     assert.strictEqual(JSON.stringify(result.children[2].attributes), JSON.stringify(expected.children[2].attributes), 'Attributes of div');
     assert.strictEqual(result.children[2].name, expected.children[2].name, 'Name of div');
 });
-$Q.test('$Z.dom - li+li>div - Add and Descend', function (assert) {
+$Q.test('steno.dom - li+li>div - Add and Descend', function (assert) {
 
     // Expectation
     assert.expect(16);
 
     // Variables
     var string = 'li+li>div',
-        result = $Z.dom(string);
-    $Z.extend(div, {
+        result = steno.dom(string);
+    steno.extend(div, {
         parent: li2
     });
-    $Z.extend(li2, {
+    steno.extend(li2, {
         parent: expected,
         children: [div]
     });
-    $Z.extend(li, {
+    steno.extend(li, {
         parent: expected
     });
-    $Z.extend(expected, {
+    steno.extend(expected, {
         children: [li, li2]
     });
 
@@ -499,24 +499,24 @@ $Q.test('$Z.dom - li+li>div - Add and Descend', function (assert) {
     assert.strictEqual(JSON.stringify(result.children[1].children[0].attributes), JSON.stringify(expected.children[1].children[0].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].children[0].name, expected.children[1].children[0].name, 'Name of div');
 });
-$Q.test('$Z.dom - li+a^div - Add and Ascend - Works like Double Add', function (assert) {
+$Q.test('steno.dom - li+a^div - Add and Ascend - Works like Double Add', function (assert) {
 
     // Expectation
     assert.expect(16);
 
     // Variables
     var string = 'li+a^div',
-        result = $Z.dom(string);
-    $Z.extend(div, {
+        result = steno.dom(string);
+    steno.extend(div, {
         parent: expected
     });
-    $Z.extend(li, {
+    steno.extend(li, {
         parent: expected
     });
-    $Z.extend(a, {
+    steno.extend(a, {
         parent: expected
     });
-    $Z.extend(expected, {
+    steno.extend(expected, {
         children: [li, a, div]
     });
 
@@ -542,24 +542,24 @@ $Q.test('$Z.dom - li+a^div - Add and Ascend - Works like Double Add', function (
     assert.strictEqual(JSON.stringify(result.children[2].attributes), JSON.stringify(expected.children[2].attributes), 'Attributes of div');
     assert.strictEqual(result.children[2].name, expected.children[2].name, 'Name of div');
 });
-$Q.test('$Z.dom - li^a^div - Double Ascend - Works like Double Add', function (assert) {
+$Q.test('steno.dom - li^a^div - Double Ascend - Works like Double Add', function (assert) {
 
     // Expectation
     assert.expect(16);
 
     // Variables
     var string = 'li^a^div',
-        result = $Z.dom(string);
-    $Z.extend(div, {
+        result = steno.dom(string);
+    steno.extend(div, {
         parent: expected
     });
-    $Z.extend(li, {
+    steno.extend(li, {
         parent: expected
     });
-    $Z.extend(a, {
+    steno.extend(a, {
         parent: expected
     });
-    $Z.extend(expected, {
+    steno.extend(expected, {
         children: [li, a, div]
     });
 
@@ -585,24 +585,24 @@ $Q.test('$Z.dom - li^a^div - Double Ascend - Works like Double Add', function (a
     assert.strictEqual(JSON.stringify(result.children[2].attributes), JSON.stringify(expected.children[2].attributes), 'Attributes of div');
     assert.strictEqual(result.children[2].name, expected.children[2].name, 'Name of div');
 });
-$Q.test('$Z.dom - li^a+div - Ascend and Add - Works like Double Add', function (assert) {
+$Q.test('steno.dom - li^a+div - Ascend and Add - Works like Double Add', function (assert) {
 
     // Expectation
     assert.expect(16);
 
     // Variables
     var string = 'li^a+div',
-        result = $Z.dom(string);
-    $Z.extend(div, {
+        result = steno.dom(string);
+    steno.extend(div, {
         parent: expected
     });
-    $Z.extend(li, {
+    steno.extend(li, {
         parent: expected
     });
-    $Z.extend(a, {
+    steno.extend(a, {
         parent: expected
     });
-    $Z.extend(expected, {
+    steno.extend(expected, {
         children: [li, a, div]
     });
 
@@ -628,25 +628,25 @@ $Q.test('$Z.dom - li^a+div - Ascend and Add - Works like Double Add', function (
     assert.strictEqual(JSON.stringify(result.children[2].attributes), JSON.stringify(expected.children[2].attributes), 'Attributes of div');
     assert.strictEqual(result.children[2].name, expected.children[2].name, 'Name of div');
 });
-$Q.test('$Z.dom - li^li>div - Ascend and Descend - Works like Add and Descend', function (assert) {
+$Q.test('steno.dom - li^li>div - Ascend and Descend - Works like Add and Descend', function (assert) {
 
     // Expectation
     assert.expect(16);
 
     // Variables
     var string = 'li^li>div',
-        result = $Z.dom(string);
-    $Z.extend(div, {
+        result = steno.dom(string);
+    steno.extend(div, {
         parent: li2
     });
-    $Z.extend(li2, {
+    steno.extend(li2, {
         parent: expected,
         children: [div]
     });
-    $Z.extend(li, {
+    steno.extend(li, {
         parent: expected
     });
-    $Z.extend(expected, {
+    steno.extend(expected, {
         children: [li, li2]
     });
 
@@ -672,7 +672,7 @@ $Q.test('$Z.dom - li^li>div - Ascend and Descend - Works like Add and Descend', 
     assert.strictEqual(JSON.stringify(result.children[1].children[0].attributes), JSON.stringify(expected.children[1].children[0].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].children[0].name, expected.children[1].children[0].name, 'Name of div');
 });
-$Q.test('$Z.html', function(assert) {
+$Q.test('steno.html', function(assert) {
     // Expectations
     assert.expect(12);
 
@@ -683,71 +683,71 @@ $Q.test('$Z.html', function(assert) {
 
     //#23
     string = 'h1+h2';
-    input = $Z.dom(string);
-    result = $Z.html(input);
+    input = steno.dom(string);
+    result = steno.html(input);
     expected = '<h1></h1><h2></h2>';
     assert.strictEqual(result, expected, 'dom ' + string);
     //#23
     string = 'h1+h2';
-    result = $Z.html(string);
+    result = steno.html(string);
     expected = '<h1></h1><h2></h2>';
     assert.strictEqual(result, expected, 'string ' + string);
 
     //#21
     string = 'ul>li*4';
-    input = $Z.dom(string);
-    result = $Z.html(input);
+    input = steno.dom(string);
+    result = steno.html(input);
     expected = '<ul><li></li><li></li><li></li><li></li></ul>';
     assert.strictEqual(result, expected, 'dom ' + string);
     //#21
     string = 'ul>li*4';
-    result = $Z.html(string);
+    result = steno.html(string);
     expected = '<ul><li></li><li></li><li></li><li></li></ul>';
     assert.strictEqual(result, expected, 'string ' + string);
 
     //#22
     string = 'ul>(li>a)*2';
-    input = $Z.dom(string);
-    result = $Z.html(input);
+    input = steno.dom(string);
+    result = steno.html(input);
     expected = '<ul><li><a></a></li><li><a></a></li></ul>';
     assert.strictEqual(result, expected, 'dom ' + string);
     //#22
     string = 'ul>(li.option>a.has-link)*2+li.selected.option>a.has-link';
-    result = $Z.html(string);
+    result = steno.html(string);
     expected = '<ul><li class="option"><a class="has-link"></a></li><li class="option"><a class="has-link"></a></li>' +
         '<li class="selected option"><a class="has-link"></a></li></ul>';
     assert.strictEqual(result, expected, 'string ' + string);
 
     string = 'ul#id.class[title="Something Here"]';
-    input = $Z.dom(string);
-    result = $Z.html(input);
+    input = steno.dom(string);
+    result = steno.html(input);
     expected = '<ul title="Something Here" id="id" class="class"></ul>';
     assert.strictEqual(result, expected, 'dom ' + string);
 
     string = 'ul>li+li+li>a';
-    input = $Z.dom(string);
-    result = $Z.html(input);
+    input = steno.dom(string);
+    result = steno.html(input);
     expected = '<ul><li></li><li></li><li><a></a></li></ul>';
     assert.strictEqual(result, expected, 'dom ' + string);
 
     string = 'ul>li{one}+li{two}+li>a{three}';
-    input = $Z.dom(string);
-    result = $Z.html(input);
+    input = steno.dom(string);
+    result = steno.html(input);
     expected = '<ul><li>one</li><li>two</li><li><a>three</a></li></ul>';
     assert.strictEqual(result, expected, 'dom ' + string);
 
     string = 'ul#id.class[title="Something Here"]';
-    result = $Z.html(string);
+    result = steno.html(string);
     expected = '<ul title="Something Here" id="id" class="class"></ul>';
     assert.strictEqual(result, expected, 'string ' + string);
 
     string = 'ul>li+li+li>a';
-    result = $Z.html(string);
+    result = steno.html(string);
     expected = '<ul><li></li><li></li><li><a></a></li></ul>';
     assert.strictEqual(result, expected, 'string ' + string);
 
     string = 'ul>li{one}+li{two}+li>a{three}';
-    result = $Z.html(string);
+    result = steno.html(string);
     expected = '<ul><li>one</li><li>two</li><li><a>three</a></li></ul>';
     assert.strictEqual(result, expected, 'string ' + string);
 });

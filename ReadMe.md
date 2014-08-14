@@ -1,10 +1,10 @@
-﻿#zQuery
+﻿#steno.js
 
 * Author: Kenshin The Battōsai *(Sudarsan Balaji)*
 * License: [GNU Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
 * Library Version: v1.1.0
-* Last Updated: 2014-08-09
-* ReadMe Version: 1.0
+* Last Updated: 2014-08-14
+* ReadMe Version: 1.1
 
 ##Description
 
@@ -12,7 +12,7 @@ A javascript library to use CSS selectors and more (similar to [Emmet](http://em
 
 The main idea is that you should be able to do something like this:
 
-`$Z.html('#main-menu.main[role="menu"]>((a>span{Selected})+(ul.dropdown>li*4))')`
+`steno.html('#main-menu.main[role="menu"]>((a>span{Selected})+(ul.dropdown>li*4))')`
 
 should output
 
@@ -32,19 +32,18 @@ should output
 
 so that you can then do:
 
-`jQuery('.insert-here').append(zQuery.html('ul>(li>a{Click Here})*4'));`
+`jQuery('.insert-here').append(steno.html('ul>(li>a{Click Here})*4'));`
 
 or, like this:
 
 ```
-window.zen = zQuery.html;
-$('#insert-here').append(zen('ul>(li>a{Click Here})*4'));
+window.steno = steno.html;
+$('#insert-here').append(steno('ul>(li>a{Click Here})*4'));
 ```
 
-or any other way you'd like to use the zQuery.html function.
-`zQuery` and `$Z` can be used interchangeably.
+or any other way you'd like to use the steno.html function.
 
-For more detailed documentation, refer the [wiki](https://github.com/kenshinthebattosai/zQuery/wiki)
+For more detailed documentation, refer the [wiki](https://github.com/kenshinthebattosai/steno.js/wiki)
 
 ##Features
 
@@ -73,6 +72,7 @@ Should be able to:
 
 ##Thanks
 
-To wonderful authors of libraries like jQuery, qUnit, underscore, backbone, etc,
+To wonderful authors of libraries like [jQuery](http://jquery.com), [qUnit](http://qunitjs.com),
+[underscore](http://underscorejs.org), [backbone](http://backbonejs.org), etc,
 whose annotated source code was invaluable. Without such libraries, this project would
 never even have started, and this piece of code would have never seen the light of day.

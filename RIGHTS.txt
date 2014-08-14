@@ -1,4 +1,4 @@
-﻿zQuery - A javascript library to create create HTML strings using CSS selectors
+﻿steno.js - A javascript library to create create HTML strings using CSS selectors (and more)
 Copyright (C) 2014  Kenshin The Battōsai (Sudarsan Balaji)
 
 This program is free software: you can redistribute it and/or modify

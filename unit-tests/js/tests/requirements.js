@@ -1,10 +1,10 @@
 ﻿/// <reference path="../lib/qunit-git.js" />
-/// <reference path="../project/zquery.js" />
+/// <reference path="../project/steno.js" />
 /// <reference path="../tests/tests.js"/>
 
 $Q.module('Requirements');
 $Q.test('Basic Requirements', function(assert) {
-    assert.expect(11);
+    assert.expect(10);
     assert.notStrictEqual(typeof window, 'undefined', 'Window reference is obtainable');
     assert.notStrictEqual(window, null, 'Window is not null');
     assert.ok(Array.prototype, 'Array.prototype is defined');
@@ -14,6 +14,5 @@ $Q.test('Basic Requirements', function(assert) {
     assert.ok(Array.prototype.push, 'Array.prototype.push is defined');
     assert.ok(Function.prototype.apply, 'Function.prototype.apply is defined');
     assert.ok(RegExp, 'RegExp is defined');
-    assert.ok(zQuery, 'zQuery is defined');
-    assert.ok($Z, '$Z is defined');
+    assert.ok(steno, 'steno is defined');
 });
