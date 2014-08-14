@@ -73,6 +73,6 @@ Should be able to:
 ##Thanks
 
 To wonderful authors of libraries like [jQuery](http://jquery.com), [qUnit](http://qunitjs.com),
-[underscore](http://underscorejs.org), [backbone](http://backbonejs.org), etc,
+[underscore](http://underscorejs.org) and [backbone](http://backbonejs.org),
 whose annotated source code was invaluable. Without such libraries, this project would
 never even have started, and this piece of code would have never seen the light of day.
