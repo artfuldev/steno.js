@@ -1,5 +1,5 @@
 ﻿/*
-    zQuery - A javascript library to create create HTML strings using CSS selectors
+    steno.js - A javascript library to write shorthand HTML
     Copyright (C) 2014  Kenshin The Battōsai (Sudarsan Balaji)
 
     This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
     //'use strict';
 
     // Required variables
-    var zQuery = {},
+    var steno = {},
 
         // Shorts
         objProto = Object.prototype,
@@ -44,11 +44,11 @@
         strNull = 'null',
         strOr = '|',
         strUndefined = 'undefined',
-        strNullOrUndefined = strNull + strOr + strUndefined,
+        strNullOrUndefined = strNull+strOr+strUndefined,
         strEmpty = '',
         strDiv = 'div',
         strClass = 'class',
-        strZenDom = 'zen dom',
+        strSteno = 'steno',
         strObject = 'object',
         strArray = 'array',
         strPlainObject = 'plain object',
@@ -75,8 +75,8 @@
         rxAttributes = /([a-z-_]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
         rxTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
 
-        // Empty Zen Element
-        emptyZenElement = {
+        // Empty Steno Element
+        emptyStenoElement = {
             parent: null,
             name: strEmpty,
             attributes: {},
@@ -85,11 +85,11 @@
             multiplier: 1
         };
 
-    // Core functions start with zen
+    // Core functions start with steno
 
-    // Returns the classes found in a classes zencoding string partial as an array
+    // Returns the classes found in a classes steno string partial as an array
     // Input-Output sample '.menu.dropdown' : ['menu','dropdown']
-    function zenClasses(string) {
+    function stenoClasses(string) {
 
         // Validate Arguments
         validateArgs(arguments, [strString]);
@@ -104,8 +104,8 @@
         return matches.join(strSpace);
     };
 
-    // Returns attributes found in an attributes zencoding string partial as an object with key value pairs
-    function zenAttributes(string) {
+    // Returns attributes found in an attributes steno string partial as an object with key value pairs
+    function stenoAttributes(string) {
 
         // Validate Arguments
         validateArgs(arguments, [strString]);
@@ -124,8 +124,8 @@
         return matches;
     };
 
-    // Returns an element from a zen coding string of a single html element
-    function zenElement(string, pure) {
+    // Returns an element from a steno string of a single html element
+    function stenoElement(string, pure) {
 
         // Returns pure {name:'', attributes{}} object if true
         // Otherwise returns an extended one
@@ -154,10 +154,10 @@
             match[5] = strDiv;
 
         // Get Classes
-        zClasses = zenClasses(match[7]);
+        zClasses = stenoClasses(match[7]);
 
         // Get Attributes
-        zAttributes = zenAttributes(match[8]);
+        zAttributes = stenoAttributes(match[8]);
 
         // Make id as an attribute, id specified takes precedence over that in attributes tag
         if (match[6])
@@ -171,7 +171,7 @@
                 zAttributes[strClass] = zClasses + strSpace + zAttributes[strClass];
             }
         }
-
+        
         // Multiplier
         multiplier = match[10];
         if (!multiplier) {
@@ -184,7 +184,7 @@
 
         // Build and return the element, now that the name and attributes are done
         if (!pure)
-            return extend(true, {}, emptyZenElement, {
+            return extend(true, {}, emptyStenoElement, {
                 name: match[5],
                 attributes: zAttributes,
                 text: match[9],
@@ -198,8 +198,8 @@
         };
     };
 
-    // Returns a custom dom object from a zen coding string of a html dom
-    function zenDom(string) {
+    // Returns a custom dom object from a steno string of a html dom
+    function stenoDom(string) {
 
         //Validate Arguments
         validateArgs(arguments, [strString]);
@@ -231,8 +231,8 @@
         }
 
         // If you came this far, create first element and add to dom
-        dom = extend(true, {}, emptyZenElement);
-        element = zenAdd(dom);
+        dom = extend(true, {}, emptyStenoElement);
+        element = stenoAdd(dom);
 
         // Loop through matches
         // Don't use for..in loop
@@ -242,52 +242,52 @@
             switch (current.charAt(0)) {
 
                 // Descend, Group
-                case strSpace:
-                case strGt:
-                case '(':
-                    element = zenAdd(element);
-                    break;
+            case strSpace:
+            case strGt:
+            case '(':
+                element = stenoAdd(element);
+                break;
 
-                    // Add
-                case '+':
-                    if (is(strNullOrUndefined, element.parent))
-                        element.parent = extend(true, {}, emptyZenElement);
-                    element = zenAdd(element.parent);
-                    break;
+            // Add
+            case '+':
+                if (is(strNullOrUndefined, element.parent))
+                    element.parent = extend(true, {}, emptyStenoElement);
+                element = stenoAdd(element.parent);
+                break;
 
-                    // Ascend
-                case '^':
-                    parent = element.parent || element;
-                    element = zenAdd(parent.parent || parent);
-                    break;
+            // Ascend
+            case '^':
+                parent = element.parent || element;
+                element = stenoAdd(parent.parent || parent);
+                break;
 
-                    // Close Group
-                case ')':
+            // Close Group
+            case ')':
 
-                    // Climb up till the element's parent has no name
-                    parent = element.parent;
-                    while (parent.name !== strEmpty) {
-                        temp = element.parent;
-                        parent = temp.parent;
-                    }
+                // Climb up till the element's parent has no name
+                parent = element.parent;
+                while (parent.name !== strEmpty) {
+                    temp = element.parent;
+                    parent = temp.parent;
+                }
 
-                    // Set multiplier
-                    multiplier = matches[i][4];
-                    if (!multiplier) {
+                // Set multiplier
+                multiplier = matches[i][4];
+                if (!multiplier) {
+                    multiplier = 1;
+                } else {
+                    multiplier = getInt(multiplier);
+                    if (isNan(multiplier))
                         multiplier = 1;
-                    } else {
-                        multiplier = getInt(multiplier);
-                        if (isNan(multiplier))
-                            multiplier = 1;
-                    }
-                    parent.multiplier = multiplier;
-                    element = parent || temp || element;
-                    break;
+                }
+                parent.multiplier = multiplier;
+                element = parent || temp || element;
+                break;
 
-                    // The element should be extended
-                    // This allows for chaining ascends, etc
-                default:
-                    extend(element, zenElement(current, true));
+            // The element should be extended
+            // This allows for chaining ascends, etc
+            default:
+                extend(element, stenoElement(current, true));
             }
         }
 
@@ -298,12 +298,12 @@
             dom.parent = null;
         }
 
-        return zenRedo(dom);
+        return stenoRedo(dom);
     };
 
     // Restructures a dom so that the parent is returned
-    function zenRedo(dom) {
-        validateArgs(arguments, [strZenDom]);
+    function stenoRedo(dom) {
+        validateArgs(arguments, [strSteno]);
 
         var temp = dom,
             parent = temp.parent;
@@ -315,17 +315,17 @@
     };
 
     // Adds a child to a $Z dom element
-    function zenAdd(element, child) {
+    function stenoAdd(element, child) {
 
         // Add empty child if not provided
         if (is(strNullOrUndefined, child)) {
-            child = extend(true, {}, emptyZenElement);
+            child = extend(true, {}, emptyStenoElement);
             arguments[1] = child;
             arguments.length++;
         }
 
         // Validate
-        validateArgs(arguments, [strZenDom, strZenDom]);
+        validateArgs(arguments, [strSteno, strSteno]);
 
         // Add child-parent links
         child.parent = element;
@@ -335,13 +335,13 @@
     };
 
     // Returns the html of a $Z dom element
-    function zenHtml(dom) {
+    function stenoHtml(dom) {
 
         // Validate
-        validateArgs(arguments, [strString + strOr + strZenDom]);
+        validateArgs(arguments, [strString + strOr + strSteno]);
 
         if (is(strString, dom))
-            return zenHtml(zenDom(dom));
+            return stenoHtml(stenoDom(dom));
 
         // Variables
         var i,
@@ -368,7 +368,7 @@
         // Add contents if children are not present, else add children
         inner += text;
         for (i in children) {
-            inner += zenHtml(children[i]);
+            inner += stenoHtml(children[i]);
         }
 
         // Multiplier
@@ -396,11 +396,11 @@
                 // - Any object or value whose internal [[Class]] property is not "[object Object]"
                 // - DOM nodes
                 // - window
-                if (objectType(obj) !== strObject || obj.nodeType || obj === obj.window) {
+                if (objectType(obj)!==strObject || obj.nodeType || obj===obj.window) {
                     continue;
                 }
                 if (obj.constructor &&
-                        !has('isPrototypeOf', obj.constructor.prototype)) {
+                        !has('isPrototypeOf',obj.constructor.prototype)) {
                     continue;
                 }
 
@@ -408,7 +408,7 @@
                 // |obj| is a plain object, created by {} or constructed with new Object
                 match = true;
                 break;
-            } else if (types[i] === strZenDom) {
+            } else if (types[i] === strSteno) {
 
                 // $Z dom object
                 if (is(strPlainObject, obj)
@@ -419,7 +419,7 @@
                     match = true;
                     break;
                 }
-
+                    
             } else if (objectType(obj) === types[i]) {
                 match = true;
                 break;
@@ -495,13 +495,13 @@
     function trim(text) {
         if (validateArgs(arguments, [strNullOrUndefined], false))
             return strEmpty;
-        validateArgs(arguments, [strString + strOr + strBoolean + strOr + strNumber]);
+        validateArgs(arguments, [strString+strOr+strBoolean+strOr+strNumber]);
         return text.toString().replace(rxTrim, strEmpty);
     };
 
     // Invlaid to Value (Nullify to Value)
     function invalidToValue(obj, value) {
-        if (!is(strObject + strOr + strArray, obj))
+        if (!is(strObject+strOr+strArray, obj))
             return obj;
         for (var i in obj)
             if (is(strNullOrUndefined, obj[i]))
@@ -565,7 +565,7 @@
                     }
 
                     // Recurse for objects and arrays
-                    if (deep && copy && (is(strPlainObject + strOr + strArray, copy))) {
+                    if (deep && copy && (is(strPlainObject+strOr+strArray, copy))) {
 
                         // If array, create array, else create empty object
                         if (is(strArray, copy))
@@ -590,10 +590,10 @@
     };
 
     // Add stuff to zQuery
-    extend(zQuery, {
+    extend(steno, {
 
         // Core
-        html: zenHtml,
+        html: stenoHtml,
 
         // Utilities
         extend: extend,
@@ -607,28 +607,22 @@
         nullify: invalidToValue
     });
 
-    // For browser, export only $Z and zQuery as globals
+    // For browser, export only steno as global
     if (typeof window !== strUndefined && window != null) {
         (function () {
             var
                 // Map over zQuery in case of overwrite
-                _zQuery = window.zQuery,
+                _steno = window.steno;
 
-                // Map over the $Z in case of overwrite
-                _$Z = window.$Z;
-
-            zQuery.noConflict = function (deep) {
-                if (window.$Z === zQuery) {
-                    window.$Z = _$Z;
+            steno.noConflict = function (deep) {
+                if (deep && window.steno === steno) {
+                    window.steno = _steno;
                 }
-                if (deep && window.zQuery === zQuery) {
-                    window.zQuery = _zQuery;
-                }
-                return zQuery;
+                return steno;
             };
 
-            window.zQuery = window.$Z = zQuery;
-            return zQuery;
+            window.steno = steno;
+            return steno;
         })();
     }
 
