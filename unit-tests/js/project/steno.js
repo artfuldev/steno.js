@@ -91,9 +91,6 @@
     // Input-Output sample '.menu.dropdown' : ['menu','dropdown']
     function stenoClasses(string) {
 
-        // Validate Arguments
-        validateArgs(arguments, [strString]);
-
         // Return Matches
         var regEx = new rX(rxClasses),
             matches = [],
@@ -106,9 +103,6 @@
 
     // Returns attributes found in an attributes steno string partial as an object with key value pairs
     function stenoAttributes(string) {
-
-        // Validate Arguments
-        validateArgs(arguments, [strString]);
 
         // Return Matches
         var regEx = new rX(rxAttributes),
@@ -130,13 +124,8 @@
         // Returns pure {name:'', attributes{}} object if true
         // Otherwise returns an extended one
         if (is(strNullOrUndefined, pure)) {
-            arguments[1] = false;
-            arguments.length++;
             pure = false;
         }
-
-        //Validate Arguments
-        validateArgs(arguments, [strString, strBoolean]);
 
         // Match RegEx to retrieve element
         var regEx = new rX(rxElement),
@@ -200,9 +189,6 @@
 
     // Returns a custom dom object from a steno string of a html dom
     function stenoDom(string) {
-
-        //Validate Arguments
-        validateArgs(arguments, [strString]);
 
         // Initialize
         var i,
@@ -303,7 +289,6 @@
 
     // Restructures a dom so that the parent is returned
     function stenoRedo(dom) {
-        validateArgs(arguments, [strSteno]);
 
         var temp = dom,
             parent = temp.parent;
@@ -320,12 +305,7 @@
         // Add empty child if not provided
         if (is(strNullOrUndefined, child)) {
             child = extend(true, {}, emptyStenoElement);
-            arguments[1] = child;
-            arguments.length++;
         }
-
-        // Validate
-        validateArgs(arguments, [strSteno, strSteno]);
 
         // Add child-parent links
         child.parent = element;
@@ -336,9 +316,6 @@
 
     // Returns the html of a $Z dom element
     function stenoHtml(dom) {
-
-        // Validate
-        validateArgs(arguments, [strString + strOr + strSteno]);
 
         if (is(strString, dom))
             return stenoHtml(stenoDom(dom));
@@ -408,18 +385,6 @@
                 // |obj| is a plain object, created by {} or constructed with new Object
                 match = true;
                 break;
-            } else if (types[i] === strSteno) {
-
-                // $Z dom object
-                if (is(strPlainObject, obj)
-                        && has('children', obj) && is(strArray, obj.children)
-                        && has('parent', obj) && is(strNullOrObject, obj.parent)
-                        && has('name', obj) && is(strString, obj.name)
-                        && has('attributes', obj) && is(strObject, obj.attributes)) {
-                    match = true;
-                    break;
-                }
-                    
             } else if (objectType(obj) === types[i]) {
                 match = true;
                 break;
@@ -462,40 +427,10 @@
         return undefined;
     };
 
-    // Validate Arguments
-    function validateArgs(args, types, doesThrow) {
-
-        if (doesThrow === undefined || doesThrow === null || !is(strBoolean, doesThrow))
-            doesThrow = true;
-
-        // Handle special case when arguments is undefined and type contains undefined
-        if (is(strObject, args) && args.length == 0 && is(strArray, types) && types[0].toString().indexOf(strUndefined) > -1)
-            return true;
-
-        if (!is(strObject, args) || !is(strArray, types) || types.length != args.length) {
-            if (doesThrow) {
-                throw strInvalidCall;
-            } else {
-                return false;
-            }
-        }
-        for (var i in args) {
-            if (!is(types[i], args[i])) {
-                if (doesThrow) {
-                    throw strInvalidCall;
-                } else {
-                    return false;
-                }
-            }
-        }
-        return true;
-    };
-
     // Trim
     function trim(text) {
-        if (validateArgs(arguments, [strNullOrUndefined], false))
+        if (is(strNullOrUndefined, text))
             return strEmpty;
-        validateArgs(arguments, [strString+strOr+strBoolean+strOr+strNumber]);
         return text.toString().replace(rxTrim, strEmpty);
     };
 
@@ -511,7 +446,6 @@
 
     // Random
     function random(array) {
-        validateArgs(arguments, [strArray]);
         return array[math.floor(math.random() * array.length)];
     };
 
@@ -610,7 +544,6 @@
         is: is,
         objectType: objectType,
         trim: trim,
-        validate: validateArgs,
 
         // Array Helpers
         random: random,

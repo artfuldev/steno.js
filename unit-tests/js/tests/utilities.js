@@ -74,24 +74,6 @@ $Q.test('steno.has', function(assert) {
     assert.strictEqual(steno.has('key', arr), true, 'Matches for Array');
     assert.strictEqual(steno.has('key-three', arr), false, 'Returns false for bad key of Array');
 });
-$Q.test('steno.validate', function(assert) {
-    assert.expect(14);
-    var args = function() { return arguments; };
-    assert.throws(function() { steno.validate(); }, 'Invalid Function Call', 'Error thrown when not enough arguments are passed');
-    assert.throws(function() { steno.validate(1); }, 'Invalid Function Call', 'Error thrown when less than 2 arguments is passed');
-    assert.throws(function() { steno.validate(1, 2, 3); }, 'Invalid Function Call', 'Error thrown when more than 2 arguments is passed');
-    assert.throws(function() { steno.validate(1, 2); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
-    assert.throws(function() { steno.validate([1], 2); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
-    assert.throws(function() { steno.validate(1, [2]); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
-    assert.throws(function() { steno.validate([1], [2]); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
-    assert.throws(function() { steno.validate(args(1), [2]); }, 'Invalid Function Call', 'Error thrown when 2 arguments of invalid type are passed');
-    assert.throws(function() { steno.validate(args(1, 2), [2]); }, 'Invalid Function Call', 'Error thrown when length of arguments is not equal to length of types');
-    assert.ok(steno.validate(args(1), ['number']), 'Works for 1 argument');
-    assert.ok(steno.validate(args(1, {}), ['number', 'object']), 'Works for more than 1 argument');
-    assert.ok(steno.validate(args(1), ['number|string']), 'Works for multiple types');
-    assert.strictEqual(steno.validate(args(1, 2), [2], false), false, 'Returns false instead of throwing error when canThrow is passed as false');
-    assert.strictEqual(steno.validate(args(), ['undefined'], false), true, 'undefined works for empty arguments');
-});
 $Q.test('steno.trim', function(assert) {
     assert.expect(13);
     var nbsp = String.fromCharCode(160);
