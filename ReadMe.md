@@ -3,7 +3,7 @@
 * Author: Kenshin The Battōsai *(Sudarsan Balaji)*
 * License: [GNU Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
 * Library Version: v1.1.1
-* Last Updated: 2014-08-14
+* Last Updated: 2014-08-19
 * ReadMe Version: 1.1
 
 ##Description
@@ -51,7 +51,7 @@ For more detailed documentation, refer the [wiki](https://github.com/kenshintheb
 eg: `[title="" href=""]` and `[title=""][href=""]`
 * Quickly add dom elements or innerHTML to a document.
 * No dependencies, use with or without jQuery.
-* Comes with utilities, like `extend, is, has, validate, random and nullify`. 
+* Comes with utilities, like `extend, is, has, trim, random and nullify`. 
 
 Should be able to:
 
