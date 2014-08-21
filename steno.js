@@ -70,6 +70,11 @@
 
         // Capture Groups: Name, Value
         rxAttributes = /([a-z-_]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
+
+        // Capture Group: Object/Variable Reference
+        rxVariables = /\\([a-z\$_.-]+)/g,
+
+        // Trim
         rxTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g,
 
         // Empty Steno Element
@@ -296,7 +301,7 @@
         return temp;
     };
 
-    // Adds a child to a $Z dom element
+    // Adds a child to a steno element
     function stenoAdd(element, child) {
 
         // Add empty child if not provided
@@ -311,11 +316,52 @@
         return child;
     };
 
-    // Returns the html of a $Z dom element
-    function stenoHtml(dom) {
+    // Returns the context-variable-substituted string
+    function stenoRender(string, context) {
 
-        if (is(strString, dom))
-            return stenoHtml(stenoDom(dom));
+        // Return Matches
+        var regEx = new rX(rxVariables),
+            matches = [],
+            substitutes = [],
+            match,
+            i;
+
+        // For every match
+        while (match = regEx.exec(string)) {
+
+            // Get Capture Group
+            var ref = match[1],
+                refs = ref.split('.'),
+                substitute = context,
+                depth = refs.length;
+
+            // Add match
+            matches.push(match[0]);
+
+            // Get substitution
+            for (i in refs) {
+                substitute = substitute[refs[i]];
+            }
+
+            // Get substitution
+            substitutes.push(substitute);
+        }
+
+        // Perform substitutions
+        for (i in matches) {
+            string = string.replace(matches[i], substitutes[i]);
+        }
+
+        // Return string
+        return string;
+    };
+
+    // Returns the html of a steno element
+    function stenoHtml(dom, context) {
+
+        if (is(strString, dom)) {
+            return stenoHtml(stenoDom(dom), context);
+        }
 
         // Variables
         var i,
@@ -334,15 +380,15 @@
         if (name) {
             prefix += '<' + name;
             for (i in attributes) {
-                prefix += strSpace + i + '="' + attributes[i] + '"';
+                prefix += strSpace + i + '="' + stenoRender(attributes[i], context) + '"';
             }
             prefix += strGt;
             suffix = '</' + name + strGt + suffix;
         }
         // Add contents if children are not present, else add children
-        inner += text;
+        inner += stenoRender(text, context);
         for (i in children) {
-            inner += stenoHtml(children[i]);
+            inner += stenoHtml(children[i], context);
         }
 
         // Multiplier
