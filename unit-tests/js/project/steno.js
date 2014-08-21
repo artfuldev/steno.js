@@ -48,15 +48,12 @@
         strEmpty = '',
         strDiv = 'div',
         strClass = 'class',
-        strSteno = 'steno',
         strObject = 'object',
         strArray = 'array',
         strPlainObject = 'plain object',
         strNumber = 'number',
         strSpace = ' ',
         strGt = '>',
-        strNullOrObject = strNull + strOr + strObject,
-        strInvalidCall = 'Invalid Function Call',
         strFunction = 'function',
 
         // Regexes
