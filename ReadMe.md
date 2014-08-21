@@ -2,7 +2,7 @@
 
 * Author: Kenshin The Battōsai *(Sudarsan Balaji)*
 * License: [GNU Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
-* Library Version: v1.2.3
+* Library Version: v1.3.0
 * Last Updated: 2014-08-21
 * ReadMe Version: 1.1
 
@@ -12,14 +12,14 @@ A javascript library to write shorthand HTML, using CSS selectors (and more).
 
 The main idea is that you should be able to do something like this:
 
-`steno.html('#main-menu.main[role="menu"]>((a>span{Selected})+(ul.dropdown>li*4))')`
+`steno.html('#main-menu.main[role="menu"]>((a>span{\\text})+(ul.dropdown>li*4))', {text: 'Some text here'})`
 
 should output
 
 ```
 <div id="main-menu" class="main" role="menu">
     <a>
-        <span>Selected</span>
+        <span>Some text here</span>
     </a>
     <ul class="dropdown">
         <li></li>
@@ -50,24 +50,25 @@ For more detailed documentation, refer the [wiki](https://github.com/kenshintheb
 * Can use Zen Coding and Sizzle selectors interchangeably
 eg: `[title="" href=""]` and `[title=""][href=""]`
 * Quickly add dom elements or innerHTML to a document.
-* No dependencies, use with or without jQuery.
+* Minor templating options with single object/variable reference.
+* Compatiable with IE7.
+* No dependencies.
 * Comes with utilities, like `extend, is, has, trim, random and nullify`. 
 
 Should be able to:
 
-* Create quick clientside templates when done.
+* Create quick clientside templates with arrays.
 * Extend to other engines like Handlebars.js.
 
 ##Goals
 
 ###Long Term
 
-* To keep working on this as and when time allows
+* To make this the smallest client side HTML templating library.
 
 ###Short Term
 
-* To add whatever possible for now.
-* Add templating options
+* Add templating options for arrays
 * Add a jQuery plugin version with much lesser file size (if possible)
 
 ##Thanks

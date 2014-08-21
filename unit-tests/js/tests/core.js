@@ -147,6 +147,47 @@ $Q.test('steno.element', function (assert) {
         assert.deepEqual(steno.element(i), elements[i], 'Elements in \'' + i + '\' retreived successfully as ' + JSON.stringify(elements[i]));
 
 });
+$Q.test('steno.render', function (assert) {
+
+    // Expectations
+    assert.expect(5);
+
+    // Variables
+    var string, context, expected, result;
+
+    // Assertions
+
+    string = 'Hi \\name!';
+    context = { name: 'John' };
+    expected = 'Hi John!';
+    result = steno.render(string, context);
+    assert.strictEqual(result, expected, 'Simple Variable Sustitution');
+
+    string = 'Hi \\author.name!';
+    context = { author: { name: 'John' } };
+    expected = 'Hi John!';
+    result = steno.render(string, context);
+    assert.strictEqual(result, expected, 'Nested Variable Sustitution');
+
+    string = 'Hi \\author.name.first-name!';
+    context = { author: { name: { 'first-name': 'John' } } };
+    expected = 'Hi John!';
+    result = steno.render(string, context);
+    assert.strictEqual(result, expected, 'Nested Variable Sustitution - Hyphenated Member');
+
+    string = 'Hi \\author.name._firstname!';
+    context = { author: { name: { '_firstname': 'John' } } };
+    expected = 'Hi John!';
+    result = steno.render(string, context);
+    assert.strictEqual(result, expected, 'Nested Variable Sustitution - Underscored Member');
+
+    string = 'Hi \\author.name.$first!';
+    context = { author: { name: { '$first': 'John' } } };
+    expected = 'Hi John!';
+    result = steno.render(string, context);
+    assert.strictEqual(result, expected, 'Nested Variable Sustitution - Dollared Member');
+
+});
 $Q.test('steno.redo', function(assert) {
     
     // Expecatations
@@ -672,7 +713,7 @@ $Q.test('steno.dom - li^li>div - Ascend and Descend - Works like Add and Descend
     assert.strictEqual(JSON.stringify(result.children[1].children[0].attributes), JSON.stringify(expected.children[1].children[0].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].children[0].name, expected.children[1].children[0].name, 'Name of div');
 });
-$Q.test('steno.html', function(assert) {
+$Q.test('steno.html - No Context', function(assert) {
     // Expectations
     assert.expect(12);
 
@@ -750,4 +791,51 @@ $Q.test('steno.html', function(assert) {
     result = steno.html(string);
     expected = '<ul><li>one</li><li>two</li><li><a>three</a></li></ul>';
     assert.strictEqual(result, expected, 'string ' + string);
+});
+$Q.test('steno.html - Object Context', function (assert) {
+    // Expectations
+    assert.expect(3);
+
+    // Variables
+    var string, context, result, expected;
+
+    // Assertions
+
+    // Text/InnerHtml
+    string = 'h1{\\title - \\name}+h2{\\subtitle}';
+    context = {
+        title: 'Some Title',
+        name: 'Battosai',
+        subtitle: 'Kenshin'
+    };
+    result = steno.html(string, context);
+    expected = '<h1>Some Title - Battosai</h1><h2>Kenshin</h2>';
+    assert.strictEqual(result, expected, string);
+
+    // Attributes
+    string = 'h1[class="\\title" id="\\name"][data-subtitle="\\subtitle"]';
+    context = {
+        title: 'Some Title',
+        name: 'Battosai',
+        subtitle: 'Kenshin'
+    };
+    result = steno.html(string, context);
+    expected = '<h1 class="Some Title" id="Battosai" data-subtitle="Kenshin"></h1>';
+    assert.strictEqual(result, expected, string);
+
+    // Nested
+    string = 'h1{\\book.title - \\author.name}+h2{\\book.subtitle}';
+    context = {
+        book: {
+            title: 'Some Title',
+            subtitle: 'Kenshin'
+        },
+        author: {
+            name: 'Battosai',
+            title: 'Mr.'
+        }
+    };
+    result = steno.html(string, context);
+    expected = '<h1>Some Title - Battosai</h1><h2>Kenshin</h2>';
+    assert.strictEqual(result, expected, string);
 });
