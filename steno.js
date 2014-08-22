@@ -90,7 +90,7 @@
     // Core functions start with steno
 
     // Returns the classes found in a classes steno string partial as an array
-    // Input-Output sample '.menu.dropdown' : ['menu','dropdown']
+    // Input-Output sample '.menu.dropdown' : 'menu dropdown'
     function stenoClasses(string) {
 
         // Return Matches
@@ -332,8 +332,7 @@
             // Get Capture Group
             var ref = match[1],
                 refs = ref.split('.'),
-                substitute = context,
-                depth = refs.length;
+                substitute = context;
 
             // Add match
             matches.push(match[0]);
