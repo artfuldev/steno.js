@@ -61,9 +61,9 @@
         // And RegEx Magic http://www.regexmagic.com/
 
         // Capture Groups:
-        // 1        2           3       4                   5       6   7       8           9       10
-        // Match    Operator    Closing ClosingMuliplier    Name    Id  Classes Attributes  Content Multiplier
-        rxElement = /(( |\+|\^|>|\()|(\))(?:\*(\d+))?|([a-z0-9_]+)?(?:#([a-z-_]+))?((?:\.[a-z-_]+)*)((?:\[(?:[a-z-_]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*)(?:\{((?:\\.|[^\n\r\\}])*)\})?(?:\*(\d+))?)/g,
+        // 1        2           3       4                   5       6   7       8           9       10          11
+        // Match    Operator    Closing ClosingMuliplier    Name    Id  Classes Attributes  Content Multiplier  SubContext
+        rxElement = /(( |\+|\^|>|\()|(\))(?:\*(\d+))?|([a-z]+[0-9]?)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*)(?:\{((?:\\.|[^\n\r\\}])*)\})?(?:\*(\d+))?(?:\\([a-z._-]+))?)/g,
 
         // Capture Group: ClassName
         rxClasses = /\.([a-z-_]+)/g,
@@ -84,7 +84,8 @@
             attributes: {},
             children: [],
             text: strEmpty,
-            multiplier: 1
+            multiplier: 1,
+            context: null
         };
 
     // Core functions start with steno
@@ -135,7 +136,8 @@
             match = regEx.exec(string),
             zClasses,
             zAttributes,
-            multiplier;
+            multiplier,
+            context = null;
 
         // Convert all non matches to empty strings
         invalidToValue(match, strEmpty);
@@ -173,19 +175,26 @@
                 multiplier = 1;
         }
 
+        // Context
+        if (match[11]) {
+            context = match[11];
+        }
+
         // Build and return the element, now that the name and attributes are done
         if (!pure)
             return extend(true, {}, emptyStenoElement, {
                 name: match[5],
                 attributes: zAttributes,
                 text: match[9],
-                multiplier: multiplier
+                multiplier: multiplier,
+                context: context
             });
         return {
             name: match[5],
             attributes: zAttributes,
             text: match[9],
-            multiplier: multiplier
+            multiplier: multiplier,
+            context: context
         };
     };
 
@@ -316,6 +325,17 @@
         return child;
     };
 
+    // Gets the context variable from a context-string and a context
+    function stenoContext(string, context) {
+        var i,
+            references = string.split('.'),
+            substitute = context;
+        for (i in references) {
+            substitute = substitute[references[i]];
+        }
+        return substitute;
+    };
+
     // Returns the context-variable-substituted string
     function stenoRender(string, context) {
 
@@ -329,21 +349,11 @@
         // For every match
         while (match = regEx.exec(string)) {
 
-            // Get Capture Group
-            var ref = match[1],
-                refs = ref.split('.'),
-                substitute = context;
-
             // Add match
             matches.push(match[0]);
 
-            // Get substitution
-            for (i in refs) {
-                substitute = substitute[refs[i]];
-            }
-
-            // Get substitution
-            substitutes.push(substitute);
+            // Add substitution
+            substitutes.push(stenoContext(match[1], context));
         }
 
         // Perform substitutions
@@ -361,6 +371,9 @@
         if (is(strString, dom)) {
             return stenoHtml(stenoDom(dom), context);
         }
+
+        // Subcontext takes precedence
+        context = dom.context ? stenoContext(dom.context, context) : context;
 
         // Variables
         var i,
