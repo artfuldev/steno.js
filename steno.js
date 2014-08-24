@@ -373,13 +373,13 @@
         }
 
         // Subcontext takes precedence
-        context = dom.context ? stenoContext(dom.context, context) : context;
+        // If there is no context, make it an empty object
+        context = (dom.context ? stenoContext(dom.context, context) : context) || {};
 
         // Variables
         var i,
-            prefix = strEmpty,
-            inner = strEmpty,
-            suffix = strEmpty,
+            j,
+            subcontext = context,
             name = dom.name,
             attributes = dom.attributes,
             multiplier = dom.multiplier,
@@ -388,24 +388,42 @@
             html = strEmpty;
 
         // Form html
-        // If name is available, add dom html
-        if (name) {
-            prefix += '<' + name;
-            for (i in attributes) {
-                prefix += strSpace + i + '="' + stenoRender(attributes[i], context) + '"';
-            }
-            prefix += strGt;
-            suffix = '</' + name + strGt + suffix;
-        }
-        // Add contents if children are not present, else add children
-        inner += stenoRender(text, context);
-        for (i in children) {
-            inner += stenoHtml(children[i], context);
+
+        // If context is not an array, make it an array with 1 element
+        // So as to allow looping in the next stage
+        if (!is('array', context)) {
+            subcontext = [context];
         }
 
-        // Multiplier
-        for (i = 0; i < multiplier; i++) {
-            html += prefix + inner + suffix;
+        // Loop over all elements in array-context
+        for (j in subcontext) {
+
+            // Local Variables inside the loop
+            var localContext = subcontext[j],
+                prefix = strEmpty,
+                inner = strEmpty,
+                suffix = strEmpty;
+
+            // If name is available, add dom html
+            if (name) {
+                prefix += '<' + name;
+                for (i in attributes) {
+                    prefix += strSpace + i + '="' + stenoRender(attributes[i], localContext) + '"';
+                }
+                prefix += strGt;
+                suffix = '</' + name + strGt + suffix;
+            }
+
+            // Add contents if children are not present, else add children
+            inner += stenoRender(text, localContext);
+            for (i in children) {
+                inner += stenoHtml(children[i], localContext);
+            }
+
+            // Multiplier
+            for (i = 0; i < multiplier; i++) {
+                html += prefix + inner + suffix;
+            }
         }
 
         // Return string
