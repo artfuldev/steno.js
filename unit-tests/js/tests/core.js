@@ -98,12 +98,24 @@ $Q.test('steno.element', function (assert) {
     // Variables
     var i,
         pureElements = {
-            'work': { name: 'work', attributes: {}, text: '', multiplier: 1 },
-            '#menu': { name: 'div', attributes: { id: 'menu' }, text: '', multiplier: 1 },
-            'div.class-name': { name: 'div', attributes: { 'class': 'class-name' }, text: '', multiplier: 1 },
-            'p.go-to-hell[class="help-me"]': { name: 'p', attributes: { 'class': 'go-to-hell help-me' }, text: '', multiplier: 1 },
-            'p#id.class': { name: 'p', attributes: { id: 'id', 'class': 'class' }, text: '', multiplier: 1 },
-            'p[hi="how" are="\\"you\\""]': { name: 'p', attributes: { hi: 'how', are: '\\"you\\"' }, text: '', multiplier: 1 },
+            'work': {
+                name: 'work', attributes: {}, text: '', multiplier: 1, context: null
+            },
+            '#menu': {
+                name: 'div', attributes: { id: 'menu' }, text: '', multiplier: 1, context: null
+            },
+            'div.class-name': {
+                name: 'div', attributes: { 'class': 'class-name' }, text: '', multiplier: 1, context: null
+            },
+            'p.go-to-hell[class="help-me"]': {
+                name: 'p', attributes: { 'class': 'go-to-hell help-me' }, text: '', multiplier: 1, context: null
+            },
+            'p#id.class': {
+                name: 'p', attributes: { id: 'id', 'class': 'class' }, text: '', multiplier: 1, context: null
+            },
+            'p[hi="how" are="\\"you\\""]': {
+                name: 'p', attributes: { hi: 'how', are: '\\"you\\"' }, text: '', multiplier: 1, context: null
+            },
             'p#id.class[data-attr da="gpo" hi="\\"help\\""]': {
                 name: 'p',
                 attributes: {
@@ -114,7 +126,8 @@ $Q.test('steno.element', function (assert) {
                     hi: '\\"help\\"'
                 },
                 text: '',
-                multiplier: 1
+                multiplier: 1,
+                context: null
             },
             'p#id.class[data-attr da="gpo" hi="\\"help\\""]{Hi, \\} How\'re you?}': {
                 name: 'p',
@@ -126,7 +139,8 @@ $Q.test('steno.element', function (assert) {
                     hi: '\\"help\\"'
                 },
                 text: 'Hi, \\} How\'re you?',
-                multiplier: 1
+                multiplier: 1,
+                context: null
             }
         },
         elements = {
@@ -146,6 +160,42 @@ $Q.test('steno.element', function (assert) {
     for (i in elements)
         assert.deepEqual(steno.element(i), elements[i], 'Elements in \'' + i + '\' retreived successfully as ' + JSON.stringify(elements[i]));
 
+});
+$Q.test('steno.context', function(assert) {
+    // Expectations
+    assert.expect(2);
+
+    // Variables
+    var string, context, result, expected;
+
+    // Assertions
+
+    // Text/InnerHtml
+    string = 'name';
+    context = {
+        title: 'Some Title',
+        name: 'Battosai',
+        subtitle: 'Kenshin'
+    };
+    result = steno.context(string, context);
+    expected = 'Battosai';
+    assert.strictEqual(result, expected, string);
+
+    // Nested
+    string = 'author.name';
+    context = {
+        book: {
+            title: 'Some Title',
+            subtitle: 'Kenshin'
+        },
+        author: {
+            name: 'Battosai',
+            title: 'Mr.'
+        }
+    };
+    result = steno.context(string, context);
+    expected = 'Battosai';
+    assert.strictEqual(result, expected, string);
 });
 $Q.test('steno.render', function (assert) {
 
@@ -794,7 +844,7 @@ $Q.test('steno.html - No Context', function(assert) {
 });
 $Q.test('steno.html - Object Context', function (assert) {
     // Expectations
-    assert.expect(3);
+    assert.expect(4);
 
     // Variables
     var string, context, result, expected;
@@ -837,5 +887,179 @@ $Q.test('steno.html - Object Context', function (assert) {
     };
     result = steno.html(string, context);
     expected = '<h1>Some Title - Battosai</h1><h2>Kenshin</h2>';
+    assert.strictEqual(result, expected, string);
+
+    // Subcontexts
+    string = 'h1{\\title - \\subtitle}\\book+h2{\\title \\name}\\author';
+    context = {
+        book: {
+            title: 'Some Title',
+            subtitle: 'Kenshin'
+        },
+        author: {
+            name: 'Battosai',
+            title: 'Mr.'
+        }
+    };
+    result = steno.html(string, context);
+    expected = '<h1>Some Title - Kenshin</h1><h2>Mr. Battosai</h2>';
+    assert.strictEqual(result, expected, string);
+});
+$Q.test('steno.html - Array Context', function (assert) {
+    // Expectations
+    assert.expect(5);
+
+    // Variables
+    var string, context, result, expected;
+
+    // Assertions
+
+    // Text/InnerHtml
+    string = 'h1{\\title}';
+    context = [
+        {
+            title: 'Hi'
+        },
+        {
+            title: 'Hello'
+        },
+        {
+            title: 'How'
+        }
+    ];
+    result = steno.html(string, context);
+    expected = '<h1>Hi</h1><h1>Hello</h1><h1>How</h1>';
+    assert.strictEqual(result, expected, string);
+
+    // Attributes
+    string = 'h1[class="\\title" id="\\name"][data-subtitle="\\subtitle"]';
+    context = [
+        {
+            title: 'Some Title',
+            name: 'Battosai',
+            subtitle: 'Kenshin'
+        },
+        {
+            title: 'Some Title2',
+            name: 'Battosai2',
+            subtitle: 'Kenshin2'
+        },
+        {
+            title: 'Some Title3',
+            name: 'Battosai3',
+            subtitle: 'Kenshin3'
+        }
+    ];
+    result = steno.html(string, context);
+    expected = '<h1 class="Some Title" id="Battosai" data-subtitle="Kenshin"></h1>' +
+        '<h1 class="Some Title2" id="Battosai2" data-subtitle="Kenshin2"></h1>' +
+        '<h1 class="Some Title3" id="Battosai3" data-subtitle="Kenshin3"></h1>';
+    assert.strictEqual(result, expected, string);
+
+    // Nested
+    string = 'h1{\\book.title - \\author.name}+h2{\\book.subtitle}';
+    context = [
+        {
+            book: {
+                title: 'Some Title',
+                subtitle: 'Kenshin'
+            },
+            author: {
+                name: 'Battosai',
+                title: 'Mr.'
+            }
+        },
+        {
+            book: {
+                title: 'ASome Title',
+                subtitle: 'AKenshin'
+            },
+            author: {
+                name: 'ABattosai',
+                title: 'AMr.'
+            }
+        },
+        {
+            book: {
+                title: 'BSome Title',
+                subtitle: 'BKenshin'
+            },
+            author: {
+                name: 'BBattosai',
+                title: 'BMr.'
+            }
+        }
+    ];
+    result = steno.html(string, context);
+    expected = '<h1>Some Title - Battosai</h1><h2>Kenshin</h2>' +
+        '<h1>ASome Title - ABattosai</h1><h2>AKenshin</h2>' +
+        '<h1>BSome Title - BBattosai</h1><h2>BKenshin</h2>';
+    assert.strictEqual(result, expected, string);
+
+    // Subcontexts
+    string = 'h1{\\title - \\subtitle}\\book+h2{\\title \\name}\\author';
+    context = [
+        {
+            book: {
+                title: 'Some Title',
+                subtitle: 'Kenshin'
+            },
+            author: {
+                name: 'Battosai',
+                title: 'Mr.'
+            }
+        },
+        {
+            book: {
+                title: 'ASome Title',
+                subtitle: 'AKenshin'
+            },
+            author: {
+                name: 'ABattosai',
+                title: 'AMr.'
+            }
+        },
+        {
+            book: {
+                title: 'BSome Title',
+                subtitle: 'BKenshin'
+            },
+            author: {
+                name: 'BBattosai',
+                title: 'BMr.'
+            }
+        }
+    ];
+    result = steno.html(string, context);
+    expected = '<h1>Some Title - Kenshin</h1><h2>Mr. Battosai</h2>' +
+        '<h1>ASome Title - AKenshin</h1><h2>AMr. ABattosai</h2>' +
+        '<h1>BSome Title - BKenshin</h1><h2>BMr. BBattosai</h2>';
+    assert.strictEqual(result, expected, string);
+
+    // SubContext as An Array
+    string = 'ul>li{\\text}\\items';
+    context = {
+        items: [
+            {
+                text: 'Some Item'
+            },
+            {
+                text: 'Some Other Item'
+            },
+            {
+                text: 'Another Item'
+            },
+            {
+                text: 'Just Another Item'
+            }
+        ]
+    };
+    result = steno.html(string, context);
+    expected = '<ul>' +
+        '<li>Some Item</li>' +
+        '<li>Some Other Item</li>' +
+        '<li>Another Item</li>' +
+        '<li>Just Another Item</li>' +
+        '</ul>';
     assert.strictEqual(result, expected, string);
 });
