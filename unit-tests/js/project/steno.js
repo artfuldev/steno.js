@@ -430,6 +430,13 @@
         return html;
     };
 
+    function stenoCompile(string) {
+        var escaped = string.replace(/\\/g,'\\\\').replace(/'/g,'\\\''),
+            obj = new Function('context', 'return steno.html(\'' + escaped + '\',context);');
+        obj.render = obj;
+        return obj;
+    };
+
     // Check if Object Has Key
     function has(key, obj) {
         return hasOwn.call(obj, key);
@@ -609,6 +616,7 @@
         add: stenoAdd,
         render: stenoRender,
         context: stenoContext,
+        compile: stenoCompile,
 
         // Element
         el: emptyStenoElement,

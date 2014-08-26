@@ -430,6 +430,13 @@
         return html;
     };
 
+    function stenoCompile(string) {
+        var escaped = string.replace(/\\/g, '\\\\').replace(/'/g, '\\\''),
+            obj = new Function('context', 'return steno.html(\'' + escaped + '\',context);');
+        obj.render = obj;
+        return obj;
+    };
+
     // Check if Object Has Key
     function has(key, obj) {
         return hasOwn.call(obj, key);
@@ -596,11 +603,12 @@
         return target;
     };
 
-    // Add stuff to zQuery
+    // Add stuff to steno
     extend(steno, {
 
         // Core
         html: stenoHtml,
+        compile: stenoCompile,
 
         // Utilities
         extend: extend,

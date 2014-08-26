@@ -238,7 +238,7 @@ $Q.test('steno.render', function (assert) {
     assert.strictEqual(result, expected, 'Nested Variable Sustitution - Dollared Member');
 
 });
-$Q.test('steno.redo', function(assert) {
+$Q.test('steno.redo', function (assert) {
     
     // Expecatations
     assert.expect(2);
@@ -1062,4 +1062,51 @@ $Q.test('steno.html - Array Context', function (assert) {
         '<li>Just Another Item</li>' +
         '</ul>';
     assert.strictEqual(result, expected, string);
+});
+$Q.test('steno.compile', function (assert) {
+    
+    // Expectations
+    assert.expect(8);
+
+    // Variables
+    var string, context, precompiledTemplate, result, expected;
+    context = { items: [{ index: 0 }, { index: 1 }, { index: 2 }, { index: 3 }] };
+
+    // Assertions
+
+    // Context Slash
+    string = 'ul>li\\items';
+    precompiledTemplate = steno.compile(string);
+    expected = steno.html(string, context);
+    result = precompiledTemplate(context);
+    assert.strictEqual(result, expected, 'fn - ' + string);
+    result = precompiledTemplate.render(context);
+    assert.strictEqual(result, expected, 'fn.render - ' + string);
+
+    // Escaped }
+    string = 'ul>li{{\\index\\}}\\items';
+    precompiledTemplate = steno.compile(string);
+    expected = steno.html(string, context);
+    result = precompiledTemplate(context);
+    assert.strictEqual(result, expected, 'fn - ' + string);
+    result = precompiledTemplate.render(context);
+    assert.strictEqual(result, expected, 'fn.render - ' + string);
+
+    // Escaped "
+    string = 'ul>li[data-for="\\"Nothing\\""]';
+    precompiledTemplate = steno.compile(string);
+    expected = steno.html(string, context);
+    result = precompiledTemplate(context);
+    assert.strictEqual(result, expected, 'fn - ' + string);
+    result = precompiledTemplate.render(context);
+    assert.strictEqual(result, expected, 'fn.render - ' + string);
+
+    // Unescaped'
+    string = 'ul>li[data-for="\'Nothing\'"]';
+    precompiledTemplate = steno.compile(string);
+    expected = steno.html(string, context);
+    result = precompiledTemplate(context);
+    assert.strictEqual(result, expected, 'fn - ' + string);
+    result = precompiledTemplate.render(context);
+    assert.strictEqual(result, expected, 'fn.render - ' + string);
 });
