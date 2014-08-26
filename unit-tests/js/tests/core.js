@@ -844,7 +844,7 @@ $Q.test('steno.html - No Context', function(assert) {
 });
 $Q.test('steno.html - Object Context', function (assert) {
     // Expectations
-    assert.expect(4);
+    assert.expect(5);
 
     // Variables
     var string, context, result, expected;
@@ -904,6 +904,13 @@ $Q.test('steno.html - Object Context', function (assert) {
     result = steno.html(string, context);
     expected = '<h1>Some Title - Kenshin</h1><h2>Mr. Battosai</h2>';
     assert.strictEqual(result, expected, string);
+
+    // #66
+    string = 'ul>li\\items';
+    context = {};
+    result = steno.html(string, context);
+    expected = '<ul></ul>';
+    assert.strictEqual(result, expected, string + ' - No such key in object');
 });
 $Q.test('steno.html - Array Context', function (assert) {
     // Expectations
