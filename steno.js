@@ -373,8 +373,7 @@
         }
 
         // Subcontext takes precedence
-        // If there is no context, make it an empty object
-        context = (dom.context ? stenoContext(dom.context, context) : context) || {};
+        context = dom.context ? stenoContext(dom.context, context) : context;
 
         // Variables
         var i,
@@ -389,10 +388,20 @@
 
         // Form html
 
-        // If context is not an array, make it an array with 1 element
-        // So as to allow looping in the next stage
-        if (!is('array', context)) {
-            subcontext = [context];
+        // If context is not an array, if the el
+        if (!is(strArray, context)) {
+
+            // If dom has context but no such context is available
+            if (dom.context && is(strNullOrUndefined, context)) {
+
+                // Subcontext is empty
+                subcontext = [];
+            } else {
+
+                // Subcontext is an array of 1 element, context
+                // If there is no context, make it an empty object
+                subcontext = [context || {}];
+            }
         }
 
         // Loop over all elements in array-context
