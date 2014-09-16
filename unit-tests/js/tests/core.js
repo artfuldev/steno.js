@@ -763,6 +763,29 @@ $Q.test('steno.dom - li^li>div - Ascend and Descend - Works like Add and Descend
     assert.strictEqual(JSON.stringify(result.children[1].children[0].attributes), JSON.stringify(expected.children[1].children[0].attributes), 'Attributes of div');
     assert.strictEqual(result.children[1].children[0].name, expected.children[1].children[0].name, 'Name of div');
 });
+$Q.test('steno.dom - Grouping', function(assert) {
+    // Expectation
+    assert.expect(2);
+
+    // Variables
+    var string,
+        result,
+        expected;
+
+    // Assertions
+
+    // #68
+    string = 'div>(header>ul>li*2>a[href])+footer>p';
+    result = steno.html(string);
+    expected = '<div><header><ul><li><a href=""></a></li><li><a href=""></a></li></ul></header><footer><p></p></footer></div>';
+    assert.strictEqual(result, expected, string);
+
+    // #68
+    string = '(div>dl>(dt+dd)*3)+footer>p';
+    result = steno.html(string);
+    expected = '<div><dl><dt></dt><dd></dd><dt></dt><dd></dd><dt></dt><dd></dd></dl></div><footer><p></p></footer>';
+    assert.strictEqual(result, expected, string);
+});
 $Q.test('steno.html - No Context', function(assert) {
     // Expectations
     assert.expect(12);
