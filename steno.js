@@ -1,5 +1,5 @@
 ﻿/*
-    steno.js - A javascript library to write shorthand HTML 
+    steno.js - The smallest independent javascript library for logic-less HTML templating.
     Copyright (C) 2014  Kenshin The Battōsai (Sudarsan Balaji)
 
     This program is free software: you can redistribute it and/or modify
@@ -264,8 +264,7 @@
                     // Climb up till the element's parent has no name
                     parent = element.parent;
                     while (parent.name !== strEmpty) {
-                        temp = element.parent;
-                        parent = temp.parent;
+                        parent = parent.parent;
                     }
 
                     // Set multiplier
@@ -612,17 +611,29 @@
         return target;
     };
 
-    // Add stuff to steno
+    // Add stuff to zQuery
     extend(steno, {
 
         // Core
+        classes: stenoClasses,
+        attributes: stenoAttributes,
+        element: stenoElement,
+        dom: stenoDom,
         html: stenoHtml,
+        redo: stenoRedo,
+        add: stenoAdd,
+        render: stenoRender,
+        context: stenoContext,
         compile: stenoCompile,
+
+        // Element
+        el: emptyStenoElement,
 
         // Utilities
         extend: extend,
         has: has,
         is: is,
+        objectType: objectType,
         trim: trim,
 
         // Array Helpers
