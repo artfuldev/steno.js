@@ -354,15 +354,17 @@ $Q.test('steno.element', function (assert) {
             }
         },
         elements = {};
-    for (i in pureElements) {
-        elements[i] = steno.extend(true, {}, element, pureElements[i]);
-    }
+    for (i in pureElements)
+        if (pureElements.hasOwnProperty(i))
+            elements[i] = steno.extend(true, {}, element, pureElements[i]);
 
     // Assertions
     for (i in pureElements)
-        assert.deepEqual(steno.element(i, true), pureElements[i], 'Elements in \'' + i + '\' retreived successfully as ' + JSON.stringify(pureElements[i]));
+        if (pureElements.hasOwnProperty(i))
+            assert.deepEqual(steno.element(i, true), pureElements[i], 'Elements in \'' + i + '\' retreived successfully as ' + JSON.stringify(pureElements[i]));
     for (i in elements)
-        assert.deepEqual(steno.element(i), elements[i], 'Elements in \'' + i + '\' retreived successfully as ' + JSON.stringify(elements[i]));
+        if (elements.hasOwnProperty(i))
+            assert.deepEqual(steno.element(i), elements[i], 'Elements in \'' + i + '\' retreived successfully as ' + JSON.stringify(elements[i]));
 
 });
 $Q.test('steno.context', function(assert) {

@@ -113,7 +113,7 @@ $Q.test('steno.extend', function(assert) {
     assert.expect(30);
 
     var empty, optionsWithLength, optionsWithDate, myKlass,
-		customObject, optionsWithCustomObject, MyNumber, ret,
+		customObject, optionsWithCustomObject, myNumber, ret,
 		nullUndef, target, recursive, obj,
 		defaults, defaultsCopy, options1, options1Copy, options2, options2Copy, merged2,
 		settings = { "xnumber1": 5, "xnumber2": 7, "xstring1": 'peter', "xstring2": 'pan' },
@@ -122,7 +122,7 @@ $Q.test('steno.extend', function(assert) {
 		merged = { "xnumber1": 5, "xnumber2": 1, "xstring1": 'peter', "xstring2": 'x', "xxx": 'newstring' },
 		deep1 = { "foo": { "bar": true } },
 		deep2 = { "foo": { "baz": true }, "foo2": document },
-		deep2copy = { "foo": { "baz": true }, "foo2": document },
+		deep2Copy = { "foo": { "baz": true }, "foo2": document },
 		deepmerged = { "foo": { "bar": true, "baz": true }, "foo2": document },
 		arr = [1, 2, 3],
 		nestedarray = { "arr": arr };
@@ -137,7 +137,7 @@ $Q.test('steno.extend', function(assert) {
 
     steno.extend(true, deep1, deep2);
     assert.deepEqual(deep1['foo'], deepmerged['foo'], 'Check if foo: settings must be extended');
-    assert.deepEqual(deep2['foo'], deep2copy['foo'], 'Check if not deep2: options must not be modified');
+    assert.deepEqual(deep2['foo'], deep2Copy['foo'], 'Check if not deep2: options must not be modified');
     assert.equal(deep1['foo2'], document, 'Make sure that a deep clone was not attempted on the document');
 
     assert.ok(steno.extend(true, {}, nestedarray)['arr'] !== arr, 'Deep extend of object must clone child array');
@@ -169,9 +169,9 @@ $Q.test('steno.extend', function(assert) {
     steno.extend(true, empty, optionsWithCustomObject);
     assert.ok(empty['foo'] && empty['foo']['date'] === customObject, 'Custom objects copy correctly');
 
-    MyNumber = Number;
+    myNumber = Number;
 
-    ret = steno.extend(true, { "foo": 4 }, { "foo": new MyNumber(5) });
+    ret = steno.extend(true, { "foo": 4 }, { "foo": new myNumber(5) });
     assert.ok(parseInt(ret.foo, 10) === 5, 'Wrapped numbers copy correctly');
 
     nullUndef = steno.extend({}, options, { "xnumber2": null });
