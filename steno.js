@@ -1,5 +1,5 @@
 ﻿/*
-    steno.js - A javascript library to write shorthand HTML 
+    steno.js - The smallest independent javascript library for logic-less HTML templating
     Copyright (C) 2014  Kenshin The Battōsai (Sudarsan Balaji)
 
     This program is free software: you can redistribute it and/or modify
@@ -63,13 +63,13 @@
         // Capture Groups:
         // 1        2           3       4                   5       6   7       8           9       10          11
         // Match    Operator    Closing ClosingMuliplier    Name    Id  Classes Attributes  Content Multiplier  SubContext
-        rxElement = /(( |\+|\^|>|\()|(\))(?:\*(\d+))?|([a-z]+[0-9]?)?(?:#([a-z-]+))?((?:\.[a-z-]+)*)((?:\[(?:[a-z-]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*)(?:\{((?:\\.|[^\n\r\\}])*)\})?(?:\*(\d+))?(?:\\([a-z._-]+))?)/g,
+        rxElement = /(( |\+|\^|>|\()|(\))(?:\*(\d+))?|([a-z]+[0-9]?)?(?:#([a-z0-9-]+))?((?:\.[a-z0-9-_]+)*)((?:\[(?:[a-z0-9-_]+(?:="(?:\\.|[^\n\r"\\])*")?[\t ]?)+\])*)(?:\{((?:\\.|[^\n\r\\}])*)\})?(?:\*(\d+))?(?:\\([a-z0-9._-]+))?)/g,
 
         // Capture Group: ClassName
-        rxClasses = /\.([a-z-_]+)/g,
+        rxClasses = /\.([a-z0-9-_]+)/g,
 
         // Capture Groups: Name, Value
-        rxAttributes = /([a-z-_]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
+        rxAttributes = /([a-z0-9-_]+)(?:="((?:\\.|[^\n\r"\\])*)")?/g,
 
         // Capture Group: Object/Variable Reference
         rxVariables = /\\([a-z\$_.-]+)/g,
@@ -264,8 +264,7 @@
                     // Climb up till the element's parent has no name
                     parent = element.parent;
                     while (parent.name !== strEmpty) {
-                        temp = element.parent;
-                        parent = temp.parent;
+                        parent = parent.parent;
                     }
 
                     // Set multiplier
@@ -612,17 +611,29 @@
         return target;
     };
 
-    // Add stuff to steno
+    // Add stuff to zQuery
     extend(steno, {
 
         // Core
+        classes: stenoClasses,
+        attributes: stenoAttributes,
+        element: stenoElement,
+        dom: stenoDom,
         html: stenoHtml,
+        redo: stenoRedo,
+        add: stenoAdd,
+        render: stenoRender,
+        context: stenoContext,
         compile: stenoCompile,
+
+        // Element
+        el: emptyStenoElement,
 
         // Utilities
         extend: extend,
         has: has,
         is: is,
+        objectType: objectType,
         trim: trim,
 
         // Array Helpers
