@@ -26,7 +26,7 @@ $Q.module('Core', {
 $Q.test('steno.classes', function (assert) {
 
     // Expectations
-    assert.expect(5);
+    assert.expect(10);
 
     // Assertions
     assert.equal(steno.classes(''), '', 'Empty String');
@@ -34,11 +34,17 @@ $Q.test('steno.classes', function (assert) {
     assert.equal(steno.classes('.menu-item'), 'menu-item', 'Single Hyphenated Class');
     assert.equal(steno.classes('.menu.item'), 'menu item', 'Multiple Classes');
     assert.equal(steno.classes('.menu-item.item-empty'), 'menu-item item-empty', 'Multiple Hyphenated Classes');
+    // #73
+    assert.equal(steno.classes('.12'), '12', 'Single Class with Numbers');
+    assert.equal(steno.classes('.menu-1'), 'menu-1', 'Single Hyphenated Class with Number');
+    assert.equal(steno.classes('.menu-12'), 'menu-12', 'Single Hyphenated Class with Numbers');
+    assert.equal(steno.classes('.menu-item-1.item-empty'), 'menu-item-1 item-empty', 'Multiple Hyphenated Classes with Number');
+    assert.equal(steno.classes('.menu-item.item-empty-100'), 'menu-item item-empty-100', 'Multiple Hyphenated Classes with Numbers');
 });
 $Q.test('steno.attributes', function (assert) {
 
     // Expectations
-    assert.expect(8);
+    assert.expect(15);
 
     // Variables
     var string, result;
@@ -89,32 +95,210 @@ $Q.test('steno.attributes', function (assert) {
         id: 'hehe'
     };
     assert.deepEqual(steno.attributes(string), result, 'Multiple Attributes in Sizzle Format');
+
+    // #73
+    string = '[data-attribute-1]';
+    result = { 'data-attribute-1': '' };
+    assert.deepEqual(steno.attributes(string), result, 'Boolean Attribute with Number in Name');
+
+    // #73
+    string = '[for-99=""]';
+    result = { 'for-99': '' };
+    assert.deepEqual(steno.attributes(string), result, 'Empty-Valued Attribute with Number in Name');
+
+    // #73
+    string = '[title-12="Something about zQuery\'s Awesomeness"]';
+    result = { 'title-12': 'Something about zQuery\'s Awesomeness' };
+    assert.deepEqual(steno.attributes(string), result, 'Attribute with value with Number in Name');
+
+    // #73
+    string = '[href-99="github.com/#"]';
+    result = { 'href-99': 'github.com/#' };
+    assert.deepEqual(steno.attributes(string), result, 'Attribute with value containing . and #, with Number in Name');
+
+    // #73
+    string = '[filter-12][title-100="Something about zQuery\'s \\"Awesomeness>+^()\\""]';
+    result = {
+        'filter-12': '',
+        'title-100': 'Something about zQuery\'s \\"Awesomeness>+^()\\"'
+    };
+    assert.deepEqual(steno.attributes(string), result, 'Attribute with value containing escaped " and operators, with Number in Name');
+
+    // #73
+    string = '[filter-900 title-12="Something about zQuery\'s \\"Awesomeness>+^()\\"" class="haha" id="hehe"]';
+    result = {
+        'filter-900': '',
+        'title-12': 'Something about zQuery\'s \\"Awesomeness>+^()\\"',
+        'class': 'haha',
+        id: 'hehe'
+    };
+    assert.deepEqual(steno.attributes(string), result, 'Multiple Attributes in ZenCoding Format, with Number in Name');
+
+    // #73
+    string = '[filter12][title13="Something about zQuery\'s \\"Awesomeness>+^()\\""][class="haha"][id="hehe"]';
+    result = {
+        'filter12': '',
+        'title13': 'Something about zQuery\'s \\"Awesomeness>+^()\\"',
+        'class': 'haha',
+        id: 'hehe'
+    };
+    assert.deepEqual(steno.attributes(string), result, 'Multiple Attributes in Sizzle Format, with Number in Name');
+
 });
 $Q.test('steno.element', function (assert) {
 
     // Expectations
-    assert.expect(16);
+    assert.expect(50);
 
     // Variables
     var i,
         pureElements = {
             'work': {
-                name: 'work', attributes: {}, text: '', multiplier: 1, context: null
+                name: 'work',
+                attributes: {},
+                text: '',
+                multiplier: 1,
+                context: null
             },
             '#menu': {
-                name: 'div', attributes: { id: 'menu' }, text: '', multiplier: 1, context: null
+                name: 'div',
+                attributes: { id: 'menu' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            '#menu1': {
+                name: 'div',
+                attributes: { id: 'menu1' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            '#menu-1': {
+                name: 'div',
+                attributes: { id: 'menu-1' },
+                text: '',
+                multiplier: 1,
+                context: null
             },
             'div.class-name': {
-                name: 'div', attributes: { 'class': 'class-name' }, text: '', multiplier: 1, context: null
+                name: 'div',
+                attributes: { 'class': 'class-name' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'div.class-name1': {
+                name: 'div',
+                attributes: { 'class': 'class-name1' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'div.class-name-1': {
+                name: 'div',
+                attributes: { 'class': 'class-name-1' },
+                text: '',
+                multiplier: 1,
+                context: null
             },
             'p.go-to-hell[class="help-me"]': {
-                name: 'p', attributes: { 'class': 'go-to-hell help-me' }, text: '', multiplier: 1, context: null
+                name: 'p',
+                attributes: { 'class': 'go-to-hell help-me' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'p.go-to-hell1[class="help-me"]': {
+                name: 'p',
+                attributes: { 'class': 'go-to-hell1 help-me' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'p.go-to-hell1[class="help-me-1"]': {
+                name: 'p',
+                attributes: { 'class': 'go-to-hell1 help-me-1' },
+                text: '',
+                multiplier: 1,
+                context: null
             },
             'p#id.class': {
-                name: 'p', attributes: { id: 'id', 'class': 'class' }, text: '', multiplier: 1, context: null
+                name: 'p',
+                attributes: { id: 'id', 'class': 'class' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'p#id.class1': {
+                name: 'p',
+                attributes: { id: 'id', 'class': 'class1' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'p#id.class-1': {
+                name: 'p',
+                attributes: { id: 'id', 'class': 'class-1' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'p#id1.class': {
+                name: 'p',
+                attributes: { id: 'id1', 'class': 'class' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'p#id1.class1': {
+                name: 'p',
+                attributes: { id: 'id1', 'class': 'class1' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'p#id1.class-1': {
+                name: 'p',
+                attributes: { id: 'id1', 'class': 'class-1' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'p#id-1.class': {
+                name: 'p',
+                attributes: { id: 'id-1', 'class': 'class' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'p#id-1.class1': {
+                name: 'p',
+                attributes: { id: 'id-1', 'class': 'class1' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'p#id-1.class-1': {
+                name: 'p',
+                attributes: { id: 'id-1', 'class': 'class-1' },
+                text: '',
+                multiplier: 1,
+                context: null
             },
             'p[hi="how" are="\\"you\\""]': {
-                name: 'p', attributes: { hi: 'how', are: '\\"you\\"' }, text: '', multiplier: 1, context: null
+                name: 'p',
+                attributes: { hi: 'how', are: '\\"you\\"' },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'p[hi-1="how" are1="\\"you\\""]': {
+                name: 'p',
+                attributes: { 'hi-1': 'how', 'are1': '\\"you\\"' },
+                text: '',
+                multiplier: 1,
+                context: null
             },
             'p#id.class[data-attr da="gpo" hi="\\"help\\""]': {
                 name: 'p',
@@ -123,6 +307,19 @@ $Q.test('steno.element', function (assert) {
                     'class': 'class',
                     'data-attr': '',
                     da: 'gpo',
+                    hi: '\\"help\\"'
+                },
+                text: '',
+                multiplier: 1,
+                context: null
+            },
+            'p#id.class[data-attr-1 da1="gpo" hi="\\"help\\""]': {
+                name: 'p',
+                attributes: {
+                    id: 'id',
+                    'class': 'class',
+                    'data-attr-1': '',
+                    da1: 'gpo',
                     hi: '\\"help\\"'
                 },
                 text: '',
@@ -141,18 +338,25 @@ $Q.test('steno.element', function (assert) {
                 text: 'Hi, \\} How\'re you?',
                 multiplier: 1,
                 context: null
+            },
+            'p#id.class[data-attr-99 da2="gpo" hi="\\"help\\""]{Hi, \\} How\'re you?}': {
+                name: 'p',
+                attributes: {
+                    id: 'id',
+                    'class': 'class',
+                    'data-attr-99': '',
+                    da2: 'gpo',
+                    hi: '\\"help\\"'
+                },
+                text: 'Hi, \\} How\'re you?',
+                multiplier: 1,
+                context: null
             }
         },
-        elements = {
-            'work': steno.extend(true, {}, element, pureElements['work']),
-            '#menu': steno.extend(true, {}, element, pureElements['#menu']),
-            'div.class-name': steno.extend(true, {}, element, pureElements['div.class-name']),
-            'p.go-to-hell[class="help-me"]': steno.extend(true, {}, element, pureElements['p.go-to-hell[class="help-me"]']),
-            'p#id.class': steno.extend(true, {}, element, pureElements['p#id.class']),
-            'p[hi="how" are="\\"you\\""]': steno.extend(true, {}, element, pureElements['p[hi="how" are="\\"you\\""]']),
-            'p#id.class[data-attr da="gpo" hi="\\"help\\""]': steno.extend(true, {}, element, pureElements['p#id.class[data-attr da="gpo" hi="\\"help\\""]']),
-            'p#id.class[data-attr da="gpo" hi="\\"help\\""]{Hi, \\} How\'re you?}': steno.extend(true, element, pureElements['p#id.class[data-attr da="gpo" hi="\\"help\\""]{Hi, \\} How\'re you?}'])
-        };
+        elements = {};
+    for (i in pureElements) {
+        elements[i] = steno.extend(true, {}, element, pureElements[i]);
+    }
 
     // Assertions
     for (i in pureElements)
