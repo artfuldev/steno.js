@@ -2,7 +2,7 @@
 
 * Author: Kenshin The Battōsai *(Sudarsan Balaji)*
 * License: [GNU Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
-* Library Version: v1.5.3
+* Library Version: v1.5.4
 * Last Updated: 2015-02-05
 * ReadMe Version: 1.1
 
