@@ -3,7 +3,7 @@
 * Author: Kenshin The Battōsai *(Sudarsan Balaji)*
 * License: [GNU Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
 * Library Version: v1.5.3
-* Last Updated: 2015-02-02
+* Last Updated: 2015-02-05
 * ReadMe Version: 1.1
 
 ##Description
@@ -85,7 +85,7 @@ precompiled.render(context);
 
 which will render the same output. `steno.js` works with both types of usage!
 
-For more detailed documentation, refer the [wiki](https://github.com/kenshinthebattosai/steno.js/wiki)
+For more detailed documentation, refer the [docs section](http://steno.js.thebattosai.in/Docs) of the [dedicated site](http://steno.js.thebattosai.in)
 
 ##Features
 
