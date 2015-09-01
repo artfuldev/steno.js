@@ -1,4 +1,4 @@
-﻿#steno.js
+# steno.js
 
 * Author: Kenshin The Battōsai *(Sudarsan Balaji)*
 * License: [GNU Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
@@ -6,7 +6,7 @@
 * Last Updated: 2015-02-05
 * ReadMe Version: 1.1
 
-##Description
+## Description
 
 The smallest independent javascript library for logic-less HTML templating.
 
@@ -87,7 +87,7 @@ which will render the same output. `steno.js` works with both types of usage!
 
 For more detailed documentation, refer the [docs section](http://steno.js.thebattosai.in/Docs) of the [dedicated site](http://steno.js.thebattosai.in)
 
-##Features
+## Features
 
 * Quickly add dom elements or innerHTML to a document.
 * Small but powerful logic-less templates!
@@ -96,13 +96,13 @@ For more detailed documentation, refer the [docs section](http://steno.js.thebat
 * No dependencies.
 * Comes with utilities, like `extend, is, has, trim, random and nullify`.
 
-##Goals
+## Goals
 
-###Short Term
+### Short Term
 * Respond to feature requests
 * Build a site/wiki for documentation and/or promotion.
 
-##Thanks
+## Thanks
 
 To wonderful authors of libraries like [jQuery](http://jquery.com), [qUnit](http://qunitjs.com),
 [underscore](http://underscorejs.org) and [backbone](http://backbonejs.org),
