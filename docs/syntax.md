@@ -35,4 +35,4 @@ As an example, `<a href="http://google.com" title="Google" disabled><a>` is writ
 
 Fifth in line is the optional text, which represents the innerHtml of the element. It can be specified by following the syntax of `{text goes here}`.
 
-As an example, `*steno.js*` is written as `span.brand{steno.js}`.
+As an example, `<span class="brand">steno.js</span>` is written as `span.brand{steno.js}`.
