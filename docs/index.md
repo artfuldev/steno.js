@@ -97,7 +97,7 @@ For more detailed documentation, refer the [docs section](http://steno.js.thebat
 * Comes with utilities, like `extend, is, has, trim, random and nullify`.
 
 ## Documentation
-Documentation is available at [ReadTheDocs](http://stenojs.readthedocs.org/). You can read about [Getting Started](http://stenojs.readthedocs.org/en/latest/Getting%20Started/), learn the [syntax](http://stenojs.readthedocs.org/en/latest/Syntax/) and [operators](http://stenojs.readthedocs.org/en/latest/Operators/). The you can learn about [templating](http://stenojs.readthedocs.org/en/latest/Templating/). If you're still hungry for more, you can get to the [API Reference](http://stenojs.readthedocs.org/en/latest/API%20Reference/).
+Documentation is available at [ReadTheDocs](http://stenojs.readthedocs.org/). You can read about [getting started](http://stenojs.readthedocs.org/en/latest/Getting%20Started/), learn the [syntax](http://stenojs.readthedocs.org/en/latest/Syntax/) and [operators](http://stenojs.readthedocs.org/en/latest/Operators/). The you can learn about [templating](http://stenojs.readthedocs.org/en/latest/Templating/). If you're still hungry for more, you can get to the [API Reference](http://stenojs.readthedocs.org/en/latest/API%20Reference/).
 
 ## Goals
 
