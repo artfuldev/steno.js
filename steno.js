@@ -563,7 +563,7 @@
         }
 
         // Maybe introduce at a later date?
-        // Extend zQuery when only one argument is passed
+        // Extend steno when only one argument is passed
         //if (i === length) {
         //    target = this;
         //    i--;
@@ -611,7 +611,7 @@
         return target;
     };
 
-    // Add stuff to zQuery
+    // Add stuff to steno
     extend(steno, {
 
         // Core
@@ -645,7 +645,7 @@
     if (typeof window !== strUndefined && window != null) {
         (function () {
             var
-                // Map over zQuery in case of overwrite
+                // Map over steno in case of overwrite
                 _steno = window.steno;
 
             steno.noConflict = function (deep) {
