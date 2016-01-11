@@ -3,8 +3,8 @@
 * Author: Sudarsan Balaji
 * License: [GNU Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
 * Library Version: v1.5.4
-* Last Updated: 2015-09-01
-* ReadMe Version: 1.1
+* Last Updated: 2016-01-11
+* ReadMe Version: 1.2
 
 ## Description
 
