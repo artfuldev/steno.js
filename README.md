@@ -85,8 +85,6 @@ precompiled.render(context);
 
 which will render the same output. `steno.js` works with both types of usage!
 
-For more detailed documentation, refer the [docs section](http://steno.js.thebattosai.in/Docs) of the [dedicated site](http://steno.js.thebattosai.in)
-
 ## Features
 
 * Quickly add dom elements or innerHTML to a document.
