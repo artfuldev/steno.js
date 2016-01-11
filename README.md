@@ -3,8 +3,8 @@
 * Author: Sudarsan Balaji
 * License: [GNU Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
 * Library Version: v1.5.4
-* Last Updated: 2015-02-05
-* ReadMe Version: 1.1
+* Last Updated: 2016-01-11
+* ReadMe Version: 1.2
 
 ## Description
 
@@ -85,7 +85,7 @@ precompiled.render(context);
 
 which will render the same output. `steno.js` works with both types of usage!
 
-For more detailed documentation, refer the [docs section](http://steno.js.thebattosai.in/Docs) of the [dedicated site](http://stenojs.readthedocs.org/en/latest/)
+For more detailed documentation, refer the [docs section](http://steno.js.thebattosai.in/Docs) of the [dedicated site](http://steno.js.thebattosai.in)
 
 ## Features
 
@@ -96,11 +96,13 @@ For more detailed documentation, refer the [docs section](http://steno.js.thebat
 * No dependencies.
 * Comes with utilities, like `extend, is, has, trim, random and nullify`.
 
+## Documentation
+Documentation is available at [ReadTheDocs](http://stenojs.readthedocs.org/). You can read about [getting started](http://stenojs.readthedocs.org/en/latest/Getting%20Started/), learn the [syntax](http://stenojs.readthedocs.org/en/latest/Syntax/) and [operators](http://stenojs.readthedocs.org/en/latest/Operators/). The you can learn about [templating](http://stenojs.readthedocs.org/en/latest/Templating/). If you're still hungry for more, you can get to the [API Reference](http://stenojs.readthedocs.org/en/latest/API%20Reference/).
+
 ## Goals
 
 ### Short Term
 * Respond to feature requests
-* Build a site/wiki for documentation and/or promotion.
 
 ## Thanks
 
