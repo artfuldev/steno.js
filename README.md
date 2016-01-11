@@ -1,6 +1,6 @@
 # steno.js
 
-* Author: Kenshin The Battōsai *(Sudarsan Balaji)*
+* Author: Sudarsan Balaji
 * License: [GNU Affero GPL v3](http://www.gnu.org/licenses/agpl-3.0.html)
 * Library Version: v1.5.4
 * Last Updated: 2015-02-05
