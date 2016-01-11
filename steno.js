@@ -1,6 +1,6 @@
 ﻿/*
     steno.js - The smallest independent javascript library for logic-less HTML templating
-    Copyright (C) 2014  Kenshin The Battōsai (Sudarsan Balaji)
+    Copyright (C) 2016 Sudarsan Balaji
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
